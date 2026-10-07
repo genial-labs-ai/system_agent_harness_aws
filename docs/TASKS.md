@@ -63,13 +63,13 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [ ] Setup cell pattern: `%pip install` guarded by `find_spec("stockroom")`, `REPO_URL` placeholder, `detect_mode()` banner
 - [ ] `make notebooks` executes all 8 notebooks in mock mode (nbmake)
 
-## Phase 6 — Teaching materials `[~]`
+## Phase 6 — Teaching materials `[x]` (merged branches `e474a8f`, `93dbfc8`)
 - [x] `lectures/day1_llm_eval_foundations.md`, `lectures/day2_llm_as_a_judge_and_otel.md` (merged from worktree branch, commit `e474a8f`)
-- [ ] `lectures/day3_agent_harness_and_mcp_mocking.md`, `lectures/day4_aws_ci_cd_redteaming.md` (sub-agent in worktree)
+- [x] `lectures/day3_agent_harness_and_mcp_mocking.md`, `lectures/day4_aws_ci_cd_redteaming.md` (merged, commit `93dbfc8`)
 - [x] `slides/DAY1_MOTIVATIONAL_SLIDES.md` (19 slides with notes; `make slides` renders 19 sections)
-- [ ] `docs/INSTRUCTOR_GUIDE.md` (sub-agent in worktree)
-- [ ] `scripts/check_lecture_refs.py` (sub-agent in worktree; `make ci` already calls it)
-- [ ] Attribute error-analysis practice to Hamel Husain / Shreya Shankar with links; real incidents only with sources
+- [x] `docs/INSTRUCTOR_GUIDE.md`
+- [x] `scripts/check_lecture_refs.py` — 0 errors over 6 documents; called by `make ci` and the CI workflow (notebook paths warn until built)
+- [x] Error-analysis practice attributed (Husain blog, Shankar et al. arXiv 2404.12272, both fetched); no real incidents used anywhere
 
 ## Phase 7 — README and DECISIONS `[~]`
 - [x] (draft, commit `246a5d6`) `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (`<GITHUB_ORG>/<GITHUB_REPO>`)
