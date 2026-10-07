@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Instructor guide
+    url: https://github.com/genial-labs-ai/system_agent_harness_aws/blob/main/docs/INSTRUCTOR_GUIDE.md
+    about: Timings, setup, and the failures participants actually hit in each lab.
+  - name: Troubleshooting table
+    url: https://github.com/genial-labs-ai/system_agent_harness_aws#troubleshooting
+    about: Check here first for common setup, Bedrock access and CI errors.
+  - name: Design decisions and version pins
+    url: https://github.com/genial-labs-ai/system_agent_harness_aws/blob/main/docs/DECISIONS.md
+    about: Why the repo deviates from the brief, and which library versions are pinned and why.

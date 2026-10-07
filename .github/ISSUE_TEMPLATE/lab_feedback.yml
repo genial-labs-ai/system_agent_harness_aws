@@ -1,0 +1,45 @@
+name: Lab or lecture feedback
+description: An exercise, notebook cell, lecture section or slide that was confusing, wrong or too slow.
+title: "[lab] "
+labels: ["teaching"]
+body:
+  - type: dropdown
+    id: day
+    attributes:
+      label: Day
+      options:
+        - Day 1 — Deterministic and RAG evals
+        - Day 2 — Judge calibration and OTEL traces
+        - Day 3 — Building a custom agent harness
+        - Day 4 — Bedrock Evaluations and CI gating
+        - Instructor guide / README
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Where
+      description: Notebook cell title, exercise number, lecture heading or slide number.
+      placeholder: "Day 3, Exercise 2 (MaxToolPayloadGuard)"
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: I was
+      options:
+        - a participant
+        - an instructor
+        - working through it alone
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected the exercise or text to teach, and what got in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested change
+      description: Optional. Rewording, a different example, a hint cell, a timing adjustment.

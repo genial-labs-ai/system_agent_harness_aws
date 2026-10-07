@@ -1,0 +1,14 @@
+# Review ownership. Every path falls back to the maintainer; narrower rules below win.
+*                                   @project-delphi
+
+# Changing any of these moves the committed baseline or the gate itself: run `make test`
+# then `make baseline` and explain the diff in the PR (see CONTRIBUTING.md).
+/eval_thresholds.yaml               @project-delphi
+/reports/baseline/                  @project-delphi
+/data/golden/                       @project-delphi
+/src/stockroom/evals/               @project-delphi
+/src/stockroom/agent/tools.py       @project-delphi
+
+# CI, cloud access and cost controls.
+/.github/                           @project-delphi
+/docs/aws/                          @project-delphi

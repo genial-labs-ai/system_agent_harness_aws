@@ -1,0 +1,57 @@
+name: Bug report
+description: Something in the agent, eval suite, CI gate or tooling behaves wrongly.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Mock mode is deterministic, so most bugs reproduce from a single command.
+  - type: input
+    id: command
+    attributes:
+      label: Command that fails
+      placeholder: "STOCKROOM_WEAKNESSES=naive_retry uv run stockroom run \"What's the status of order ORD-9001?\""
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Paste the output or traceback. Please redact AWS account IDs and bucket names.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - mock (default, no AWS)
+        - live (STOCKROOM_MODE=live, Amazon Bedrock)
+    validations:
+      required: true
+  - type: input
+    id: weaknesses
+    attributes:
+      label: STOCKROOM_WEAKNESSES
+      description: Leave empty if unset. Seeded weaknesses are expected to break things; say which were on.
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Output of `uv run stockroom config` and `make pins`, plus OS and whether this is a Codespace / devcontainer.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: I ran `make setup` on a clean checkout and the problem persists
+        - label: I checked the troubleshooting table in the README

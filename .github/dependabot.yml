@@ -1,0 +1,38 @@
+# Keeps the pinned toolchain fresh without surprising the gate: one grouped PR per ecosystem per month.
+# Library bumps still have to pass `make ci`, and a changed metric still needs `make baseline` plus an
+# explanation in the PR (see CONTRIBUTING.md). Record new pins in docs/DECISIONS.md and the README table.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels: ["dependencies", "ci"]
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels: ["dependencies", "python"]
+    open-pull-requests-limit: 3
+    groups:
+      eval-frameworks:
+        patterns: ["deepeval", "ragas"]
+      aws:
+        patterns: ["boto3", "botocore", "aws-*"]
+      opentelemetry:
+        patterns: ["opentelemetry-*", "openinference-*", "arize-*"]
+      dev-tooling:
+        patterns: ["pytest", "ruff", "jupytext", "nbformat", "nbclient", "nbmake", "ipykernel", "pandas", "matplotlib"]
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels: ["dependencies", "node"]
+    groups:
+      node-tooling:
+        patterns: ["*"]

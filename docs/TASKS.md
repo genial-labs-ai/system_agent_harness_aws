@@ -79,6 +79,7 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 
 ## Session log
 - 2026-10-06/07, session 1: phases 1–7 completed; three worktree sub-agents produced notebooks, lectures, slides, instructor guide and the reference checker; all verified on a clean clone.
+- 2026-10-07, session 3: repository polish for the org. Added `LICENSE` (MIT, Genial Labs), `CITATION.cff` (validated with cffconvert), `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.editorconfig`; under `.github/`: `CODEOWNERS`, PR template with a metrics/baseline section, three issue forms (bug, lab feedback, proposal) plus contact links, `dependabot.yml` (monthly grouped PRs for uv, npm, Actions), `labeler.yml` + `workflows/labeler.yml` (actions/labeler v7), `release.yml` categories. README got a badge row, a Colab/solutions table for the four notebooks and a contributing/security section. On GitHub: 15 topics, 15 labels (matching labeler and release categories), private vulnerability reporting and Dependabot alerts/security updates enabled. DECISIONS 38.
 - 2026-10-07, session 2: published to GitHub. Org `genial-labs-ai` (the requested `genial-labs` is taken on GitHub), public repo `system_agent_harness_aws`; placeholders replaced (DECISIONS 2); first hosted CI run exposed the `setup-uv@v10` tag bug, fixed by pinning `v10.2.0` (DECISIONS 36). Live workflow switched to manual dispatch only, no cron (DECISIONS 37).
 
 ## Follow-ups worth doing (not required by the brief)

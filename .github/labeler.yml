@@ -1,0 +1,31 @@
+# Paths → labels, applied by .github/workflows/labeler.yml on every pull request.
+agent:
+  - changed-files:
+      - any-glob-to-any-file: ["src/stockroom/agent/**", "src/stockroom/config.py", "src/stockroom/cli.py"]
+evals:
+  - changed-files:
+      - any-glob-to-any-file: ["src/stockroom/evals/**", "eval_thresholds.yaml", "promptfooconfig.yaml", "scripts/check_thresholds.py", "scripts/promptfoo_*.py"]
+mcp:
+  - changed-files:
+      - any-glob-to-any-file: ["src/stockroom/mock_server/**", "src/stockroom/agent/mcp_client.py", "scripts/mcp_smoke.py"]
+data:
+  - changed-files:
+      - any-glob-to-any-file: ["data/**", "scripts/generate_seed_data.py", "scripts/validate_data.py"]
+baseline:
+  - changed-files:
+      - any-glob-to-any-file: ["reports/baseline/**"]
+teaching:
+  - changed-files:
+      - any-glob-to-any-file: ["notebooks/**", "lectures/**", "slides/**", "docs/INSTRUCTOR_GUIDE.md"]
+docs:
+  - changed-files:
+      - any-glob-to-any-file: ["README.md", "AGENTS.md", "CONTRIBUTING.md", "SECURITY.md", "docs/**"]
+ci:
+  - changed-files:
+      - any-glob-to-any-file: [".github/**", "Makefile", ".devcontainer/**"]
+aws:
+  - changed-files:
+      - any-glob-to-any-file: ["docs/aws/**", "src/stockroom/agent/bedrock_adapter.py", "scripts/sync_datasets_s3.py", "scripts/fetch_pricing.py", "pricing.yaml"]
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ["pyproject.toml", "uv.lock", "package.json", "package-lock.json"]

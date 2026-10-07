@@ -1,0 +1,20 @@
+# Applies path-based labels (.github/labeler.yml) so PR lists show at a glance whether a change
+# touches the agent, the evals, the committed baseline or the teaching materials.
+name: labeler
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/labeler@v7
+        with:
+          sync-labels: true

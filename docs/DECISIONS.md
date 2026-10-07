@@ -202,3 +202,16 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     wording in the teaching materials are kept: "nightly" names the scheduled-live layer of the
     offline / nightly / online model taught on Day 4, and the materials now say explicitly that
     this repository dispatches that layer by hand.
+38. **Repository hygiene files added on 2026-10-07 (session 3).** `LICENSE` is MIT with
+    "Genial Labs" as holder, matching the `license = MIT` already declared in `pyproject.toml` and
+    `package.json` (there was no LICENSE file, so GitHub showed no licence). `CITATION.cff` lists
+    the git author as the only author; add co-authors there, not in the README. Dependabot runs
+    **monthly and grouped** rather than weekly because every pin is recorded in the README table
+    and `docs/DECISIONS.md`, and because a library bump that moves a metric also needs
+    `make baseline` plus an explanation; a weekly stream of ungrouped PRs would make that
+    discipline impossible. The labeler workflow uses `pull_request_target` (the documented
+    pattern for `actions/labeler`, so it can label PRs from forks) and checks out nothing, so it
+    never runs fork code with write permissions. `SECURITY.md` points at GitHub private
+    vulnerability reporting, which was enabled on the repository the same day; it states
+    explicitly that the seeded weaknesses and the planted injection are lab features.
+

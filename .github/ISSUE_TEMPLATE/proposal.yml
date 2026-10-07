@@ -1,0 +1,39 @@
+name: Proposal
+description: A new metric, guard, seeded weakness, golden case, red-team case or integration.
+title: "[proposal] "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - New eval metric or rubric
+        - New harness guard
+        - New seeded weakness (feature flag)
+        - Golden-set or red-team case
+        - AWS / observability integration
+        - Tooling or CI
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: Production failure mode this exposes or prevents
+      description: The repo's rule is that every claim about a failure mode is demonstrated by a test or a notebook cell.
+    validations:
+      required: true
+  - type: textarea
+    id: sketch
+    attributes:
+      label: Sketch
+      description: Which files change, how it stays offline-deterministic in mock mode, and what the gate should do differently.
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints acknowledged
+      options:
+        - label: Runs offline with no AWS credentials (FakeBedrockClient / FakeJudge)
+        - label: No hardcoded model IDs; no OpenAI anywhere
+        - label: Seeded weaknesses stay behind STOCKROOM_WEAKNESSES flags, default fixed

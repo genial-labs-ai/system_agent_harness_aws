@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this workshop or the Stockroom reference agent in teaching or research, please cite it."
+title: "Evaluating Autonomous Agents: Systems, Harnesses & AWS Production CI/CD"
+type: software
+version: 0.1.0
+date-released: 2026-10-07
+license: MIT
+repository-code: "https://github.com/genial-labs-ai/system_agent_harness_aws"
+url: "https://github.com/genial-labs-ai/system_agent_harness_aws"
+abstract: >-
+  A four-day, hands-on workshop built around Stockroom, an inventory and order-support
+  agent with deliberately seeded weaknesses. The thesis is Agent = Model + Harness: the
+  eval suite exercises tool selection, arguments, trajectories, guards, context compaction
+  and injection handling, not only final answers. Everything runs offline by default with a
+  deterministic fake Bedrock client and judge; live mode runs the same code on Amazon Bedrock,
+  gated in GitHub Actions through OIDC.
+authors:
+  - family-names: Kalia
+    given-names: Ravi
+    affiliation: Genial Labs
+keywords:
+  - agent-evaluation
+  - llm-evaluation
+  - amazon-bedrock
+  - model-context-protocol
+  - opentelemetry
+  - ci-cd
+  - workshop

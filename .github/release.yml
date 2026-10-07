@@ -1,0 +1,23 @@
+# Categories for auto-generated release notes (Releases → "Generate release notes").
+changelog:
+  exclude:
+    labels: ["skip-changelog"]
+  categories:
+    - title: Agent and harness
+      labels: ["agent", "mcp"]
+    - title: Evals, metrics and the CI gate
+      labels: ["evals", "baseline"]
+    - title: Teaching materials
+      labels: ["teaching"]
+    - title: Data
+      labels: ["data"]
+    - title: AWS and observability
+      labels: ["aws"]
+    - title: CI and tooling
+      labels: ["ci"]
+    - title: Documentation
+      labels: ["docs"]
+    - title: Dependencies
+      labels: ["dependencies"]
+    - title: Other changes
+      labels: ["*"]

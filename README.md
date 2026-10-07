@@ -1,5 +1,14 @@
 # Evaluating Autonomous Agents: Systems, Harnesses & AWS Production CI/CD
 
+[![agent-eval-ci](https://github.com/genial-labs-ai/system_agent_harness_aws/actions/workflows/agent_eval_ci.yml/badge.svg)](https://github.com/genial-labs-ai/system_agent_harness_aws/actions/workflows/agent_eval_ci.yml)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](pyproject.toml)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://docs.astral.sh/uv/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://docs.astral.sh/ruff/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Offline by default](https://img.shields.io/badge/runs-offline%20by%20default-informational)](#modes)
+[![Judges on Bedrock](https://img.shields.io/badge/judges-Amazon%20Bedrock-FF9900?logo=amazonwebservices&logoColor=white)](#live-mode-on-amazon-bedrock)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/genial-labs-ai/system_agent_harness_aws?quickstart=1)
+
 A four-day, hands-on workshop repository. Participants clone it; instructors teach from it.
 One running example is used throughout: **Stockroom**, an inventory and order-support agent with
 five tools, a small product catalogue, policy documents for RAG, and four *deliberately seeded
@@ -28,6 +37,20 @@ and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Ama
 | `eval_thresholds.yaml` | the single place CI thresholds live |
 | `.github/workflows/` | `agent_eval_ci.yml` (PR gate, mock) and `agent_eval_nightly.yml` (live via OIDC, report only) |
 | `docs/` | `DECISIONS.md` (every deviation and version pin), `INSTRUCTOR_GUIDE.md`, `TASKS.md`, `aws/` IAM policies |
+| `.github/` | issue and PR templates, `CODEOWNERS`, Dependabot (grouped monthly PRs for uv, npm and Actions), path labeler, release-notes categories |
+| `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CITATION.cff` | how to contribute, how to report a real vulnerability (the seeded ones are features), and how to cite the workshop |
+
+### Notebooks in the browser
+
+Each notebook's setup cell clones and installs the repo when `stockroom` is not importable, so they
+run in Google Colab or SageMaker Studio as well as locally. Mock mode needs no AWS account.
+
+| day | student notebook | solutions |
+|---|---|---|
+| 1 · Deterministic and RAG evals | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day1_Deterministic_and_RAG_Evals.ipynb) | [solutions](notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb) |
+| 2 · Judge calibration and OTEL traces | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) | [solutions](notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) |
+| 3 · Building a custom agent harness | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day3_Building_Custom_Agent_Harness.ipynb) | [solutions](notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb) |
+| 4 · Bedrock Evaluations and CI gating | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) | [solutions](notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) |
 
 ## Quick start (no AWS needed)
 
@@ -278,6 +301,13 @@ The repository lives at `genial-labs-ai/system_agent_harness_aws` (already fille
 `docs/aws/oidc_trust_policy.json`, the notebooks' setup cells (`REPO_URL`) and
 `docs/INSTRUCTOR_GUIDE.md`). Still to replace: `<ACCOUNT_ID>`, `<AWS_REGION>`, `<S3_BUCKET>`,
 `<S3_PREFIX>` in `docs/aws/*.json`.
+
+## Contributing, security and citation
+
+- `CONTRIBUTING.md`: ground rules, the baseline-regeneration workflow for metric changes, and the PR checklist.
+- `SECURITY.md`: the seeded weaknesses and the planted injection are lab features; anything that breaks the *default* harness or widens the OIDC trust is a real report, filed privately.
+- `CITATION.cff`: GitHub's "Cite this repository" button uses it.
+- Issues: templates for bugs, lab/lecture feedback and proposals; PRs get path labels automatically.
 
 ## Troubleshooting
 
