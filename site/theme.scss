@@ -1,39 +1,1182 @@
 /*-- scss:defaults --*/
-$font-family-sans-serif: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-$font-family-monospace: "JetBrains Mono", Menlo, Consolas, monospace;
-$link-color: #d97706;
-$navbar-bg: #0b1220;
-$navbar-fg: #ecf0f7;
-$footer-bg: #0b1220;
-$footer-fg: #96a3b8;
+
+// A quiet, academic palette over cosmo: ink navy for structure, one warm amber accent (a nod to
+// the AWS orange without shouting). Every colour is a token; site/theme-dark.scss overrides the
+// tokens and nothing else, so a rule written here works in both themes. Use the tokens: a literal
+// colour in a rule will be wrong in one of the two themes.
+$ws-bg: #ffffff !default; // page
+$ws-surface: #f5f7fa !default; // cards, code blocks, table heads
+$ws-raised: #ffffff !default; // cards that sit on a surface
+$ws-border: #e1e7ee !default;
+$ws-border-strong: #c3cdd9 !default;
+$ws-text: #1f2a37 !default;
+$ws-heading: #101f33 !default;
+$ws-muted: #5a6879 !default;
+$ws-link: #1a5c8c !default;
+$ws-navy: #132a4a !default; // navbar and hero band
+$ws-on-navy: #ffffff !default;
+$ws-on-navy-muted: #bccbdc !default;
+$ws-accent: #b45309 !default; // calls to action, active markers (amber-700 on white: 4.6:1)
+$ws-accent-soft: #fdf3e6 !default;
+$ws-on-accent: #ffffff !default;
+$ws-cta: #f0a030 !default; // the one filled button on the navy hero
+$ws-on-cta: #1b1206 !default;
+$ws-teal: #1f7a6d !default; // the thesis, "what the evals show"
+$ws-teal-soft: #e9f5f2 !default;
+$ws-danger: #b4232c !default; // "what breaks"
+$ws-danger-soft: #fbeaea !default;
+$ws-code: #9a3412 !default; // inline code
+$ws-code-bg: #f6f8fa !default;
+$ws-shadow: 0 1px 2px rgba(16, 31, 51, 0.06), 0 6px 18px rgba(16, 31, 51, 0.06) !default;
+
+$primary: $ws-navy !default;
+$body-bg: $ws-bg !default;
+$body-color: $ws-text !default;
+$link-color: $ws-link !default;
+$border-color: $ws-border !default;
+$headings-color: $ws-heading !default;
+$navbar-bg: $ws-navy !default;
+$navbar-fg: $ws-on-navy !default;
+$code-color: $ws-code !default;
+$code-bg: $ws-code-bg !default;
+$code-block-bg: $ws-code-bg !default;
+$footer-bg: $ws-surface !default;
+$footer-fg: $ws-muted !default;
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+$font-family-monospace: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+$headings-font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+$headings-font-weight: 600;
+$font-size-root: 17px;
 
 /*-- scss:rules --*/
-.navbar-brand { font-weight: 700; letter-spacing: -0.01em; }
-.navbar .navbar-brand, .navbar .nav-link { color: #ecf0f7 !important; }
-.navbar .nav-link:hover { color: #ff9900 !important; }
 
-pre.mermaid { background: transparent; border: 0; text-align: center; }
-pre.mermaid svg { max-width: 100%; height: auto; }
+// ---------------------------------------------------------------------------
+// Reading experience
+// ---------------------------------------------------------------------------
 
-.hero {
-  padding: 2.5rem 0 1.5rem 0;
-  .eyebrow { color: #d97706; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: .85rem; }
-  h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.02em; margin: .25rem 0 .5rem 0; }
-  .lead { font-size: 1.25rem; color: var(--bs-secondary-color); max-width: 46rem; }
-  .thesis {
-    display: inline-block; margin-top: 1rem; padding: .5rem 1rem; border-radius: .6rem;
-    border: 1px solid rgba(217,119,6,.45); background: rgba(217,119,6,.08);
-    font-weight: 700; font-size: 1.2rem; color: #2a9d8f;
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip; // the landing hero bleeds to the viewport edge
+}
+
+main.content p,
+main.content li {
+  line-height: 1.65;
+}
+
+main.content li + li {
+  margin-top: 0.2rem;
+}
+
+h1.title {
+  font-size: 2.35rem;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+// Lecture pages: the page title gets an eyebrow from its subtitle ("Day 1 · lecture notes").
+#title-block-header {
+  margin-bottom: 1.6rem;
+
+  // Quarto writes the subtitle after the title; the eyebrow belongs above it.
+  .quarto-title {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .subtitle {
+    @extend .eyebrow;
+    order: -1;
+    margin: 0 0 0.6rem;
+    color: $ws-accent;
+  }
+
+  .quarto-title-meta {
+    margin-top: 0.5rem;
   }
 }
-.badges img { height: 20px; margin: 0 .25rem .35rem 0; }
 
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-.card-link {
-  display: block; padding: 1rem 1.1rem; border-radius: .75rem; text-decoration: none;
-  border: 1px solid var(--bs-border-color); color: inherit; transition: border-color .15s, transform .15s;
-  .card-title { font-weight: 700; margin-bottom: .25rem; }
-  .card-text { color: var(--bs-secondary-color); font-size: .95rem; }
-  &:hover { border-color: #d97706; transform: translateY(-2px); color: inherit; }
+h2 {
+  margin-top: 2.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid $ws-border;
+  font-size: 1.55rem;
+  letter-spacing: -0.005em;
 }
-table.weaknesses code { white-space: nowrap; }
+
+h3 {
+  margin-top: 1.8rem;
+  font-size: 1.22rem;
+}
+
+h4 {
+  font-family: $font-family-sans-serif;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.subtitle,
+.lead {
+  color: $ws-muted;
+}
+
+main.content a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: rgba($ws-link, 0.4);
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid $ws-accent;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+hr {
+  margin: 2.2rem 0;
+  border-top: 1px solid $ws-border;
+  opacity: 1;
+}
+
+// Small-caps label used above card titles and in headers.
+.eyebrow {
+  display: block;
+  font-family: $font-family-sans-serif;
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $ws-muted;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.08rem 0.55rem;
+  border: 1px solid $ws-border;
+  border-radius: 999px;
+  background: $ws-surface;
+  color: $ws-muted;
+  font-family: $font-family-sans-serif;
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+// Tables: light rules, no heavy borders, comfortable padding.
+main.content table {
+  font-size: 0.92rem;
+  border-color: $ws-border;
+
+  thead th {
+    border-bottom: 1.5px solid $ws-border-strong;
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $ws-muted;
+    vertical-align: bottom;
+  }
+
+  td,
+  th {
+    padding: 0.5rem 0.75rem;
+    vertical-align: top;
+  }
+
+  > :not(caption) > * > * {
+    background-color: transparent;
+    color: inherit;
+  }
+
+  tbody tr:last-child td {
+    border-bottom-color: $ws-border-strong;
+  }
+}
+
+// Code. Inline code is tinted; blocks sit on a bordered surface.
+code {
+  font-size: 0.875em;
+}
+
+p code:not(.sourceCode),
+li code:not(.sourceCode),
+td code:not(.sourceCode),
+h1 code,
+h2 code,
+h3 code {
+  padding: 0.1em 0.32em;
+  border-radius: 4px;
+  background: $ws-code-bg;
+}
+
+h1 code,
+h2 code,
+h3 code {
+  font-size: 0.8em;
+  color: $ws-code;
+}
+
+div.sourceCode,
+pre:not(.sourceCode) {
+  border: 1px solid $ws-border;
+  border-radius: 8px;
+  background: $ws-code-bg;
+}
+
+// Unhighlighted blocks (```text prompts, printed output): theme text, wrapped.
+pre:not(.sourceCode):not(.mermaid) {
+  padding: 0.75rem 0.9rem;
+  color: $ws-text;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  code {
+    color: inherit;
+    font-size: inherit;
+  }
+}
+
+div.sourceCode pre.sourceCode {
+  padding: 0.75rem 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.code-copy-button {
+  opacity: 0.55;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Mermaid diagrams (lectures use GitHub's ```mermaid fences; site/filters/gfm.lua turns them
+// into <pre class="mermaid"> blocks rendered in the browser).
+pre.mermaid {
+  margin: 1.4rem 0;
+  padding: 0.6rem 0;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  overflow-x: auto; // a diagram wider than a phone scrolls inside its own box
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+// Figures and captions.
+main.content figcaption,
+main.content .figure-caption,
+main.content caption {
+  margin-top: 0.6rem;
+  color: $ws-muted;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+main.content .quarto-figure {
+  margin: 1.6rem 0;
+}
+
+blockquote {
+  margin: 1.2rem 0;
+  padding: 0.2rem 0 0.2rem 1rem;
+  border-left: 3px solid $ws-accent;
+  color: $ws-muted;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Callouts keep Quarto's colours per type; only the frame is tuned.
+.callout {
+  border-radius: 8px;
+
+  &.callout-style-simple,
+  &.callout-style-default {
+    border-color: $ws-border;
+    border-left-width: 4px;
+  }
+
+  .callout-body {
+    font-size: 0.94rem;
+  }
+}
+
+// Executed notebook cells: inputs on a surface, outputs quietly indented.
+.cell {
+  margin: 1.2rem 0;
+}
+
+.cell-output {
+  margin-top: 0.4rem;
+
+  pre {
+    border-style: dashed;
+    background: $ws-bg;
+  }
+
+  pre:not(.sourceCode) {
+    color: $ws-muted;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+}
+
+.cell-output-display {
+  overflow-x: auto;
+}
+
+// Shields in README-style sections render small and quiet.
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+
+  p {
+    display: contents;
+  }
+
+  img {
+    height: 20px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Site chrome: navbar, sidebar, table of contents, page navigation, footer
+// ---------------------------------------------------------------------------
+
+.navbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  font-family: $headings-font-family;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.navbar-logo {
+  max-height: 26px;
+  margin-right: 0.3rem;
+  border-radius: 6px;
+}
+
+.navbar .nav-link {
+  font-size: 0.92rem;
+}
+
+.navbar .navbar-nav .nav-link.active,
+.navbar .navbar-nav .show > .nav-link.active {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: $ws-cta;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.5em;
+}
+
+.navbar .dropdown-menu {
+  border: 1px solid $ws-border;
+  border-radius: 8px;
+  box-shadow: $ws-shadow;
+  font-size: 0.9rem;
+}
+
+// The workshop sidebar (lectures, labs, slides, running the workshop).
+#quarto-sidebar {
+  font-size: 0.88rem;
+
+  .sidebar-title {
+    @extend .eyebrow;
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-item-section > .sidebar-item-container .sidebar-item-text {
+    font-family: $headings-font-family;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: $ws-heading;
+  }
+
+  .sidebar-item-section {
+    margin-top: 0.9rem;
+  }
+
+  ul.sidebar-section .sidebar-item {
+    margin: 0;
+  }
+
+  ul.sidebar-section .sidebar-link {
+    display: block;
+    padding: 0.22rem 0.6rem;
+    border-left: 2px solid $ws-border;
+    color: $ws-muted;
+    line-height: 1.35;
+
+    &:hover {
+      color: $ws-link;
+      border-left-color: $ws-border-strong;
+    }
+
+    &.active {
+      border-left-color: $ws-accent;
+      color: $ws-heading;
+      font-weight: 600;
+    }
+  }
+}
+
+// "On this page".
+#TOC,
+.sidebar nav[role="doc-toc"] {
+  font-size: 0.84rem;
+
+  > h2,
+  #toc-title {
+    @extend .eyebrow;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    border: 0;
+    font-family: $font-family-sans-serif;
+  }
+
+  ul a {
+    border-left: 2px solid $ws-border;
+    color: $ws-muted;
+    line-height: 1.35;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+  }
+
+  ul a.active,
+  ul a:hover {
+    border-left-color: $ws-accent;
+    color: $ws-heading;
+  }
+}
+
+// Previous / next page at the foot of a lecture.
+.page-navigation {
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $ws-border;
+
+  .nav-page a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid $ws-border;
+    border-radius: 8px;
+    color: $ws-heading;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 0.12s, box-shadow 0.12s;
+
+    &:hover {
+      border-color: $ws-accent;
+      box-shadow: $ws-shadow;
+    }
+  }
+}
+
+// The "edit this page / report an issue" links.
+.toc-actions {
+  font-size: 0.82rem;
+
+  a {
+    color: $ws-muted;
+  }
+}
+
+.nav-footer {
+  padding: 1.6rem 0;
+  border-top: 1px solid $ws-border;
+  font-size: 0.86rem;
+  color: $ws-muted;
+
+  a {
+    color: $ws-muted;
+
+    &:hover {
+      color: $ws-link;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Landing page (index.qmd; body class `landing`)
+// ---------------------------------------------------------------------------
+
+body.landing {
+  #title-block-header {
+    display: none; // the hero carries the title
+  }
+
+  // The id selector outranks Quarto's `#quarto-content > *` top padding, so the hero meets the navbar.
+  #quarto-content > main.content {
+    width: 100%; // size from the grid track, not from the content: at phone width it was overflowing
+    max-width: 1100px;
+    min-width: 0;
+    margin-inline: auto;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  main.content > section > h2,
+  main.content > h2,
+  main.content section.level2 > h2 {
+    margin-top: 3.4rem;
+    border: 0;
+    font-size: 1.9rem;
+  }
+
+  .section-lede {
+    max-width: 44rem;
+    color: $ws-muted;
+  }
+
+  .prose {
+    max-width: 46rem;
+  }
+}
+
+.hero {
+  // Full-bleed band: stretch to the viewport edges, keep the text aligned.
+  margin: 0 calc(50% - 50vw) 2.2rem;
+  padding: 4rem calc(50vw - 50%) 2.6rem;
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, rgba(240, 160, 48, 0.18), transparent 60%),
+    radial-gradient(40rem 24rem at -10% 110%, rgba(31, 122, 109, 0.25), transparent 60%),
+    $ws-navy;
+  color: $ws-on-navy;
+
+  .eyebrow {
+    color: $ws-on-navy-muted;
+  }
+
+  h1 {
+    max-width: 18em;
+    margin: 0.6rem 0 0.5rem;
+    color: $ws-on-navy;
+    font-size: 3.3rem;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-subtitle {
+    display: block;
+    font-family: $headings-font-family;
+    font-size: 1.45rem;
+    font-style: italic;
+    color: $ws-on-navy-muted;
+  }
+
+  .hero-lead {
+    max-width: 42rem;
+    margin-top: 1.4rem;
+    font-size: 1.1rem;
+    color: $ws-on-navy;
+
+    p {
+      line-height: 1.6;
+    }
+  }
+
+  .hero-actions p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin: 1.7rem 0 0;
+  }
+
+  .hero-actions a {
+    padding: 0.62rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 7px;
+    color: $ws-on-navy;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.12s, border-color 0.12s;
+
+    &:hover {
+      border-color: $ws-on-navy;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .hero-actions a.btn-primary-action {
+    border-color: $ws-cta;
+    background: $ws-cta;
+    color: $ws-on-cta;
+
+    &:hover {
+      background: lighten($ws-cta, 6%);
+      border-color: lighten($ws-cta, 6%);
+    }
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 2rem;
+    margin-top: 2.4rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: $ws-on-navy-muted;
+    font-size: 0.92rem;
+
+    p {
+      display: contents;
+    }
+
+    strong {
+      margin-right: 0.15rem;
+      color: $ws-on-navy;
+      font-family: $headings-font-family;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+  }
+}
+
+// The thesis, set like an epigraph between the hero and the first section.
+.thesis {
+  margin: 0.5rem 0 0;
+  text-align: center;
+
+  .thesis-line {
+    display: block;
+    font-family: $headings-font-family;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: $ws-heading;
+
+    em {
+      color: $ws-teal;
+      font-style: normal;
+    }
+  }
+
+  .thesis-gloss {
+    display: block;
+    max-width: 40rem;
+    margin: 0.4rem auto 0;
+    color: $ws-muted;
+  }
+}
+
+// Model / Harness / Environment: where failures live.
+.surfaces {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.4rem 0;
+
+  > div {
+    padding: 1rem 1.1rem 1.1rem;
+    border: 1px solid $ws-border;
+    border-radius: 10px;
+    background: $ws-surface;
+
+    p {
+      margin: 0;
+      font-size: 0.93rem;
+      line-height: 1.5;
+    }
+
+    .eyebrow {
+      margin-bottom: 0.35rem;
+    }
+
+    strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-family: $headings-font-family;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: $ws-heading;
+    }
+  }
+
+  > div.surface-harness {
+    border-color: $ws-accent;
+    box-shadow: inset 0 3px 0 $ws-accent;
+  }
+}
+
+// The days, one card each.
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1.4rem 0 1.2rem;
+}
+
+.day-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.15rem 1rem;
+  border: 1px solid $ws-border;
+  border-top: 3px solid $ws-navy;
+  border-radius: 10px;
+  background: $ws-raised;
+  transition: box-shadow 0.12s, border-color 0.12s;
+
+  &:hover {
+    box-shadow: $ws-shadow;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .eyebrow {
+    color: $ws-accent;
+  }
+
+  a.day-card-title {
+    display: block;
+    margin: 0.3rem 0 0.7rem;
+    font-family: $headings-font-family;
+    font-size: 1.22rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: $ws-heading;
+    text-decoration: none;
+
+    &:hover {
+      color: $ws-link;
+      text-decoration: underline;
+    }
+  }
+
+  // The guiding question takes the remaining height, so the link rows line up.
+  p:has(.day-card-question) {
+    flex: 1;
+  }
+
+  .day-card-question {
+    display: block;
+    font-family: $headings-font-family;
+    font-style: italic;
+    font-size: 1.02rem;
+    line-height: 1.45;
+    color: $ws-text;
+  }
+
+  .day-card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid $ws-border;
+  }
+}
+
+// Small bordered buttons: `.btn-quiet` for secondary actions, `.btn-lab` to open a lab.
+main.content a.btn-quiet,
+main.content a.btn-lab {
+  display: inline-block;
+  padding: 0.28rem 0.75rem;
+  border-radius: 6px;
+  font-family: $font-family-sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+}
+
+main.content a.btn-quiet {
+  border: 1px solid $ws-border-strong;
+  background: $ws-raised;
+  color: $ws-heading;
+
+  &:hover {
+    border-color: $ws-link;
+    color: $ws-link;
+  }
+}
+
+main.content a.btn-lab {
+  border: 1px solid $ws-accent;
+  background: $ws-accent-soft;
+  color: $ws-accent;
+
+  &:hover {
+    background: $ws-accent;
+    color: $ws-on-accent;
+  }
+}
+
+// The path: one rail, a node per lecture or lab, grouped by day.
+.path {
+  margin: 1.6rem 0 1rem;
+}
+
+.path-day {
+  display: grid;
+  grid-template-columns: 13.5rem 1fr;
+  column-gap: 1.5rem;
+  padding: 0.3rem 0;
+
+  > p {
+    grid-column: 1;
+    grid-row: 1 / span 20;
+    margin: 0;
+    padding-top: 0.55rem;
+  }
+
+  a.path-day-label {
+    position: sticky;
+    top: 5rem;
+    font-family: $headings-font-family;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: $ws-heading;
+    text-decoration: none;
+
+    &:hover {
+      color: $ws-link;
+      text-decoration: underline;
+    }
+  }
+
+  & + .path-day {
+    margin-top: 0.4rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid $ws-border;
+  }
+}
+
+.path-step {
+  grid-column: 2;
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.3rem 1fr;
+  column-gap: 1rem;
+  padding-bottom: 1.05rem;
+
+  p {
+    margin: 0;
+  }
+
+  // The rail: from this node down to the next one.
+  &::before {
+    content: "";
+    position: absolute;
+    left: calc(1.15rem - 1px);
+    top: 2.3rem;
+    bottom: -0.3rem;
+    width: 2px;
+    background: $ws-border-strong;
+  }
+
+  .path-day:last-child &:last-child::before {
+    display: none;
+  }
+
+  .path-num {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.3rem;
+    height: 2.3rem;
+    border: 2px solid $ws-navy;
+    border-radius: 50%;
+    background: $ws-navy;
+    color: $ws-on-navy;
+    font-family: $font-family-sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  // Lab nodes are amber; lectures are navy.
+  &.path-step-lab .path-num {
+    border-color: $ws-accent;
+    background: $ws-accent-soft;
+    color: $ws-accent;
+  }
+
+  .path-body {
+    padding-top: 0.25rem;
+  }
+
+  a.path-title {
+    margin-right: 0.5rem;
+    font-family: $headings-font-family;
+    font-size: 1.14rem;
+    font-weight: 600;
+    color: $ws-heading;
+    text-decoration: none;
+
+    &:hover {
+      color: $ws-link;
+      text-decoration: underline;
+    }
+  }
+
+  .path-body > p:last-child {
+    margin-top: 0.1rem;
+    max-width: 40rem;
+    color: $ws-muted;
+    font-size: 0.93rem;
+    line-height: 1.5;
+  }
+}
+
+// The four seeded weaknesses, one card each.
+.weakness-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.4rem 0;
+}
+
+.weakness {
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid $ws-border;
+  border-radius: 10px;
+  background: $ws-raised;
+
+  p {
+    margin: 0;
+    font-size: 0.93rem;
+    line-height: 1.5;
+  }
+
+  p:first-child code {
+    padding: 0.15em 0.5em;
+    border: 1px solid $ws-border-strong;
+    border-radius: 6px;
+    background: $ws-surface;
+    color: $ws-heading;
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+
+  // Spans holding inline code: a block with a label hung in the left gutter (not a grid, which
+  // would split the code element and the text into separate cells).
+  .breaks,
+  .shows {
+    position: relative;
+    display: block;
+    margin-top: 0.7rem;
+    padding-left: 5.4rem;
+  }
+
+  .breaks::before,
+  .shows::before {
+    position: absolute;
+    left: 0;
+    top: 0.1rem;
+    font-family: $font-family-sans-serif;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.9;
+  }
+
+  .breaks::before {
+    content: "breaks";
+    color: $ws-danger;
+  }
+
+  .shows::before {
+    content: "evals show";
+    color: $ws-teal;
+  }
+}
+
+// Mock and live, side by side.
+.modes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.4rem 0;
+
+  > div {
+    padding: 1rem 1.15rem 1.1rem;
+    border: 1px solid $ws-border;
+    border-radius: 10px;
+    background: $ws-surface;
+
+    .eyebrow {
+      margin-bottom: 0.2rem;
+    }
+
+    strong:first-of-type {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-family: $headings-font-family;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: $ws-heading;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      font-size: 0.93rem;
+    }
+
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  > div.mode-mock {
+    border-top: 3px solid $ws-teal;
+  }
+
+  > div.mode-live {
+    border-top: 3px solid $ws-accent;
+  }
+}
+
+// The daily rhythm: four blocks from an ordered list.
+.rhythm ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1.2rem 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rhythm;
+
+  li {
+    counter-increment: rhythm;
+    margin: 0;
+    padding: 0.9rem 1rem 1rem;
+    border: 1px solid $ws-border;
+    border-radius: 10px;
+    background: $ws-surface;
+    font-size: 0.93rem;
+    line-height: 1.5;
+
+    &::before {
+      content: counter(rhythm);
+      display: block;
+      margin-bottom: 0.3rem;
+      font-family: $headings-font-family;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: $ws-accent;
+    }
+
+    strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      color: $ws-heading;
+    }
+  }
+}
+
+// "What you will be able to do": two columns of outcomes.
+.outcomes ul {
+  columns: 2;
+  column-gap: 2.5rem;
+  padding-left: 1.1rem;
+
+  li {
+    break-inside: avoid;
+    margin-bottom: 0.45rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Responsive
+// ---------------------------------------------------------------------------
+
+@media (max-width: 991px) {
+  .hero h1 {
+    font-size: 2.6rem;
+  }
+
+  .day-grid,
+  .surfaces {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rhythm ol {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .path-day {
+    grid-template-columns: 1fr;
+
+    > p {
+      grid-row: auto;
+      padding: 0 0 0.6rem;
+    }
+
+    a.path-day-label {
+      position: static;
+    }
+  }
+
+  .path-step {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding-top: 2.6rem;
+
+    h1 {
+      font-size: 2.1rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+    }
+  }
+
+  .day-grid,
+  .surfaces,
+  .weakness-grid,
+  .modes,
+  .rhythm ol {
+    grid-template-columns: 1fr;
+  }
+
+  .outcomes ul {
+    columns: 1;
+  }
+
+  .weakness .breaks,
+  .weakness .shows {
+    padding-left: 0;
+    padding-top: 1.3rem;
+  }
+}

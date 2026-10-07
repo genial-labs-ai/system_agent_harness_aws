@@ -44,7 +44,7 @@ decks, the instructor guide and the decisions log. Built by `make site` (Quarto)
 | `promptfooconfig.yaml` | Promptfoo suite: golden slice + red-team cases (offline) |
 | `eval_thresholds.yaml` | the single place CI thresholds live |
 | `.github/workflows/` | `agent_eval_ci.yml` (PR gate, mock), `agent_eval_nightly.yml` (live via OIDC, manual dispatch, report only), `pages.yml` (website) |
-| `_quarto.yml`, `index.qmd`, `site/` | the website: project config, landing page, theme and the Lua filter that renders the GitHub-flavoured lectures unchanged |
+| `_quarto.yml`, `index.qmd`, `site/` | the website: project config, landing page, light/dark theme (`theme.scss`, `theme-dark.scss`), vendored fonts, logo, and the Lua filter that renders the GitHub-flavoured lectures unchanged |
 | `docs/` | `DECISIONS.md` (every deviation and version pin), `INSTRUCTOR_GUIDE.md`, `TASKS.md`, `aws/` IAM policies |
 | `.github/` | issue and PR templates, `CODEOWNERS`, Dependabot (grouped monthly PRs for uv, npm and Actions), path labeler, release-notes categories |
 | `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CITATION.cff` | how to contribute, how to report a real vulnerability (the seeded ones are features), and how to cite the workshop |

@@ -1,13 +1,22 @@
 /*-- scss:defaults --*/
-$presentation-heading-color: #0b1220;
-$link-color: #d97706;
+// The kickoff deck (slides/intro.qmd) shares the website palette: ink navy, one amber accent, teal
+// for the thesis. Keep in step with site/theme.scss.
+$presentation-heading-color: #101f33;
+$presentation-heading-font: "Source Serif 4", Georgia, "Times New Roman", serif;
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+$link-color: #1a5c8c;
 $presentation-font-size-root: 30px;
 $code-block-font-size: 0.8em;
+$code-color: #9a3412;
 
 /*-- scss:rules --*/
-.reveal .slide-number, .reveal .footer { color: #96a3b8; }
-.reveal .small { font-size: 0.6em; color: #5b6778; margin-top: 1em; }
+.reveal .slide-number, .reveal .footer { color: #5a6879; }
+.reveal .small { font-size: 0.6em; color: #5a6879; margin-top: 1em; }
 .reveal table { font-size: 0.75em; }
-.reveal .r-fit-text { color: #2a9d8f; font-weight: 800; }
-.reveal h2 { border-bottom: 3px solid #ff9900; display: inline-block; padding-bottom: .1em; }
-.reveal code { color: #b45309; }
+.reveal table thead th { font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.04em; color: #5a6879; }
+.reveal .r-fit-text { color: #1f7a6d; font-weight: 700; }
+.reveal h2 { border-bottom: 3px solid #f0a030; display: inline-block; padding-bottom: .1em; }
+.reveal code { color: #9a3412; }
+.reveal pre code { border-radius: 8px; }
+.reveal .title-slide h1 { font-size: 2.2em; }
+.reveal .title-slide .subtitle { color: #5a6879; font-style: italic; font-family: "Source Serif 4", Georgia, serif; }

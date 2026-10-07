@@ -18,6 +18,8 @@ project:
   resources:
     - slides/DAY1_MOTIVATIONAL_SLIDES.html
     - docs/social-preview.png
+    - site/fonts/*.woff2
+    - site/logo.svg
   preview:
     port: 4321
     browser: false
@@ -38,31 +40,13 @@ website:
   back-to-top-navigation: true
   navbar:
     pinned: true
+    logo: site/logo.svg
+    logo-alt: "Evaluating Autonomous Agents"
     left:
-      - text: Lectures
-        href: lectures/day1_llm_eval_foundations.md
-      - text: Notebooks
-        href: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
-      - text: Slides
-        menu:
-          - text: Workshop kickoff (intro deck)
-            href: slides/intro.qmd
-          - text: "Day 1: Why Your AI Agent Fails in Production (Marp)"
-            href: slides/DAY1_MOTIVATIONAL_SLIDES.html
-      - text: Instructor guide
-        href: docs/INSTRUCTOR_GUIDE.md
-    right:
-      - icon: github
-        href: https://github.com/genial-labs-ai/system_agent_harness_aws
-        aria-label: GitHub repository
-  sidebar:
-    style: docked
-    collapse-level: 2
-    contents:
-      - text: Overview
+      - text: Home
         href: index.qmd
-      - section: Lectures
-        contents:
+      - text: Lectures
+        menu:
           - text: "Day 1 · LLM evaluation foundations"
             href: lectures/day1_llm_eval_foundations.md
           - text: "Day 2 · LLM-as-a-judge, calibration, OTel"
@@ -71,8 +55,8 @@ website:
             href: lectures/day3_agent_harness_and_mcp_mocking.md
           - text: "Day 4 · AWS CI/CD and red-teaming"
             href: lectures/day4_aws_ci_cd_redteaming.md
-      - section: Notebooks (student)
-        contents:
+      - text: Notebooks
+        menu:
           - text: "Day 1 · Deterministic and RAG evals"
             href: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
           - text: "Day 2 · Judge calibration and OTel traces"
@@ -81,56 +65,152 @@ website:
             href: notebooks/Day3_Building_Custom_Agent_Harness.ipynb
           - text: "Day 4 · Bedrock Evaluations and CI gating"
             href: notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
-      - section: Notebooks (solutions)
-        contents:
-          - text: "Day 1 · solutions"
+          - text: "---"
+          - text: "Solutions · Day 1"
             href: notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb
-          - text: "Day 2 · solutions"
+          - text: "Solutions · Day 2"
             href: notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
-          - text: "Day 3 · solutions"
+          - text: "Solutions · Day 3"
             href: notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb
-          - text: "Day 4 · solutions"
+          - text: "Solutions · Day 4"
             href: notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
-      - section: Slides
-        contents:
-          - text: Workshop kickoff
+      - text: Slides
+        menu:
+          - text: "Workshop kickoff (intro deck)"
             href: slides/intro.qmd
-          - text: "Day 1 · Why Your AI Agent Fails in Production"
+          - text: "Day 1 · Why Your AI Agent Fails in Production (Marp)"
             href: slides/DAY1_MOTIVATIONAL_SLIDES.html
-      - section: Running the workshop
-        contents:
-          - text: Instructor guide
-            href: docs/INSTRUCTOR_GUIDE.md
-          - text: AWS policies (OIDC, IAM)
-            href: docs/aws/README.md
-          - text: Decisions and version pins
-            href: docs/DECISIONS.md
-          - text: Contributing
-            href: CONTRIBUTING.md
-          - text: Security policy
-            href: SECURITY.md
-  page-footer:
-    left: "© 2026 Genial Labs · MIT licence · Agent = Model + Harness"
+      - text: Teach
+        href: docs/INSTRUCTOR_GUIDE.md
     right:
       - icon: github
         href: https://github.com/genial-labs-ai/system_agent_harness_aws
+        aria-label: GitHub repository
+  sidebar:
+    # An id means the sidebar shows only on the pages listed here: the landing page has none.
+    - id: workshop
+      title: Workshop
+      style: docked
+      collapse-level: 2
+      contents:
+        - section: Lectures
+          contents:
+            - text: "Day 1 · LLM evaluation foundations"
+              href: lectures/day1_llm_eval_foundations.md
+            - text: "Day 2 · LLM-as-a-judge, calibration, OTel"
+              href: lectures/day2_llm_as_a_judge_and_otel.md
+            - text: "Day 3 · Agent harness and MCP mocking"
+              href: lectures/day3_agent_harness_and_mcp_mocking.md
+            - text: "Day 4 · AWS CI/CD and red-teaming"
+              href: lectures/day4_aws_ci_cd_redteaming.md
+        - section: Notebooks (student)
+          contents:
+            - text: "Day 1 · Deterministic and RAG evals"
+              href: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
+            - text: "Day 2 · Judge calibration and OTel traces"
+              href: notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
+            - text: "Day 3 · Building a custom agent harness"
+              href: notebooks/Day3_Building_Custom_Agent_Harness.ipynb
+            - text: "Day 4 · Bedrock Evaluations and CI gating"
+              href: notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
+        - section: Notebooks (solutions)
+          contents:
+            - text: "Day 1 · solutions"
+              href: notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb
+            - text: "Day 2 · solutions"
+              href: notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
+            - text: "Day 3 · solutions"
+              href: notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb
+            - text: "Day 4 · solutions"
+              href: notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
+        - section: Slides
+          contents:
+            - text: Workshop kickoff
+              href: slides/intro.qmd
+            - text: "Day 1 · Why Your AI Agent Fails in Production"
+              href: slides/DAY1_MOTIVATIONAL_SLIDES.html
+        - section: Running the workshop
+          contents:
+            - text: Instructor guide
+              href: docs/INSTRUCTOR_GUIDE.md
+            - text: AWS policies (OIDC, IAM)
+              href: docs/aws/README.md
+            - text: Decisions and version pins
+              href: docs/DECISIONS.md
+            - text: Contributing
+              href: CONTRIBUTING.md
+            - text: Security policy
+              href: SECURITY.md
+  page-footer:
+    left: "Evaluating Autonomous Agents · © 2026 Genial Labs · MIT licence · Built with [Quarto](https://quarto.org)"
+    center:
+      - text: AWS policies
+        href: docs/aws/README.md
+      - text: Decisions
+        href: docs/DECISIONS.md
+      - text: Contributing
+        href: CONTRIBUTING.md
+      - text: Security
+        href: SECURITY.md
+    right:
+      - icon: github
+        href: https://github.com/genial-labs-ai/system_agent_harness_aws
+        aria-label: GitHub repository
+  favicon: site/logo.svg
+  bread-crumbs: false
 
 format:
   html:
+    # site/theme.scss holds the palette tokens and every rule; site/theme-dark.scss only overrides
+    # the tokens. Quarto adds the light/dark toggle to the navbar.
     theme:
       light: [cosmo, site/theme.scss]
-      dark: [darkly, site/theme.scss]
+      dark: [cosmo, site/theme.scss, site/theme-dark.scss]
+    # The @font-face rules sit beside the vendored font files they name (site/fonts/README.md).
+    css:
+      - site/fonts/fonts.css
+    grid:
+      sidebar-width: 250px
+      body-width: 860px
+      margin-width: 220px
+      gutter-width: 1.5rem
     toc: true
     toc-depth: 3
+    toc-title: "On this page"
+    anchor-sections: true
     code-copy: true
     code-overflow: wrap
+    highlight-style: a11y
     link-external-newwindow: true
     filters:
       - site/filters/gfm.lua
     include-in-header:
       text: |
+        <script>
+          // First visit: follow the operating system's light/dark setting. Quarto 1.6 reads only
+          // this stored value; the navbar toggle overwrites it.
+          try {
+            if (localStorage.getItem("quarto-color-scheme") === null &&
+                matchMedia("(prefers-color-scheme: dark)").matches) {
+              localStorage.setItem("quarto-color-scheme", "alternate");
+            }
+          } catch (e) {}
+        </script>
         <script type="module">
           import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-          const dark = document.body.classList.contains("quarto-dark");
-          mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", securityLevel: "strict" });
+          // Quarto adds `quarto-dark` to <body> after this module runs, so read its stored choice too.
+          let dark = document.body.classList.contains("quarto-dark");
+          try { dark = dark || localStorage.getItem("quarto-color-scheme") === "alternate"; } catch (e) {}
+          mermaid.initialize({
+            startOnLoad: true,
+            securityLevel: "strict",
+            theme: "base",
+            themeVariables: dark
+              ? { fontFamily: "Inter, system-ui, sans-serif", background: "#0e141b", primaryColor: "#1b3a60",
+                  primaryTextColor: "#eef2f6", primaryBorderColor: "#86bde6", lineColor: "#9aa7b5",
+                  secondaryColor: "#2a211a", tertiaryColor: "#161e28", edgeLabelBackground: "#161e28" }
+              : { fontFamily: "Inter, system-ui, sans-serif", background: "#ffffff", primaryColor: "#e8eef6",
+                  primaryTextColor: "#101f33", primaryBorderColor: "#132a4a", lineColor: "#5a6879",
+                  secondaryColor: "#fdf3e6", tertiaryColor: "#f5f7fa", edgeLabelBackground: "#ffffff" },
+          });
         </script>
