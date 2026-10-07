@@ -249,8 +249,9 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     lecture or notebook H1 of the form "Day N — rest" (for notebooks, the `title` Quarto's
     jupyter engine has already taken from that heading) into the title ("rest") and a subtitle
     ("Day N · lecture notes" / "lab notebook") that the theme sets as an eyebrow above the title;
-    the Markdown sources are still unchanged for GitHub. The Mermaid palette is passed as
-    `themeVariables` and chosen from the stored colour scheme, because Quarto adds the
-    `quarto-dark` body class after the module script has run. The site's numbers (4 days, 8
+    the Markdown sources are still unchanged for GitHub. The Mermaid script reads the palette from the
+    `--ws-*` custom properties once the stylesheet Quarto's own script swaps in has applied
+    (Quarto sets the body class and swaps the stylesheet after the module has run), and
+    redraws the diagrams when the navbar toggle changes the body class. The site's numbers (4 days, 8
     notebooks, 5 tools, 4 weaknesses, 50 golden cases, the 1.0 → 0.64 tool-selection drop) are
     the repo's own: `data/golden/manifest.json`, `README.md` and the committed baseline.

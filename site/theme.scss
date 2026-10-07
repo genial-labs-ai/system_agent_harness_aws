@@ -57,6 +57,23 @@ h1.title {
   letter-spacing: -0.015em;
 }
 
+// Small-caps label used above card titles and in headers. A mixin rather than an extend
+// target: extending would emit the shared rule where .eyebrow is declared, after any earlier
+// rule that wants to override it (the narrow-screen `display: none` on the title eyebrow).
+@mixin eyebrow {
+  display: block;
+  font-family: $font-family-sans-serif;
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $ws-muted;
+}
+
+.eyebrow {
+  @include eyebrow;
+}
+
 // Lecture pages: the page title gets an eyebrow from its subtitle ("Day 1 · lecture notes").
 #title-block-header {
   margin-bottom: 1.6rem;
@@ -68,7 +85,7 @@ h1.title {
   }
 
   .subtitle {
-    @extend .eyebrow;
+    @include eyebrow;
     order: -1;
     margin: 0 0 0.6rem;
     color: $ws-accent;
@@ -135,16 +152,6 @@ hr {
   opacity: 1;
 }
 
-// Small-caps label used above card titles and in headers.
-.eyebrow {
-  display: block;
-  font-family: $font-family-sans-serif;
-  font-size: 0.74rem;
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: $ws-muted;
-}
 
 
 // Tables: light rules, no heavy borders, comfortable padding.
@@ -367,7 +374,7 @@ blockquote {
   font-size: 0.88rem;
 
   .sidebar-title {
-    @extend .eyebrow;
+    @include eyebrow;
     margin-bottom: 0.5rem;
   }
 
@@ -414,7 +421,7 @@ blockquote {
 
   > h2,
   #toc-title {
-    @extend .eyebrow;
+    @include eyebrow;
     margin: 0 0 0.5rem;
     padding: 0;
     border: 0;
@@ -594,8 +601,8 @@ body.landing {
     color: $ws-on-cta;
 
     &:hover {
-      background: lighten($ws-cta, 6%);
-      border-color: lighten($ws-cta, 6%);
+      background: $ws-cta-hover;
+      border-color: $ws-cta-hover;
     }
   }
 

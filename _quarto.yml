@@ -188,7 +188,9 @@ format:
       text: |
         <script>
           // First visit: follow the operating system's light/dark setting. Quarto 1.6 reads only
-          // this stored value; the navbar toggle overwrites it.
+          // this stored value; the navbar toggle overwrites it. Quarto 1.7 adds
+          // `respect-user-color-scheme`, which does this properly: delete this block when
+          // .github/workflows/pages.yml moves past 1.6.40 and set that option instead.
           try {
             if (localStorage.getItem("quarto-color-scheme") === null &&
                 matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -198,22 +200,25 @@ format:
         </script>
         <script type="module">
           import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-          // Mermaid would otherwise render every diagram with its own defaults at the load event,
-          // before the wait below has finished.
+          // Mermaid would otherwise render every diagram with its own defaults at the load event.
           mermaid.initialize({ startOnLoad: false });
-          // The palette comes from the --ws-* custom properties that site/theme.scss publishes, so
-          // diagrams follow whichever theme's stylesheet is active. Quarto swaps the stylesheet
-          // (and sets the body class) from its own script after this module has run, so wait
-          // until the published scheme matches the stored choice, which the script above has
-          // already settled (capped at about two seconds).
+          // The palette comes from the --ws-* custom properties that site/theme.scss publishes.
+          // Quarto's own script sets the body class and swaps the stylesheet after the DOM is
+          // parsed, and the toggle does the same later, so: read the wanted scheme from the body
+          // class, wait (with timers, which also run in background tabs) until the published
+          // scheme matches it, render, and do it again whenever the body class changes.
+          const sources = new Map(); // each diagram's text, so it can be drawn again
           const scheme = () => getComputedStyle(document.documentElement).getPropertyValue("--ws-scheme").trim();
-          const wanted = () => {
-            try { return localStorage.getItem("quarto-color-scheme") === "alternate" ? "dark" : "light"; } catch (e) {}
-            return document.body.classList.contains("quarto-dark") ? "dark" : "light";
-          };
-          const render = () => {
+          const wanted = () => (document.body.classList.contains("quarto-dark") ? "dark" : "light");
+          let drawn = null;
+          const draw = () => {
             const css = getComputedStyle(document.documentElement);
             const v = (name) => css.getPropertyValue(name).trim();
+            for (const pre of document.querySelectorAll("pre.mermaid")) {
+              if (!sources.has(pre)) { sources.set(pre, pre.textContent); }
+              pre.textContent = sources.get(pre);
+              pre.removeAttribute("data-processed");
+            }
             mermaid.initialize({
               startOnLoad: false,
               securityLevel: "strict",
@@ -230,10 +235,26 @@ format:
                 edgeLabelBackground: v("--ws-bg"),
               },
             });
+            drawn = scheme();
             mermaid.run();
           };
-          const tick = (n) => {
-            if (scheme() === wanted() || n > 120) { render(); } else { requestAnimationFrame(() => tick(n + 1)); }
+          let pending = 0;
+          const sync = () => {
+            clearTimeout(pending);
+            const started = Date.now();
+            const tick = () => {
+              const ready = scheme() === wanted();
+              if (ready || Date.now() - started > 2000) {
+                if (scheme() !== drawn) { draw(); }
+              } else {
+                pending = setTimeout(tick, 30);
+              }
+            };
+            tick();
           };
-          tick(0);
+          const start = () => {
+            sync();
+            new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+          };
+          if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", start); } else { start(); }
         </script>

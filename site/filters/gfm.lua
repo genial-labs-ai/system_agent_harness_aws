@@ -43,29 +43,33 @@ local function split_day(inlines)
   return inlines[3].text, rest
 end
 
-local function set_title(doc, inlines)
+-- Applies the split to the document metadata; returns false when there is nothing to split.
+local function set_split_title(doc, inlines)
   local day, rest = split_day(inlines)
-  if day then
-    doc.meta.title = pandoc.MetaInlines(rest)
-    doc.meta.pagetitle = pandoc.MetaString("Day " .. day .. " · " .. pandoc.utils.stringify(rest))
-    doc.meta.subtitle = pandoc.MetaString("Day " .. day .. " · " .. kind_of(quarto.doc.input_file or ""))
-  else
-    doc.meta.title = pandoc.MetaInlines(inlines)
-    doc.meta.pagetitle = pandoc.MetaString(pandoc.utils.stringify(inlines))
+  if day == nil then
+    return false
   end
+  doc.meta.title = pandoc.MetaInlines(rest)
+  doc.meta.pagetitle = pandoc.MetaString("Day " .. day .. " · " .. pandoc.utils.stringify(rest))
+  doc.meta.subtitle = pandoc.MetaString("Day " .. day .. " · " .. kind_of(quarto.doc.input_file or ""))
+  return true
 end
 
 function Pandoc(doc)
   if doc.meta.title == nil then
     for i, block in ipairs(doc.blocks) do
       if block.t == "Header" and block.level == 1 then
-        set_title(doc, block.content)
+        if not set_split_title(doc, block.content) then
+          doc.meta.title = pandoc.MetaInlines(block.content)
+          doc.meta.pagetitle = pandoc.MetaString(pandoc.utils.stringify(block.content))
+        end
         table.remove(doc.blocks, i)
         break
       end
     end
   elseif doc.meta.subtitle == nil and pandoc.utils.type(doc.meta.title) == "Inlines" then
-    set_title(doc, doc.meta.title)
+    -- A document whose title is already set (a notebook): only a "Day N — rest" title changes.
+    set_split_title(doc, doc.meta.title)
   end
   return doc
 end
