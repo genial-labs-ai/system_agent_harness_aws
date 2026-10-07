@@ -28,7 +28,8 @@ local function split_day(inlines)
   if inlines[2].t ~= "Space" or inlines[3].t ~= "Str" or not inlines[3].text:match("^%d+$") then
     return nil
   end
-  if inlines[4].t ~= "Space" or inlines[5].t ~= "Str" or not inlines[5].text:match("^[—–-]+$") then
+  local dash = inlines[5].t == "Str" and inlines[5].text
+  if inlines[4].t ~= "Space" or not (dash == "—" or dash == "–" or dash == "-") then
     return nil
   end
   local rest = pandoc.Inlines({})
@@ -67,7 +68,8 @@ function Pandoc(doc)
         break
       end
     end
-  elseif doc.meta.subtitle == nil and pandoc.utils.type(doc.meta.title) == "Inlines" then
+  elseif doc.meta.subtitle == nil and doc.meta.pagetitle == nil
+      and pandoc.utils.type(doc.meta.title) == "Inlines" then
     -- A document whose title is already set (a notebook): only a "Day N — rest" title changes.
     set_split_title(doc, doc.meta.title)
   end

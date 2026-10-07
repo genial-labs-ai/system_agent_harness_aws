@@ -10,4 +10,5 @@ latin subsets downloaded from [Fontsource](https://fontsource.org/) (jsDelivr mi
 | `source-serif-4-latin-wght-italic.woff2` | [Source Serif 4](https://github.com/adobe-fonts/source-serif) | SIL Open Font License 1.1 |
 
 The `@font-face` rules are in `fonts.css`, which `_quarto.yml` loads as a plain stylesheet.
-The licence text is at <https://openfontlicense.org/>.
+The licence and copyright notices are redistributed alongside, as the OFL requires:
+`LICENSE-Inter.txt` (The Inter Project Authors) and `LICENSE-SourceSerif4.md` (Adobe).

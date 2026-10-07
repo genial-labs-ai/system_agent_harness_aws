@@ -192,7 +192,8 @@ format:
           // `respect-user-color-scheme`, which does this properly: delete this block when
           // .github/workflows/pages.yml moves past 1.6.40 and set that option instead.
           try {
-            if (localStorage.getItem("quarto-color-scheme") === null &&
+            if (location.protocol !== "file:" && // Quarto ignores storage for local files
+                localStorage.getItem("quarto-color-scheme") === null &&
                 matchMedia("(prefers-color-scheme: dark)").matches) {
               localStorage.setItem("quarto-color-scheme", "alternate");
             }
@@ -247,11 +248,12 @@ format:
             clearTimeout(pending);
             const started = Date.now();
             const tick = () => {
-              const ready = scheme() === wanted();
-              if (ready || Date.now() - started > 2000) {
+              if (scheme() === wanted()) {
                 if (scheme() !== drawn) { running.then(draw); }
               } else {
-                pending = setTimeout(tick, 30);
+                // Quarto sets the class and the stylesheet together, so they do meet; poll fast
+                // at first, then slowly, and never draw with a palette that is not the wanted one.
+                pending = setTimeout(tick, Date.now() - started < 2000 ? 30 : 500);
               }
             };
             tick();
@@ -260,5 +262,7 @@ format:
             sync();
             new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
           };
-          if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", start); } else { start(); }
+          // Quarto's own DOMContentLoaded handler (registered while parsing) sets the body class;
+          // starting after it avoids a light render that is redrawn dark a moment later.
+          if (document.readyState === "complete") { start(); } else { document.addEventListener("DOMContentLoaded", start); }
         </script>

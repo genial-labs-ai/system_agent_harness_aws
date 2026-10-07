@@ -539,8 +539,8 @@ body.landing {
   margin: 0 calc(50% - 50vw) 2.2rem;
   padding: 4rem calc(50vw - 50%) 2.6rem;
   background:
-    radial-gradient(60rem 30rem at 85% -10%, rgba(240, 160, 48, 0.18), transparent 60%),
-    radial-gradient(40rem 24rem at -10% 110%, rgba(31, 122, 109, 0.25), transparent 60%),
+    radial-gradient(60rem 30rem at 85% -10%, rgba($ws-cta, 0.18), transparent 60%),
+    radial-gradient(40rem 24rem at -10% 110%, rgba($ws-teal, 0.25), transparent 60%),
     $ws-navy;
   color: $ws-on-navy;
 
