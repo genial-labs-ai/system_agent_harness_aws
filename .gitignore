@@ -33,3 +33,6 @@ reports/*
 .DS_Store
 .idea/
 .vscode/
+
+# Claude Code worktrees / local settings
+.claude/

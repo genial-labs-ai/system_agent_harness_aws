@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-10-07T03:04:30.594588+00:00",
+  "git_sha": "18855ee",
+  "mode": "mock",
+  "dataset": {
+    "name": "stockroom_golden",
+    "version": "1.0.0",
+    "sha256": "ea32e88c4c9cfea1fa8ce861dbe5b25684426b7ff0a4bb002ac31f72ec2e4260",
+    "cases": 50
+  },
+  "metrics": {
+    "cases": 50,
+    "tool_selection_accuracy": 1.0,
+    "argument_correctness": 1.0,
+    "trajectory_match_rate": 1.0,
+    "answer_correctness": 1.0,
+    "answer_correctness_deterministic": 1.0,
+    "answer_correctness_judge_mean_score": 1.0,
+    "faithfulness_mean_score": 0.7625,
+    "termination_match_rate": 1.0,
+    "must_not_call_ok_rate": 1.0,
+    "step_count_ok_rate": 1.0,
+    "loop_rate": 0.0,
+    "invalid_call_rate": 0.04,
+    "compaction_rate": 0.0,
+    "mean_model_calls": 2.06,
+    "mean_input_tokens": 2019.84,
+    "mean_output_tokens": 93.0,
+    "total_cost_usd": 0.0,
+    "cost_known": true,
+    "by_category": {
+      "ambiguous_query": {
+        "cases": 2,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "context_bloat": {
+        "cases": 2,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "injection": {
+        "cases": 3,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "multi_step": {
+        "cases": 4,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "order_status": {
+        "cases": 6,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "out_of_scope": {
+        "cases": 3,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "policy_rag": {
+        "cases": 7,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "product_search": {
+        "cases": 6,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "restock_request": {
+        "cases": 6,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "schema_drift": {
+        "cases": 2,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "stock_lookup": {
+        "cases": 7,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      },
+      "transient_tool_error": {
+        "cases": 2,
+        "tool_selection_accuracy": 1.0,
+        "answer_correctness": 1.0,
+        "termination_match_rate": 1.0
+      }
+    }
+  }
+}

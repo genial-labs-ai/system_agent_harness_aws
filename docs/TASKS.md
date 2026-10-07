@@ -36,23 +36,24 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - Check passed: `make test-unit`; every weakness flag produces its expected failing metric
   (ambiguous desc → tool selection 1.0→0.64; oversized → TOKEN_BUDGET; naive retry → MAX_STEPS + loop; injection → forbidden call + prompt leak)
 
-## Phase 4 — Eval suite and CI `[~]`
+## Phase 4 — Eval suite and CI `[~]` (checkpoint commit after `ac21773`)
 - [x] `eval_thresholds.yaml` (single source of thresholds)
 - [x] `tests/test_trajectory_regression.py` (DeepEval test cases over the golden set → `reports/eval_results.json`, repeats + CIs)
 - [x] `scripts/check_thresholds.py` (gates, baseline diff, red-team gate, Markdown summary, `--write-baseline`)
 - [x] `promptfooconfig.yaml` + `scripts/promptfoo_provider.py` + `scripts/promptfoo_asserts.py` (10 golden + 8 red-team cases, offline)
 - [x] `.github/workflows/agent_eval_ci.yml`, `agent_eval_nightly.yml` (OIDC), `docs/aws/iam_policy.json`, `oidc_trust_policy.json`, `docs/aws/README.md`
 - [x] `scripts/sync_datasets_s3.py` (versioned golden/report sync, model check)
-- [ ] Verify `make eval` (first run in progress) and `make promptfoo` (first npx run in progress); fix anything that surfaces
-- [ ] Verify the eval suite over `STOCKROOM_TOOL_TRANSPORT=mcp-http` with `make mcp-server` running (CI uses this path)
-- [ ] `make baseline` → commit `reports/baseline/main.json`
+- [x] `make eval` verified (50/50, writes `reports/eval_results.json` with CIs and DeepEval pass rates)
+- [ ] `make promptfoo` verified (first `npx promptfoo@0.124.0` install was still running at the end of session 1; check `reports/promptfoo_results.json`)
+- [x] Eval suite verified over `STOCKROOM_TOOL_TRANSPORT=mcp-http` with the server in the background (50/50)
+- [x] `make baseline` → `reports/baseline/main.json` committed (sha 18855ee data 1.0.0)
 - [ ] `make ci` passes; `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` fails at the gate with a readable summary
-- [ ] Fix 3 lint lines (`scripts/check_thresholds.py`, `scripts/sync_datasets_s3.py`) that slipped past the phase-3 commit
-- [ ] Unit tests for `check_thresholds.py` (gate pass/fail, baseline regression, red-team split) and the promptfoo asserts
-- [ ] `tests/test_live_adapters.py`: stubbed boto3 clients for `BedrockConverseClient`, `BedrockJudge`, `sync_datasets_s3` (no network)
-- [ ] DECISIONS entries for phase 3/4 (heuristic planner, pytest vs `deepeval test run`, RAGAS custom LLM, hand-written red team, no agent job type in Bedrock Evaluations, MCP v2, semconv status)
+- [x] Lint clean again (`make lint`)
+- [x] `tests/test_check_thresholds.py` (gate pass/fail, baseline regression, red-team split, CLI, promptfoo asserts)
+- [x] `tests/test_live_adapters.py`: stubbed boto3 clients for `BedrockConverseClient`, `BedrockJudge`, DeepEval live bridge, `sync_datasets_s3` dry run
+- [x] DECISIONS entries 8–22 for phases 3/4
 
-## Phase 5 — Notebooks `[ ]`
+## Phase 5 — Notebooks `[~]` (sub-agent working in a git worktree; merge its branch, then verify `make notebooks`)
 - [ ] `scripts/build_notebooks.py` (jupytext percent sources → student + `solutions/` .ipynb; tags `exercise` / `check` / `solution`)
 - [ ] `notebooks/src/day1_deterministic_and_rag_evals.py` — taxonomy demo on the weakness flags, golden-set tour, DeepEval assertions, RAGAS (BM25 local; KB branch live); 3–5 exercises
 - [ ] `notebooks/src/day2_judge_calibration_and_otel_traces.py` — spans (memory + optional Phoenix), `ToolCallEvaluator`, calibration v1→v2, bias probes; exercises
@@ -61,7 +62,7 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [ ] Setup cell pattern: `%pip install` guarded by `find_spec("stockroom")`, `REPO_URL` placeholder, `detect_mode()` banner
 - [ ] `make notebooks` executes all 8 notebooks in mock mode (nbmake)
 
-## Phase 6 — Teaching materials `[ ]`
+## Phase 6 — Teaching materials `[~]` (two sub-agents in worktrees: Day 1–2 lectures + slides; Day 3–4 lectures + instructor guide + `check_lecture_refs.py`; merge, then run the checker and `make slides`)
 - [ ] `lectures/day1_llm_eval_foundations.md` … `day4_aws_ci_cd_redteaming.md` (objectives, timed agenda, Mermaid, notebook link, discussion questions, common mistakes)
 - [ ] `slides/DAY1_MOTIVATIONAL_SLIDES.md` (Marp, 15–20 slides, speaker notes, composite post-mortem labelled hypothetical, no invented numbers); `make slides` renders
 - [ ] `docs/INSTRUCTOR_GUIDE.md` (timings, setup checklist, common participant failures)
