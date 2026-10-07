@@ -408,10 +408,10 @@ def _last_json_object(text: str) -> dict[str, Any]:
             if depth == 0 and start != -1:
                 try:
                     obj = json.loads(text[start : i + 1])
-                    if isinstance(obj, dict):
-                        last = obj
                 except json.JSONDecodeError:
-                    pass
+                    continue
+                if isinstance(obj, dict):
+                    last = obj
     return last
 
 

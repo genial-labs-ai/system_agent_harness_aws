@@ -225,8 +225,8 @@ class RunTracer:
                 sc.STOCKROOM_COMPACTION_TOKENS_AFTER: after,
                 "stockroom.compaction.results_summarised": summarised,
             },
-        ):
-            pass
+        ) as span:
+            span.add_event("compaction", {"tokens_saved": max(0, before - after)})
 
     @staticmethod
     def set_termination(span: Span, reason: str, steps: int, final_answer: str) -> None:
