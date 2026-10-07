@@ -71,11 +71,20 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [x] `scripts/check_lecture_refs.py` — 0 errors over 6 documents; called by `make ci` and the CI workflow (notebook paths warn until built)
 - [x] Error-analysis practice attributed (Husain blog, Shankar et al. arXiv 2404.12272, both fetched); no real incidents used anywhere
 
-## Phase 7 — README and DECISIONS `[~]`
-- [x] (draft, commit `246a5d6`) `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (`<GITHUB_ORG>/<GITHUB_REPO>`)
+## Phase 7 — README and DECISIONS `[x]`
+- [x] `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (`<GITHUB_ORG>/<GITHUB_REPO>`)
 - [x] `docs/DECISIONS.md` entries 1–35; `AGENTS.md` refreshed
-- [~] Clean-clone verification in a scratch dir with AWS vars unset: `make setup && make test && make notebooks && make ci` (setup/lint/test passed on the first clone; full run in progress)
-- [ ] Final commit; `git log` shows one commit per phase
+- [x] Clean-clone verification with AWS vars unset: `make setup` (48 s) → `make test` (128 passed) → `make notebooks` (8 passed) → `make ci` (gate passed, 0 checker errors). `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` fails at the gate with the metrics table (tool selection 0.64, answer correctness 0.78, 4 golden Promptfoo cases failed, 8/8 red team held)
+- [x] Phases committed on `main` (plus merge commits from the three worktree branches and small follow-ups)
+
+## Session log
+- 2026-10-06/07, session 1: phases 1–7 completed; three worktree sub-agents produced notebooks, lectures, slides, instructor guide and the reference checker; all verified on a clean clone.
+
+## Follow-ups worth doing (not required by the brief)
+- Add a guard-plugin seam to `Harness` so `MaxToolPayloadGuard` (Day 3 exercise) can be a real guard rather than an executor wrapper (DECISIONS 32).
+- Add more bias-probe pairs to `data/judge_calibration` before trusting the probes on a live judge (DECISIONS 25).
+- Exercise live mode end to end on a machine with a working `aws` CLI and record real nightly numbers.
+- Replace the `<GITHUB_ORG>/<GITHUB_REPO>` placeholders once the repository is published.
 
 ## Known gaps / ideas (not required by the brief)
 - Mock-mode scores are an upper bound (deterministic simulator); live nightly reports the real numbers with CIs.
