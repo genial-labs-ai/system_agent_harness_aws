@@ -247,6 +247,10 @@ def main(argv: list[str] | None = None) -> int:
     promptfoo = promptfoo_summary(load_json(args.promptfoo))
     baseline = load_json(args.baseline)
     rows, failures = evaluate(thresholds, results, promptfoo, baseline)
+    if args.promptfoo is not None and not promptfoo["available"]:
+        failures.append(
+            f"Promptfoo results file {args.promptfoo} is missing (did `make promptfoo` run?)"
+        )
     summary = render(results, rows, failures, promptfoo, baseline)
     args.summary.parent.mkdir(parents=True, exist_ok=True)
     args.summary.write_text(summary, encoding="utf-8")

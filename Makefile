@@ -59,8 +59,10 @@ mcp-smoke: ## List tools from a running MCP HTTP server
 
 promptfoo: ## Run the Promptfoo suite (golden slice + red team) via the Python provider
 	mkdir -p $(REPORTS)
+	rm -f $(REPORTS)/promptfoo_results.json
+	# promptfoo exits non-zero when any case fails; the gate script decides, so only a missing results file is fatal here.
 	npx --yes --prefer-offline promptfoo@$(PROMPTFOO_VER) eval -c promptfooconfig.yaml --no-cache --no-progress-bar \
-	  --output $(REPORTS)/promptfoo_results.json
+	  --output $(REPORTS)/promptfoo_results.json < /dev/null || test -s $(REPORTS)/promptfoo_results.json
 
 thresholds: ## Enforce eval_thresholds.yaml against the latest results and write reports/summary.md
 	$(PY) scripts/check_thresholds.py --results $(REPORTS)/eval_results.json \
