@@ -146,3 +146,41 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     phase-6 check ("every code reference in the lectures points to a real file and function")
     strict for paths and `name()` references without flagging prose; missing notebooks are warnings
     until `make build-notebooks` has run.
+
+## Phase 5 — notebooks (2026-10-07)
+
+28. **Notebook sources are jupytext percent files under `notebooks/src/`; the `.ipynb` files are
+    generated** by `scripts/build_notebooks.py`. Cell tags drive the two outputs: `exercise` cells
+    go to the student notebook only, `solution` cells to `notebooks/solutions/` only (same position),
+    `check` cells to both and are written to print "not solved yet" rather than fail in the student
+    variant. Generated notebooks carry no outputs, kernelspec `python3`, and content-hash cell ids
+    (`co-<sha1[:8]>`) so rebuilds are byte-identical and diffs stay clean (nbformat would otherwise
+    assign random ids). The participant marker is referenced only in the builder, as `"TO" + "DO"`,
+    so a repository-wide grep hits exercise cells only.
+29. **Notebook sources are not importable modules by design.** They contain IPython magics
+    (`%pip`) and top-level `await`, because the RAGAS collections metrics are coroutine-only and
+    `asyncio.run` cannot be used inside the kernel's running loop. `ruff` excludes `notebooks/`.
+30. **Setup cell for Colab / SageMaker.** `%pip install` is guarded by
+    `importlib.util.find_spec("stockroom")` (a no-op when the repo is installed), pins the versions
+    from `pyproject.toml`, and adds `langchain-community>=0.3.27,<0.4` explicitly because uv's
+    `constraint-dependencies` do not apply to plain pip (ragas 0.4.3 fails to import with
+    langchain-community 0.4). `REPO_URL` is the `<GITHUB_ORG>/<GITHUB_REPO>` placeholder.
+31. **Phoenix export in notebooks is opt-in via `PHOENIX_COLLECTOR_ENDPOINT`**, not via importability:
+    an OTLP exporter with no collector would stall nbmake on export timeouts. The Day 2 cell prints
+    how to start Phoenix (`make phoenix`) when the variable is unset.
+32. **`MaxToolPayloadGuard` (Day 3 exercise) is a `ToolExecutor` wrapper, not a harness guard**,
+    because `Harness` exposes no guard-registration hook; it replaces any single tool result over N
+    characters with a structured `payload_too_large` error, which turns G049 under
+    `oversized_payload` from `TOKEN_BUDGET` into `COMPLETED` (14,093 → 2,777 input tokens). A
+    guard-plugin seam on the harness is a candidate follow-up.
+33. **Bedrock Evaluations payloads are validated offline against botocore's service model**
+    (`botocore.validate.validate_parameters` on the `CreateEvaluationJob` input shape shipped with
+    botocore 1.43.108), so the Day 4 notebook proves the request is well-formed without an AWS call.
+    `taskType` is `QuestionAndAnswer`, metrics `Builtin.Correctness/Completeness/Faithfulness/Helpfulness`,
+    `jobName` uses `1-0-0` because the pattern forbids dots. Submission is triple-gated
+    (`STOCKROOM_MODE=live`, `STOCKROOM_CONFIRM_AWS_SPEND=1`, `EVAL_ROLE_ARN`). The AgentCore
+    `evaluate()` cell additionally needs `AGENTCORE_SESSION_ID`, since the mock harness does not run
+    on AgentCore Runtime.
+34. **Day 4 Exercise 2 uses an explicitly illustrative variance table** (labelled made-up) as input
+    for setting a threshold with the rule "mean − 2·pstdev, rounded down", presented as one
+    reasonable rule rather than a standard.

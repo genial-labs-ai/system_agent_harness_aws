@@ -48,20 +48,20 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [x] Eval suite verified over `STOCKROOM_TOOL_TRANSPORT=mcp-http` with the server in the background (50/50)
 - [x] `make baseline` → `reports/baseline/main.json` committed (sha 18855ee data 1.0.0)
 - [x] Gate verified step by step: clean run passes; `STOCKROOM_WEAKNESSES=ambiguous_tool_desc` run fails (tool selection 0.64, answer 0.78, 4 Promptfoo failures) with the Markdown summary
-- [ ] Full `make ci` end to end once notebooks and `check_lecture_refs.py` are merged
+- [~] Full `make ci` end to end (running at the end of session 1)
 - [x] Lint clean again (`make lint`)
 - [x] `tests/test_check_thresholds.py` (gate pass/fail, baseline regression, red-team split, CLI, promptfoo asserts)
 - [x] `tests/test_live_adapters.py`: stubbed boto3 clients for `BedrockConverseClient`, `BedrockJudge`, DeepEval live bridge, `sync_datasets_s3` dry run
 - [x] DECISIONS entries 8–22 for phases 3/4
 
-## Phase 5 — Notebooks `[~]` (sub-agent working in a git worktree; merge its branch, then verify `make notebooks`)
-- [ ] `scripts/build_notebooks.py` (jupytext percent sources → student + `solutions/` .ipynb; tags `exercise` / `check` / `solution`)
-- [ ] `notebooks/src/day1_deterministic_and_rag_evals.py` — taxonomy demo on the weakness flags, golden-set tour, DeepEval assertions, RAGAS (BM25 local; KB branch live); 3–5 exercises
-- [ ] `notebooks/src/day2_judge_calibration_and_otel_traces.py` — spans (memory + optional Phoenix), `ToolCallEvaluator`, calibration v1→v2, bias probes; exercises
-- [ ] `notebooks/src/day3_building_custom_agent_harness.py` — guards/validation/compaction, MCP server via client, toggle each weakness and chart metric movement; exercises
-- [ ] `notebooks/src/day4_bedrock_evaluations_and_ci_gating.py` — synthetic case generation + judge filter, Promptfoo red team, thresholds from baseline variance, `check_thresholds.py` on regressed vs fixed, Bedrock Evaluations job builder (payload only; submit behind `STOCKROOM_CONFIRM_AWS_SPEND=1`), AgentCore `evaluate()` script (live only); exercises
-- [ ] Setup cell pattern: `%pip install` guarded by `find_spec("stockroom")`, `REPO_URL` placeholder, `detect_mode()` banner
-- [ ] `make notebooks` executes all 8 notebooks in mock mode (nbmake)
+## Phase 5 — Notebooks `[x]` (merged branch commit `fb73972`; `make notebooks` = 8 passed in 71 s on main)
+- [x] `scripts/build_notebooks.py` (jupytext percent sources → student + `solutions/` .ipynb; tags `exercise` / `check` / `solution`)
+- [x] `notebooks/src/day1_deterministic_and_rag_evals.py` — taxonomy demo on the weakness flags, golden-set tour, DeepEval assertions, RAGAS (BM25 local; KB branch live); 3–5 exercises
+- [x] `notebooks/src/day2_judge_calibration_and_otel_traces.py` — spans (memory + optional Phoenix), `ToolCallEvaluator`, calibration v1→v2, bias probes; exercises
+- [x] `notebooks/src/day3_building_custom_agent_harness.py` — guards/validation/compaction, MCP server via client, toggle each weakness and chart metric movement; exercises
+- [x] `notebooks/src/day4_bedrock_evaluations_and_ci_gating.py` — synthetic case generation + judge filter, Promptfoo red team, thresholds from baseline variance, `check_thresholds.py` on regressed vs fixed, Bedrock Evaluations job builder (payload only; submit behind `STOCKROOM_CONFIRM_AWS_SPEND=1`), AgentCore `evaluate()` script (live only); exercises
+- [x] Setup cell pattern: `%pip install` guarded by `find_spec("stockroom")`, `REPO_URL` placeholder, `detect_mode()` banner
+- [x] `make notebooks` executes all 8 notebooks in mock mode (nbmake)
 
 ## Phase 6 — Teaching materials `[x]` (merged branches `e474a8f`, `93dbfc8`)
 - [x] `lectures/day1_llm_eval_foundations.md`, `lectures/day2_llm_as_a_judge_and_otel.md` (merged from worktree branch, commit `e474a8f`)
