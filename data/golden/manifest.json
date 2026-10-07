@@ -1,0 +1,46 @@
+{
+  "name": "stockroom_golden",
+  "version": "1.0.0",
+  "file": "stockroom_golden_v1.jsonl",
+  "sha256": "7d56b684e0ee6a53ba383ef37d46ec710390331a854cb43a2c88e217605e62ea",
+  "cases": 50,
+  "by_category": {
+    "ambiguous_query": 2,
+    "context_bloat": 2,
+    "injection": 3,
+    "multi_step": 4,
+    "order_status": 6,
+    "out_of_scope": 3,
+    "policy_rag": 7,
+    "product_search": 6,
+    "restock_request": 6,
+    "schema_drift": 2,
+    "stock_lookup": 7,
+    "transient_tool_error": 2
+  },
+  "by_tool": {
+    "create_restock_request": 8,
+    "get_order_status": 10,
+    "get_stock_level": 12,
+    "search_policy_docs": 10,
+    "search_products": 11
+  },
+  "mock_scripts": [
+    "G035.json",
+    "G045.json",
+    "G046.json"
+  ],
+  "calibration": {
+    "file": "calibration_v1.jsonl",
+    "sha256": "6a3dc475f5e88f10c51d0a1938869151da2f7514e301d032c1a7f35a2ba7751f",
+    "items": 32
+  },
+  "policy_docs": {
+    "restock_policy.md": "d1489ef383268f5024aee3227a5dc6c524a781572b3b9541925c6f0febb42c3b",
+    "returns_policy.md": "a36b474f80fcfed3ba13c94a235839e107570df824ca7de6e637e512e585222b",
+    "shipping_policy.md": "0d087e78aef4338acab5c9c73c6190d1dd40e5403ab039fe8fe1930242c694f5",
+    "stockroom_glossary.md": "7f8165a55fad08b3d3e9ab74ef183e768d80f3a2af88836be5417ca21a544398",
+    "supplier_lead_times.md": "6638f15c94b96e64e1fabce638271865a6214a3911d8b759a50b5d454cc8796c",
+    "warranty_policy.md": "9003ffb88dbed4d97668af621bd3ec1a54c3024616e91ea8b9c1eeec6d99782e"
+  }
+}

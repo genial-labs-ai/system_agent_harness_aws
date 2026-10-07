@@ -1,0 +1,50 @@
+{
+  "SUP-01": {
+    "name": "Northfield Stationery",
+    "lead_time_days": 3
+  },
+  "SUP-02": {
+    "name": "PrintParts Direct",
+    "lead_time_days": 7
+  },
+  "SUP-03": {
+    "name": "Ironbridge Tools",
+    "lead_time_days": 5
+  },
+  "SUP-04": {
+    "name": "FastenRight",
+    "lead_time_days": 4
+  },
+  "SUP-05": {
+    "name": "SafeHands PPE",
+    "lead_time_days": 2
+  },
+  "SUP-06": {
+    "name": "WorkGuard Supply",
+    "lead_time_days": 10
+  },
+  "SUP-07": {
+    "name": "BoxLine Packaging",
+    "lead_time_days": 3
+  },
+  "SUP-08": {
+    "name": "EcoFill Materials",
+    "lead_time_days": 6
+  },
+  "SUP-09": {
+    "name": "Voltage Accessories",
+    "lead_time_days": 4
+  },
+  "SUP-10": {
+    "name": "ScanTech Devices",
+    "lead_time_days": 14
+  },
+  "SUP-11": {
+    "name": "CleanRoom Supplies",
+    "lead_time_days": 2
+  },
+  "SUP-12": {
+    "name": "Janitorial Wholesale",
+    "lead_time_days": 5
+  }
+}

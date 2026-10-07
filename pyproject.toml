@@ -70,6 +70,7 @@ ignore = ["RUF012", "RUF001", "RUF002", "RUF003"]  # allow en-dashes etc. in doc
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B011"]
+"scripts/generate_seed_data.py" = ["E501"]  # hand-authored data tables
 
 [tool.ruff.format]
 quote-style = "double"

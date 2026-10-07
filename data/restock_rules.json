@@ -1,0 +1,9 @@
+{
+  "source": "data/policy_docs/restock_policy.md",
+  "min_quantity": 10,
+  "auto_approve_max": 500,
+  "reject_above": 5000,
+  "urgent_surcharge_pct": 10,
+  "priorities": ["standard", "urgent"],
+  "one_open_request_per_sku": true
+}

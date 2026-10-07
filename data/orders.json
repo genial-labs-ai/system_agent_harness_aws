@@ -1,0 +1,647 @@
+[
+  {
+    "order_id": "ORD-1001",
+    "customer_name": "Avery Lindqvist",
+    "status": "shipped",
+    "placed_at": "2026-09-08",
+    "shipped_at": "2026-09-12",
+    "delivered_at": null,
+    "carrier": "DPD",
+    "tracking_number": "DP48213377",
+    "estimated_delivery": "2026-09-15",
+    "items": [
+      {
+        "sku": "SKU-1005",
+        "name": "Whiteboard Markers Assorted (pack of 8)",
+        "quantity": 10,
+        "unit_price_usd": 9.75
+      },
+      {
+        "sku": "SKU-1019",
+        "name": "Ear Defenders 31dB",
+        "quantity": 10,
+        "unit_price_usd": 19.9
+      }
+    ],
+    "total_usd": 296.5,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1002",
+    "customer_name": "Priya Raman",
+    "status": "delivered",
+    "placed_at": "2026-09-23",
+    "shipped_at": "2026-09-05",
+    "delivered_at": "2026-09-08",
+    "carrier": "UPS",
+    "tracking_number": "UP55019842",
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1007",
+        "name": "Laser Toner Cartridge TN-2420",
+        "quantity": 9,
+        "unit_price_usd": 64.0
+      },
+      {
+        "sku": "SKU-1018",
+        "name": "Hard Hat White Vented",
+        "quantity": 9,
+        "unit_price_usd": 15.3
+      },
+      {
+        "sku": "SKU-1009",
+        "name": "Hex Bolts M8 x 40mm Zinc (box of 100)",
+        "quantity": 2,
+        "unit_price_usd": 14.2
+      }
+    ],
+    "total_usd": 742.1,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1003",
+    "customer_name": "Tom\u00e1s Ferreira",
+    "status": "backordered",
+    "placed_at": "2026-09-21",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1008",
+        "name": "Cordless Drill Driver 18V",
+        "quantity": 9,
+        "unit_price_usd": 129.0
+      }
+    ],
+    "total_usd": 1161.0,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1004",
+    "customer_name": "Mei-Ling Chao",
+    "status": "processing",
+    "placed_at": "2026-09-23",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1024",
+        "name": "Bubble Wrap Roll 500mm x 50m",
+        "quantity": 10,
+        "unit_price_usd": 18.7
+      }
+    ],
+    "total_usd": 187.0,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1005",
+    "customer_name": "Kwame Mensah",
+    "status": "cancelled",
+    "placed_at": "2026-09-11",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1035",
+        "name": "Paper Towels 2-ply (case of 12 rolls)",
+        "quantity": 4,
+        "unit_price_usd": 27.5
+      },
+      {
+        "sku": "SKU-1004",
+        "name": "Lever Arch File A4 Blue",
+        "quantity": 9,
+        "unit_price_usd": 3.4
+      }
+    ],
+    "total_usd": 140.6,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1006",
+    "customer_name": "Sofia Petrov",
+    "status": "cancelled",
+    "placed_at": "2026-09-02",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1006",
+        "name": "Stapler Heavy Duty 100-sheet",
+        "quantity": 1,
+        "unit_price_usd": 28.0
+      }
+    ],
+    "total_usd": 28.0,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1007",
+    "customer_name": "Daniel O'Connor",
+    "status": "processing",
+    "placed_at": "2026-09-01",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1033",
+        "name": "Label Printer Thermal 4 inch",
+        "quantity": 1,
+        "unit_price_usd": 159.0
+      }
+    ],
+    "total_usd": 159.0,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1008",
+    "customer_name": "Hana Yamamoto",
+    "status": "shipped",
+    "placed_at": "2026-09-15",
+    "shipped_at": "2026-09-16",
+    "delivered_at": null,
+    "carrier": "UPS",
+    "tracking_number": "UP94341001",
+    "estimated_delivery": "2026-09-19",
+    "items": [
+      {
+        "sku": "SKU-1041",
+        "name": "Dispenser Soap Wall-mounted 1L",
+        "quantity": 5,
+        "unit_price_usd": 18.5
+      }
+    ],
+    "total_usd": 92.5,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1009",
+    "customer_name": "Lucas Moreau",
+    "status": "delivered",
+    "placed_at": "2026-09-02",
+    "shipped_at": "2026-09-05",
+    "delivered_at": "2026-09-09",
+    "carrier": "DHL",
+    "tracking_number": "DH27657246",
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1030",
+        "name": "HDMI Cable 3m 4K",
+        "quantity": 4,
+        "unit_price_usd": 10.4
+      }
+    ],
+    "total_usd": 41.6,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1010",
+    "customer_name": "Amara Okafor",
+    "status": "delivered",
+    "placed_at": "2026-09-08",
+    "shipped_at": "2026-09-11",
+    "delivered_at": "2026-09-14",
+    "carrier": "Parcelforce",
+    "tracking_number": "PA72054451",
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1036",
+        "name": "Floor Cleaner Concentrate 5L",
+        "quantity": 3,
+        "unit_price_usd": 16.4
+      },
+      {
+        "sku": "SKU-1025",
+        "name": "Pallet Stretch Film 500mm (6 rolls)",
+        "quantity": 2,
+        "unit_price_usd": 41.0
+      },
+      {
+        "sku": "SKU-1041",
+        "name": "Dispenser Soap Wall-mounted 1L",
+        "quantity": 9,
+        "unit_price_usd": 18.5
+      }
+    ],
+    "total_usd": 297.7,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1011",
+    "customer_name": "Noor Haddad",
+    "status": "backordered",
+    "placed_at": "2026-09-09",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1029",
+        "name": "Wireless Mouse Ergonomic",
+        "quantity": 1,
+        "unit_price_usd": 24.5
+      },
+      {
+        "sku": "SKU-1039",
+        "name": "Hand Sanitiser Gel 500ml",
+        "quantity": 7,
+        "unit_price_usd": 4.2
+      }
+    ],
+    "total_usd": 53.9,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1012",
+    "customer_name": "Ben Carter",
+    "status": "cancelled",
+    "placed_at": "2026-09-12",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1015",
+        "name": "Nitrile Gloves Large (box of 100)",
+        "quantity": 8,
+        "unit_price_usd": 12.9
+      },
+      {
+        "sku": "SKU-1030",
+        "name": "HDMI Cable 3m 4K",
+        "quantity": 4,
+        "unit_price_usd": 10.4
+      }
+    ],
+    "total_usd": 144.8,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1013",
+    "customer_name": "Avery Lindqvist",
+    "status": "processing",
+    "placed_at": "2026-09-10",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1027",
+        "name": "Void Fill Paper 380mm x 450m",
+        "quantity": 9,
+        "unit_price_usd": 36.0
+      },
+      {
+        "sku": "SKU-1005",
+        "name": "Whiteboard Markers Assorted (pack of 8)",
+        "quantity": 7,
+        "unit_price_usd": 9.75
+      }
+    ],
+    "total_usd": 392.25,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1014",
+    "customer_name": "Priya Raman",
+    "status": "shipped",
+    "placed_at": "2026-09-26",
+    "shipped_at": "2026-09-27",
+    "delivered_at": null,
+    "carrier": "UPS",
+    "tracking_number": "UP82392392",
+    "estimated_delivery": "2026-09-30",
+    "items": [
+      {
+        "sku": "SKU-1001",
+        "name": "A4 Copy Paper 80gsm (500 sheets)",
+        "quantity": 11,
+        "unit_price_usd": 6.9
+      }
+    ],
+    "total_usd": 75.9,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1015",
+    "customer_name": "Tom\u00e1s Ferreira",
+    "status": "delivered",
+    "placed_at": "2026-09-03",
+    "shipped_at": "2026-09-05",
+    "delivered_at": "2026-09-08",
+    "carrier": "Parcelforce",
+    "tracking_number": "PA78178395",
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1004",
+        "name": "Lever Arch File A4 Blue",
+        "quantity": 2,
+        "unit_price_usd": 3.4
+      },
+      {
+        "sku": "SKU-1040",
+        "name": "Mop Bucket with Wringer 15L",
+        "quantity": 4,
+        "unit_price_usd": 33.0
+      }
+    ],
+    "total_usd": 138.8,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1016",
+    "customer_name": "Mei-Ling Chao",
+    "status": "delivered",
+    "placed_at": "2026-09-09",
+    "shipped_at": "2026-09-12",
+    "delivered_at": "2026-09-14",
+    "carrier": "DPD",
+    "tracking_number": "DP95325316",
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1004",
+        "name": "Lever Arch File A4 Blue",
+        "quantity": 2,
+        "unit_price_usd": 3.4
+      },
+      {
+        "sku": "SKU-1010",
+        "name": "Socket Set 1/2 inch Drive 24-piece",
+        "quantity": 1,
+        "unit_price_usd": 58.5
+      }
+    ],
+    "total_usd": 65.3,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1017",
+    "customer_name": "Kwame Mensah",
+    "status": "backordered",
+    "placed_at": "2026-09-17",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1027",
+        "name": "Void Fill Paper 380mm x 450m",
+        "quantity": 6,
+        "unit_price_usd": 36.0
+      },
+      {
+        "sku": "SKU-1026",
+        "name": "Shipping Labels 4x6 inch (roll of 500)",
+        "quantity": 9,
+        "unit_price_usd": 13.6
+      }
+    ],
+    "total_usd": 338.4,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1018",
+    "customer_name": "Sofia Petrov",
+    "status": "cancelled",
+    "placed_at": "2026-09-17",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1019",
+        "name": "Ear Defenders 31dB",
+        "quantity": 3,
+        "unit_price_usd": 19.9
+      }
+    ],
+    "total_usd": 59.7,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1019",
+    "customer_name": "Daniel O'Connor",
+    "status": "processing",
+    "placed_at": "2026-09-14",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1001",
+        "name": "A4 Copy Paper 80gsm (500 sheets)",
+        "quantity": 9,
+        "unit_price_usd": 6.9
+      },
+      {
+        "sku": "SKU-1003",
+        "name": "Sticky Notes 76x76mm Yellow (12 pads)",
+        "quantity": 5,
+        "unit_price_usd": 8.2
+      },
+      {
+        "sku": "SKU-1011",
+        "name": "Digital Calliper 150mm",
+        "quantity": 4,
+        "unit_price_usd": 32.0
+      }
+    ],
+    "total_usd": 231.1,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-1020",
+    "customer_name": "Hana Yamamoto",
+    "status": "shipped",
+    "placed_at": "2026-09-27",
+    "shipped_at": "2026-09-28",
+    "delivered_at": null,
+    "carrier": "UPS",
+    "tracking_number": "UP68943756",
+    "estimated_delivery": "2026-10-01",
+    "items": [
+      {
+        "sku": "SKU-1008",
+        "name": "Cordless Drill Driver 18V",
+        "quantity": 7,
+        "unit_price_usd": 129.0
+      }
+    ],
+    "total_usd": 903.0,
+    "shard": "primary"
+  },
+  {
+    "order_id": "ORD-9001",
+    "customer_name": "Lucas Moreau",
+    "status": "shipped",
+    "placed_at": "2026-09-13",
+    "shipped_at": "2026-09-20",
+    "delivered_at": null,
+    "carrier": "Parcelforce",
+    "tracking_number": "PA77120931",
+    "estimated_delivery": "2026-09-23",
+    "items": [
+      {
+        "sku": "SKU-1037",
+        "name": "Refuse Sacks Heavy Duty (roll of 100)",
+        "quantity": 4,
+        "unit_price_usd": 14.9
+      },
+      {
+        "sku": "SKU-1012",
+        "name": "Adjustable Spanner 250mm",
+        "quantity": 10,
+        "unit_price_usd": 17.8
+      },
+      {
+        "sku": "SKU-1041",
+        "name": "Dispenser Soap Wall-mounted 1L",
+        "quantity": 1,
+        "unit_price_usd": 18.5
+      }
+    ],
+    "total_usd": 256.1,
+    "shard": "legacy"
+  },
+  {
+    "order_id": "ORD-9002",
+    "customer_name": "Amara Okafor",
+    "status": "delivered",
+    "placed_at": "2026-09-19",
+    "shipped_at": "2026-09-02",
+    "delivered_at": "2026-09-04",
+    "carrier": "DHL",
+    "tracking_number": "DH30987112",
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1030",
+        "name": "HDMI Cable 3m 4K",
+        "quantity": 11,
+        "unit_price_usd": 10.4
+      },
+      {
+        "sku": "SKU-1012",
+        "name": "Adjustable Spanner 250mm",
+        "quantity": 11,
+        "unit_price_usd": 17.8
+      }
+    ],
+    "total_usd": 310.2,
+    "shard": "legacy"
+  },
+  {
+    "order_id": "ORD-9003",
+    "customer_name": "Noor Haddad",
+    "status": "backordered",
+    "placed_at": "2026-09-08",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1039",
+        "name": "Hand Sanitiser Gel 500ml",
+        "quantity": 8,
+        "unit_price_usd": 4.2
+      },
+      {
+        "sku": "SKU-1019",
+        "name": "Ear Defenders 31dB",
+        "quantity": 2,
+        "unit_price_usd": 19.9
+      },
+      {
+        "sku": "SKU-1003",
+        "name": "Sticky Notes 76x76mm Yellow (12 pads)",
+        "quantity": 12,
+        "unit_price_usd": 8.2
+      }
+    ],
+    "total_usd": 171.8,
+    "shard": "legacy"
+  },
+  {
+    "order_id": "ORD-9004",
+    "customer_name": "Ben Carter",
+    "status": "cancelled",
+    "placed_at": "2026-09-24",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1014",
+        "name": "Torque Wrench 1/2 inch 40-200Nm",
+        "quantity": 4,
+        "unit_price_usd": 74.0
+      }
+    ],
+    "total_usd": 296.0,
+    "shard": "legacy"
+  },
+  {
+    "order_id": "ORD-9005",
+    "customer_name": "Avery Lindqvist",
+    "status": "processing",
+    "placed_at": "2026-09-23",
+    "shipped_at": null,
+    "delivered_at": null,
+    "carrier": null,
+    "tracking_number": null,
+    "estimated_delivery": null,
+    "items": [
+      {
+        "sku": "SKU-1026",
+        "name": "Shipping Labels 4x6 inch (roll of 500)",
+        "quantity": 5,
+        "unit_price_usd": 13.6
+      },
+      {
+        "sku": "SKU-1028",
+        "name": "USB-C Charging Cable 2m",
+        "quantity": 6,
+        "unit_price_usd": 7.9
+      }
+    ],
+    "total_usd": 115.4,
+    "shard": "legacy"
+  }
+]

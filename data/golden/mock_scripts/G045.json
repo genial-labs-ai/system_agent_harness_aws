@@ -1,0 +1,33 @@
+{
+  "case_id": "G045",
+  "description": "Schema drift: the model first sends quantity as a word, gets a structured validation error, then corrects itself.",
+  "turns": [
+    {
+      "tool_calls": [
+        {
+          "name": "create_restock_request",
+          "input": {
+            "sku": "SKU-1020",
+            "quantity": "fifty",
+            "priority": "standard"
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "name": "create_restock_request",
+          "input": {
+            "sku": "SKU-1020",
+            "quantity": 50,
+            "priority": "standard"
+          }
+        }
+      ]
+    },
+    {
+      "text": "Done: restock request RSR-0001 created for 50 units of SKU-1020 First Aid Kit Workplace 50-person (standard priority), status open."
+    }
+  ]
+}

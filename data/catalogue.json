@@ -1,0 +1,1703 @@
+[
+  {
+    "sku": "SKU-1001",
+    "name": "A4 Copy Paper 80gsm (500 sheets)",
+    "category": "Office Supplies",
+    "unit_price_usd": 6.9,
+    "unit": "ream",
+    "stock_level": 320,
+    "reorder_point": 80,
+    "location": {
+      "aisle": 1,
+      "bin": 2
+    },
+    "supplier_id": "SUP-01",
+    "supplier_name": "Northfield Stationery",
+    "lead_time_days": 3,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. This line is reviewed quarterly against usage data so that reorder points stay realistic. Ships from the main distribution centre; split shipments are consolidated where possible.",
+    "spec_sheet": {
+      "country_of_origin": "IT",
+      "pack_weight_kg": "2.95",
+      "pack_dimensions_mm": "420x368x328",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1001-V1",
+        "option": "Standard",
+        "stock_level": 0
+      }
+    ],
+    "tags": [
+      "a4",
+      "copy",
+      "paper"
+    ]
+  },
+  {
+    "sku": "SKU-1002",
+    "name": "Ballpoint Pens Black (box of 50)",
+    "category": "Office Supplies",
+    "unit_price_usd": 11.5,
+    "unit": "box",
+    "stock_level": 48,
+    "reorder_point": 12,
+    "location": {
+      "aisle": 1,
+      "bin": 5
+    },
+    "supplier_id": "SUP-01",
+    "supplier_name": "Northfield Stationery",
+    "lead_time_days": 3,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Ballpoint Pens Black (box of 50) is stocked for office supplies customers who need dependable supplies on a predictable schedule. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests.",
+    "spec_sheet": {
+      "country_of_origin": "IT",
+      "pack_weight_kg": "5.24",
+      "pack_dimensions_mm": "548x211x52",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1002-V1",
+        "option": "Standard",
+        "stock_level": 31
+      }
+    ],
+    "tags": [
+      "ballpoint",
+      "pens",
+      "black"
+    ]
+  },
+  {
+    "sku": "SKU-1003",
+    "name": "Sticky Notes 76x76mm Yellow (12 pads)",
+    "category": "Office Supplies",
+    "unit_price_usd": 8.2,
+    "unit": "pack",
+    "stock_level": 83,
+    "reorder_point": 20,
+    "location": {
+      "aisle": 1,
+      "bin": 8
+    },
+    "supplier_id": "SUP-01",
+    "supplier_name": "Northfield Stationery",
+    "lead_time_days": 3,
+    "long_description": "Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. This line is reviewed quarterly against usage data so that reorder points stay realistic. Ships from the main distribution centre; split shipments are consolidated where possible. Sticky Notes 76x76mm Yellow (12 pads) is stocked for office supplies customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "DE",
+      "pack_weight_kg": "8.07",
+      "pack_dimensions_mm": "464x323x82",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1003-V1",
+        "option": "Standard",
+        "stock_level": 7
+      },
+      {
+        "variant_sku": "SKU-1003-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 24
+      }
+    ],
+    "tags": [
+      "sticky",
+      "notes",
+      "76x76mm"
+    ]
+  },
+  {
+    "sku": "SKU-1004",
+    "name": "Lever Arch File A4 Blue",
+    "category": "Office Supplies",
+    "unit_price_usd": 3.4,
+    "unit": "each",
+    "stock_level": 263,
+    "reorder_point": 65,
+    "location": {
+      "aisle": 1,
+      "bin": 11
+    },
+    "supplier_id": "SUP-01",
+    "supplier_name": "Northfield Stationery",
+    "lead_time_days": 3,
+    "long_description": "Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. This line is reviewed quarterly against usage data so that reorder points stay realistic. Lever Arch File A4 Blue is stocked for office supplies customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "IT",
+      "pack_weight_kg": "10.63",
+      "pack_dimensions_mm": "100x225x385",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1004-V1",
+        "option": "Standard",
+        "stock_level": 7
+      }
+    ],
+    "tags": [
+      "lever",
+      "arch",
+      "file"
+    ]
+  },
+  {
+    "sku": "SKU-1005",
+    "name": "Whiteboard Markers Assorted (pack of 8)",
+    "category": "Office Supplies",
+    "unit_price_usd": 9.75,
+    "unit": "pack",
+    "stock_level": 35,
+    "reorder_point": 10,
+    "location": {
+      "aisle": 1,
+      "bin": 14
+    },
+    "supplier_id": "SUP-01",
+    "supplier_name": "Northfield Stationery",
+    "lead_time_days": 3,
+    "long_description": "This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Whiteboard Markers Assorted (pack of 8) is stocked for office supplies customers who need dependable supplies on a predictable schedule. Ships from the main distribution centre; split shipments are consolidated where possible.",
+    "spec_sheet": {
+      "country_of_origin": "US",
+      "pack_weight_kg": "9.53",
+      "pack_dimensions_mm": "502x279x397",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1005-V1",
+        "option": "Standard",
+        "stock_level": 44
+      },
+      {
+        "variant_sku": "SKU-1005-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 52
+      },
+      {
+        "variant_sku": "SKU-1005-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 21
+      }
+    ],
+    "tags": [
+      "whiteboard",
+      "markers",
+      "assorted"
+    ]
+  },
+  {
+    "sku": "SKU-1006",
+    "name": "Stapler Heavy Duty 100-sheet",
+    "category": "Office Supplies",
+    "unit_price_usd": 28.0,
+    "unit": "each",
+    "stock_level": 311,
+    "reorder_point": 77,
+    "location": {
+      "aisle": 1,
+      "bin": 17
+    },
+    "supplier_id": "SUP-02",
+    "supplier_name": "PrintParts Direct",
+    "lead_time_days": 7,
+    "long_description": "Stapler Heavy Duty 100-sheet is stocked for office supplies customers who need dependable supplies on a predictable schedule. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay.",
+    "spec_sheet": {
+      "country_of_origin": "IT",
+      "pack_weight_kg": "6.07",
+      "pack_dimensions_mm": "178x383x73",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1006-V1",
+        "option": "Standard",
+        "stock_level": 29
+      }
+    ],
+    "tags": [
+      "stapler",
+      "heavy",
+      "duty"
+    ]
+  },
+  {
+    "sku": "SKU-1007",
+    "name": "Laser Toner Cartridge TN-2420",
+    "category": "Office Supplies",
+    "unit_price_usd": 64.0,
+    "unit": "each",
+    "stock_level": 0,
+    "reorder_point": 20,
+    "location": {
+      "aisle": 1,
+      "bin": 20
+    },
+    "supplier_id": "SUP-02",
+    "supplier_name": "PrintParts Direct",
+    "lead_time_days": 7,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Ships from the main distribution centre; split shipments are consolidated where possible. This line is reviewed quarterly against usage data so that reorder points stay realistic.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "1.87",
+      "pack_dimensions_mm": "376x136x87",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1007-V1",
+        "option": "Standard",
+        "stock_level": 28
+      },
+      {
+        "variant_sku": "SKU-1007-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 56
+      },
+      {
+        "variant_sku": "SKU-1007-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 37
+      }
+    ],
+    "tags": [
+      "laser",
+      "toner",
+      "cartridge"
+    ]
+  },
+  {
+    "sku": "SKU-1008",
+    "name": "Cordless Drill Driver 18V",
+    "category": "Workshop Tools",
+    "unit_price_usd": 129.0,
+    "unit": "each",
+    "stock_level": 5,
+    "reorder_point": 10,
+    "location": {
+      "aisle": 2,
+      "bin": 2
+    },
+    "supplier_id": "SUP-03",
+    "supplier_name": "Ironbridge Tools",
+    "lead_time_days": 5,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Ships from the main distribution centre; split shipments are consolidated where possible. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold.",
+    "spec_sheet": {
+      "country_of_origin": "DE",
+      "pack_weight_kg": "7.53",
+      "pack_dimensions_mm": "360x397x88",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "60",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1008-V1",
+        "option": "Standard",
+        "stock_level": 11
+      },
+      {
+        "variant_sku": "SKU-1008-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 1
+      },
+      {
+        "variant_sku": "SKU-1008-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 50
+      }
+    ],
+    "tags": [
+      "cordless",
+      "drill",
+      "driver"
+    ]
+  },
+  {
+    "sku": "SKU-1009",
+    "name": "Hex Bolts M8 x 40mm Zinc (box of 100)",
+    "category": "Workshop Tools",
+    "unit_price_usd": 14.2,
+    "unit": "box",
+    "stock_level": 1250,
+    "reorder_point": 312,
+    "location": {
+      "aisle": 2,
+      "bin": 5
+    },
+    "supplier_id": "SUP-03",
+    "supplier_name": "Ironbridge Tools",
+    "lead_time_days": 5,
+    "long_description": "Hex Bolts M8 x 40mm Zinc (box of 100) is stocked for workshop tools customers who need dependable supplies on a predictable schedule. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Ships from the main distribution centre; split shipments are consolidated where possible. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Supplier batch numbers are retained for twelve months to support warranty claims and recalls.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "7.51",
+      "pack_dimensions_mm": "578x321x136",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1009-V1",
+        "option": "Standard",
+        "stock_level": 14
+      },
+      {
+        "variant_sku": "SKU-1009-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 35
+      }
+    ],
+    "tags": [
+      "hex",
+      "bolts",
+      "m8"
+    ]
+  },
+  {
+    "sku": "SKU-1010",
+    "name": "Socket Set 1/2 inch Drive 24-piece",
+    "category": "Workshop Tools",
+    "unit_price_usd": 58.5,
+    "unit": "set",
+    "stock_level": 53,
+    "reorder_point": 13,
+    "location": {
+      "aisle": 2,
+      "bin": 8
+    },
+    "supplier_id": "SUP-03",
+    "supplier_name": "Ironbridge Tools",
+    "lead_time_days": 5,
+    "long_description": "This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Returns are accepted under the standard returns policy provided the packaging is intact. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Ships from the main distribution centre; split shipments are consolidated where possible.",
+    "spec_sheet": {
+      "country_of_origin": "US",
+      "pack_weight_kg": "7.79",
+      "pack_dimensions_mm": "127x248x262",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1010-V1",
+        "option": "Standard",
+        "stock_level": 28
+      }
+    ],
+    "tags": [
+      "socket",
+      "set",
+      "1/2"
+    ]
+  },
+  {
+    "sku": "SKU-1011",
+    "name": "Digital Calliper 150mm",
+    "category": "Workshop Tools",
+    "unit_price_usd": 32.0,
+    "unit": "each",
+    "stock_level": 60,
+    "reorder_point": 15,
+    "location": {
+      "aisle": 2,
+      "bin": 11
+    },
+    "supplier_id": "SUP-03",
+    "supplier_name": "Ironbridge Tools",
+    "lead_time_days": 5,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. This line is reviewed quarterly against usage data so that reorder points stay realistic.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "1.54",
+      "pack_dimensions_mm": "169x347x57",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "60",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1011-V1",
+        "option": "Standard",
+        "stock_level": 29
+      }
+    ],
+    "tags": [
+      "digital",
+      "calliper",
+      "150mm"
+    ]
+  },
+  {
+    "sku": "SKU-1012",
+    "name": "Adjustable Spanner 250mm",
+    "category": "Workshop Tools",
+    "unit_price_usd": 17.8,
+    "unit": "each",
+    "stock_level": 93,
+    "reorder_point": 23,
+    "location": {
+      "aisle": 2,
+      "bin": 14
+    },
+    "supplier_id": "SUP-03",
+    "supplier_name": "Ironbridge Tools",
+    "lead_time_days": 5,
+    "long_description": "Ships from the main distribution centre; split shipments are consolidated where possible. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Adjustable Spanner 250mm is stocked for workshop tools customers who need dependable supplies on a predictable schedule. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "0.34",
+      "pack_dimensions_mm": "563x119x333",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "60",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1012-V1",
+        "option": "Standard",
+        "stock_level": 17
+      }
+    ],
+    "tags": [
+      "adjustable",
+      "spanner",
+      "250mm"
+    ]
+  },
+  {
+    "sku": "SKU-1013",
+    "name": "Cable Ties 300mm Black (bag of 100)",
+    "category": "Workshop Tools",
+    "unit_price_usd": 5.6,
+    "unit": "bag",
+    "stock_level": 159,
+    "reorder_point": 39,
+    "location": {
+      "aisle": 2,
+      "bin": 17
+    },
+    "supplier_id": "SUP-04",
+    "supplier_name": "FastenRight",
+    "lead_time_days": 4,
+    "long_description": "Ships from the main distribution centre; split shipments are consolidated where possible. Returns are accepted under the standard returns policy provided the packaging is intact. This line is reviewed quarterly against usage data so that reorder points stay realistic. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Cable Ties 300mm Black (bag of 100) is stocked for workshop tools customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "IT",
+      "pack_weight_kg": "10.92",
+      "pack_dimensions_mm": "304x134x141",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "60",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1013-V1",
+        "option": "Standard",
+        "stock_level": 1
+      },
+      {
+        "variant_sku": "SKU-1013-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 38
+      }
+    ],
+    "tags": [
+      "cable",
+      "ties",
+      "300mm"
+    ]
+  },
+  {
+    "sku": "SKU-1014",
+    "name": "Torque Wrench 1/2 inch 40-200Nm",
+    "category": "Workshop Tools",
+    "unit_price_usd": 74.0,
+    "unit": "each",
+    "stock_level": 153,
+    "reorder_point": 38,
+    "location": {
+      "aisle": 2,
+      "bin": 20
+    },
+    "supplier_id": "SUP-03",
+    "supplier_name": "Ironbridge Tools",
+    "lead_time_days": 5,
+    "long_description": "Ships from the main distribution centre; split shipments are consolidated where possible. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Torque Wrench 1/2 inch 40-200Nm is stocked for workshop tools customers who need dependable supplies on a predictable schedule. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold.",
+    "spec_sheet": {
+      "country_of_origin": "PL",
+      "pack_weight_kg": "5.21",
+      "pack_dimensions_mm": "210x372x268",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "60",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1014-V1",
+        "option": "Standard",
+        "stock_level": 14
+      }
+    ],
+    "tags": [
+      "torque",
+      "wrench",
+      "1/2"
+    ]
+  },
+  {
+    "sku": "SKU-1015",
+    "name": "Nitrile Gloves Large (box of 100)",
+    "category": "Safety Equipment",
+    "unit_price_usd": 12.9,
+    "unit": "box",
+    "stock_level": 42,
+    "reorder_point": 10,
+    "location": {
+      "aisle": 3,
+      "bin": 2
+    },
+    "supplier_id": "SUP-05",
+    "supplier_name": "SafeHands PPE",
+    "lead_time_days": 2,
+    "long_description": "Ships from the main distribution centre; split shipments are consolidated where possible. Nitrile Gloves Large (box of 100) is stocked for safety equipment customers who need dependable supplies on a predictable schedule. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Returns are accepted under the standard returns policy provided the packaging is intact. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "10.39",
+      "pack_dimensions_mm": "313x234x250",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no",
+      "certification": "EN 388"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1015-V1",
+        "option": "Standard",
+        "stock_level": 57
+      },
+      {
+        "variant_sku": "SKU-1015-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 32
+      }
+    ],
+    "tags": [
+      "nitrile",
+      "gloves",
+      "large"
+    ]
+  },
+  {
+    "sku": "SKU-1016",
+    "name": "Safety Glasses Clear Anti-Fog",
+    "category": "Safety Equipment",
+    "unit_price_usd": 4.5,
+    "unit": "each",
+    "stock_level": 89,
+    "reorder_point": 22,
+    "location": {
+      "aisle": 3,
+      "bin": 5
+    },
+    "supplier_id": "SUP-05",
+    "supplier_name": "SafeHands PPE",
+    "lead_time_days": 2,
+    "long_description": "Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Returns are accepted under the standard returns policy provided the packaging is intact. This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "11.37",
+      "pack_dimensions_mm": "341x225x346",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no",
+      "certification": "EN 352-1"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1016-V1",
+        "option": "Standard",
+        "stock_level": 7
+      },
+      {
+        "variant_sku": "SKU-1016-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 0
+      }
+    ],
+    "tags": [
+      "safety",
+      "glasses",
+      "clear"
+    ]
+  },
+  {
+    "sku": "SKU-1017",
+    "name": "Hi-Vis Vest Yellow Class 2",
+    "category": "Safety Equipment",
+    "unit_price_usd": 6.8,
+    "unit": "each",
+    "stock_level": 252,
+    "reorder_point": 63,
+    "location": {
+      "aisle": 3,
+      "bin": 8
+    },
+    "supplier_id": "SUP-05",
+    "supplier_name": "SafeHands PPE",
+    "lead_time_days": 2,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Ships from the main distribution centre; split shipments are consolidated where possible. Hi-Vis Vest Yellow Class 2 is stocked for safety equipment customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "8.73",
+      "pack_dimensions_mm": "561x303x322",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no",
+      "certification": "EN 166"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1017-V1",
+        "option": "Standard",
+        "stock_level": 44
+      }
+    ],
+    "tags": [
+      "hi-vis",
+      "vest",
+      "yellow"
+    ]
+  },
+  {
+    "sku": "SKU-1018",
+    "name": "Hard Hat White Vented",
+    "category": "Safety Equipment",
+    "unit_price_usd": 15.3,
+    "unit": "each",
+    "stock_level": 0,
+    "reorder_point": 20,
+    "location": {
+      "aisle": 3,
+      "bin": 11
+    },
+    "supplier_id": "SUP-05",
+    "supplier_name": "SafeHands PPE",
+    "lead_time_days": 2,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Ships from the main distribution centre; split shipments are consolidated where possible. Returns are accepted under the standard returns policy provided the packaging is intact. This line is reviewed quarterly against usage data so that reorder points stay realistic. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "8.90",
+      "pack_dimensions_mm": "170x192x254",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no",
+      "certification": "EN 166"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1018-V1",
+        "option": "Standard",
+        "stock_level": 12
+      },
+      {
+        "variant_sku": "SKU-1018-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 15
+      },
+      {
+        "variant_sku": "SKU-1018-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 57
+      }
+    ],
+    "tags": [
+      "hard",
+      "hat",
+      "white"
+    ]
+  },
+  {
+    "sku": "SKU-1019",
+    "name": "Ear Defenders 31dB",
+    "category": "Safety Equipment",
+    "unit_price_usd": 19.9,
+    "unit": "each",
+    "stock_level": 33,
+    "reorder_point": 10,
+    "location": {
+      "aisle": 3,
+      "bin": 14
+    },
+    "supplier_id": "SUP-05",
+    "supplier_name": "SafeHands PPE",
+    "lead_time_days": 2,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Ear Defenders 31dB is stocked for safety equipment customers who need dependable supplies on a predictable schedule. Returns are accepted under the standard returns policy provided the packaging is intact. This line is reviewed quarterly against usage data so that reorder points stay realistic.",
+    "spec_sheet": {
+      "country_of_origin": "PL",
+      "pack_weight_kg": "2.83",
+      "pack_dimensions_mm": "156x325x116",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no",
+      "certification": "EN 352-1"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1019-V1",
+        "option": "Standard",
+        "stock_level": 40
+      },
+      {
+        "variant_sku": "SKU-1019-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 23
+      }
+    ],
+    "tags": [
+      "ear",
+      "defenders",
+      "31db"
+    ]
+  },
+  {
+    "sku": "SKU-1020",
+    "name": "First Aid Kit Workplace 50-person",
+    "category": "Safety Equipment",
+    "unit_price_usd": 44.0,
+    "unit": "each",
+    "stock_level": 12,
+    "reorder_point": 10,
+    "location": {
+      "aisle": 3,
+      "bin": 17
+    },
+    "supplier_id": "SUP-06",
+    "supplier_name": "WorkGuard Supply",
+    "lead_time_days": 10,
+    "long_description": "This line is reviewed quarterly against usage data so that reorder points stay realistic. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Returns are accepted under the standard returns policy provided the packaging is intact. Ships from the main distribution centre; split shipments are consolidated where possible. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "2.96",
+      "pack_dimensions_mm": "210x114x326",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no",
+      "certification": "EN 166"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1020-V1",
+        "option": "Standard",
+        "stock_level": 38
+      }
+    ],
+    "tags": [
+      "first",
+      "aid",
+      "kit"
+    ]
+  },
+  {
+    "sku": "SKU-1021",
+    "name": "Steel Toe Boots Size 10",
+    "category": "Safety Equipment",
+    "unit_price_usd": 68.0,
+    "unit": "pair",
+    "stock_level": 315,
+    "reorder_point": 78,
+    "location": {
+      "aisle": 3,
+      "bin": 20
+    },
+    "supplier_id": "SUP-06",
+    "supplier_name": "WorkGuard Supply",
+    "lead_time_days": 10,
+    "long_description": "Steel Toe Boots Size 10 is stocked for safety equipment customers who need dependable supplies on a predictable schedule. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests.",
+    "spec_sheet": {
+      "country_of_origin": "US",
+      "pack_weight_kg": "2.82",
+      "pack_dimensions_mm": "217x134x112",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no",
+      "certification": "EN 166"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1021-V1",
+        "option": "Standard",
+        "stock_level": 33
+      },
+      {
+        "variant_sku": "SKU-1021-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 6
+      }
+    ],
+    "tags": [
+      "steel",
+      "toe",
+      "boots"
+    ]
+  },
+  {
+    "sku": "SKU-1022",
+    "name": "Cardboard Boxes 400x300x300mm (pack of 20)",
+    "category": "Packaging",
+    "unit_price_usd": 22.4,
+    "unit": "pack",
+    "stock_level": 86,
+    "reorder_point": 21,
+    "location": {
+      "aisle": 4,
+      "bin": 2
+    },
+    "supplier_id": "SUP-07",
+    "supplier_name": "BoxLine Packaging",
+    "lead_time_days": 3,
+    "long_description": "Ships from the main distribution centre; split shipments are consolidated where possible. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. This line is reviewed quarterly against usage data so that reorder points stay realistic. Cardboard Boxes 400x300x300mm (pack of 20) is stocked for packaging customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "8.58",
+      "pack_dimensions_mm": "562x146x303",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1022-V1",
+        "option": "Standard",
+        "stock_level": 11
+      },
+      {
+        "variant_sku": "SKU-1022-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 32
+      },
+      {
+        "variant_sku": "SKU-1022-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 17
+      }
+    ],
+    "tags": [
+      "cardboard",
+      "boxes",
+      "400x300x300mm"
+    ]
+  },
+  {
+    "sku": "SKU-1023",
+    "name": "Packing Tape Clear 48mm (6 rolls)",
+    "category": "Packaging",
+    "unit_price_usd": 9.3,
+    "unit": "pack",
+    "stock_level": 73,
+    "reorder_point": 18,
+    "location": {
+      "aisle": 4,
+      "bin": 5
+    },
+    "supplier_id": "SUP-07",
+    "supplier_name": "BoxLine Packaging",
+    "lead_time_days": 3,
+    "long_description": "Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Returns are accepted under the standard returns policy provided the packaging is intact. Packing Tape Clear 48mm (6 rolls) is stocked for packaging customers who need dependable supplies on a predictable schedule. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Ships from the main distribution centre; split shipments are consolidated where possible.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "10.51",
+      "pack_dimensions_mm": "502x150x250",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1023-V1",
+        "option": "Standard",
+        "stock_level": 39
+      },
+      {
+        "variant_sku": "SKU-1023-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 9
+      }
+    ],
+    "tags": [
+      "packing",
+      "tape",
+      "clear"
+    ]
+  },
+  {
+    "sku": "SKU-1024",
+    "name": "Bubble Wrap Roll 500mm x 50m",
+    "category": "Packaging",
+    "unit_price_usd": 18.7,
+    "unit": "roll",
+    "stock_level": 274,
+    "reorder_point": 68,
+    "location": {
+      "aisle": 4,
+      "bin": 8
+    },
+    "supplier_id": "SUP-07",
+    "supplier_name": "BoxLine Packaging",
+    "lead_time_days": 3,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Returns are accepted under the standard returns policy provided the packaging is intact. Bubble Wrap Roll 500mm x 50m is stocked for packaging customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "8.27",
+      "pack_dimensions_mm": "226x297x88",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1024-V1",
+        "option": "Standard",
+        "stock_level": 40
+      },
+      {
+        "variant_sku": "SKU-1024-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 1
+      },
+      {
+        "variant_sku": "SKU-1024-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 10
+      }
+    ],
+    "tags": [
+      "bubble",
+      "wrap",
+      "roll"
+    ]
+  },
+  {
+    "sku": "SKU-1025",
+    "name": "Pallet Stretch Film 500mm (6 rolls)",
+    "category": "Packaging",
+    "unit_price_usd": 41.0,
+    "unit": "pack",
+    "stock_level": 286,
+    "reorder_point": 71,
+    "location": {
+      "aisle": 4,
+      "bin": 11
+    },
+    "supplier_id": "SUP-07",
+    "supplier_name": "BoxLine Packaging",
+    "lead_time_days": 3,
+    "long_description": "This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Returns are accepted under the standard returns policy provided the packaging is intact.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "1.81",
+      "pack_dimensions_mm": "245x376x361",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1025-V1",
+        "option": "Standard",
+        "stock_level": 39
+      },
+      {
+        "variant_sku": "SKU-1025-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 59
+      },
+      {
+        "variant_sku": "SKU-1025-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 57
+      }
+    ],
+    "tags": [
+      "pallet",
+      "stretch",
+      "film"
+    ]
+  },
+  {
+    "sku": "SKU-1026",
+    "name": "Shipping Labels 4x6 inch (roll of 500)",
+    "category": "Packaging",
+    "unit_price_usd": 13.6,
+    "unit": "roll",
+    "stock_level": 180,
+    "reorder_point": 45,
+    "location": {
+      "aisle": 4,
+      "bin": 14
+    },
+    "supplier_id": "SUP-07",
+    "supplier_name": "BoxLine Packaging",
+    "lead_time_days": 3,
+    "long_description": "Shipping Labels 4x6 inch (roll of 500) is stocked for packaging customers who need dependable supplies on a predictable schedule. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Ships from the main distribution centre; split shipments are consolidated where possible. Returns are accepted under the standard returns policy provided the packaging is intact. This line is reviewed quarterly against usage data so that reorder points stay realistic.",
+    "spec_sheet": {
+      "country_of_origin": "DE",
+      "pack_weight_kg": "8.06",
+      "pack_dimensions_mm": "327x116x215",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1026-V1",
+        "option": "Standard",
+        "stock_level": 15
+      }
+    ],
+    "tags": [
+      "shipping",
+      "labels",
+      "4x6"
+    ]
+  },
+  {
+    "sku": "SKU-1027",
+    "name": "Void Fill Paper 380mm x 450m",
+    "category": "Packaging",
+    "unit_price_usd": 36.0,
+    "unit": "roll",
+    "stock_level": 233,
+    "reorder_point": 58,
+    "location": {
+      "aisle": 4,
+      "bin": 17
+    },
+    "supplier_id": "SUP-08",
+    "supplier_name": "EcoFill Materials",
+    "lead_time_days": 6,
+    "long_description": "Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Ships from the main distribution centre; split shipments are consolidated where possible. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. This line is reviewed quarterly against usage data so that reorder points stay realistic.",
+    "spec_sheet": {
+      "country_of_origin": "US",
+      "pack_weight_kg": "4.91",
+      "pack_dimensions_mm": "411x252x128",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1027-V1",
+        "option": "Standard",
+        "stock_level": 22
+      },
+      {
+        "variant_sku": "SKU-1027-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 36
+      },
+      {
+        "variant_sku": "SKU-1027-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 34
+      }
+    ],
+    "tags": [
+      "void",
+      "fill",
+      "paper"
+    ]
+  },
+  {
+    "sku": "SKU-1028",
+    "name": "USB-C Charging Cable 2m",
+    "category": "Electronics Accessories",
+    "unit_price_usd": 7.9,
+    "unit": "each",
+    "stock_level": 210,
+    "reorder_point": 52,
+    "location": {
+      "aisle": 4,
+      "bin": 20
+    },
+    "supplier_id": "SUP-09",
+    "supplier_name": "Voltage Accessories",
+    "lead_time_days": 4,
+    "long_description": "This line is reviewed quarterly against usage data so that reorder points stay realistic. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Returns are accepted under the standard returns policy provided the packaging is intact. USB-C Charging Cable 2m is stocked for electronics accessories customers who need dependable supplies on a predictable schedule. Supplier batch numbers are retained for twelve months to support warranty claims and recalls.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "5.18",
+      "pack_dimensions_mm": "185x341x343",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no",
+      "certification": "CE, RoHS"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1028-V1",
+        "option": "Standard",
+        "stock_level": 19
+      }
+    ],
+    "tags": [
+      "usb-c",
+      "charging",
+      "cable"
+    ]
+  },
+  {
+    "sku": "SKU-1029",
+    "name": "Wireless Mouse Ergonomic",
+    "category": "Electronics Accessories",
+    "unit_price_usd": 24.5,
+    "unit": "each",
+    "stock_level": 248,
+    "reorder_point": 62,
+    "location": {
+      "aisle": 5,
+      "bin": 2
+    },
+    "supplier_id": "SUP-09",
+    "supplier_name": "Voltage Accessories",
+    "lead_time_days": 4,
+    "long_description": "Returns are accepted under the standard returns policy provided the packaging is intact. This line is reviewed quarterly against usage data so that reorder points stay realistic. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold.",
+    "spec_sheet": {
+      "country_of_origin": "US",
+      "pack_weight_kg": "8.78",
+      "pack_dimensions_mm": "533x138x114",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no",
+      "certification": "CE, RoHS"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1029-V1",
+        "option": "Standard",
+        "stock_level": 42
+      },
+      {
+        "variant_sku": "SKU-1029-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 49
+      }
+    ],
+    "tags": [
+      "wireless",
+      "mouse",
+      "ergonomic"
+    ]
+  },
+  {
+    "sku": "SKU-1030",
+    "name": "HDMI Cable 3m 4K",
+    "category": "Electronics Accessories",
+    "unit_price_usd": 10.4,
+    "unit": "each",
+    "stock_level": 279,
+    "reorder_point": 69,
+    "location": {
+      "aisle": 5,
+      "bin": 5
+    },
+    "supplier_id": "SUP-09",
+    "supplier_name": "Voltage Accessories",
+    "lead_time_days": 4,
+    "long_description": "HDMI Cable 3m 4K is stocked for electronics accessories customers who need dependable supplies on a predictable schedule. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Ships from the main distribution centre; split shipments are consolidated where possible. This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests.",
+    "spec_sheet": {
+      "country_of_origin": "DE",
+      "pack_weight_kg": "4.00",
+      "pack_dimensions_mm": "116x106x315",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no",
+      "certification": "CE, RoHS"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1030-V1",
+        "option": "Standard",
+        "stock_level": 53
+      },
+      {
+        "variant_sku": "SKU-1030-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 13
+      },
+      {
+        "variant_sku": "SKU-1030-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 0
+      }
+    ],
+    "tags": [
+      "hdmi",
+      "cable",
+      "3m"
+    ]
+  },
+  {
+    "sku": "SKU-1031",
+    "name": "Power Strip 6-way Surge Protected",
+    "category": "Electronics Accessories",
+    "unit_price_usd": 21.0,
+    "unit": "each",
+    "stock_level": 115,
+    "reorder_point": 28,
+    "location": {
+      "aisle": 5,
+      "bin": 8
+    },
+    "supplier_id": "SUP-09",
+    "supplier_name": "Voltage Accessories",
+    "lead_time_days": 4,
+    "long_description": "Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Power Strip 6-way Surge Protected is stocked for electronics accessories customers who need dependable supplies on a predictable schedule. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Returns are accepted under the standard returns policy provided the packaging is intact.",
+    "spec_sheet": {
+      "country_of_origin": "IT",
+      "pack_weight_kg": "1.90",
+      "pack_dimensions_mm": "166x184x110",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no",
+      "certification": "CE, RoHS"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1031-V1",
+        "option": "Standard",
+        "stock_level": 7
+      }
+    ],
+    "tags": [
+      "power",
+      "strip",
+      "6-way"
+    ]
+  },
+  {
+    "sku": "SKU-1032",
+    "name": "Barcode Scanner USB Handheld",
+    "category": "Electronics Accessories",
+    "unit_price_usd": 89.0,
+    "unit": "each",
+    "stock_level": 3,
+    "reorder_point": 10,
+    "location": {
+      "aisle": 5,
+      "bin": 11
+    },
+    "supplier_id": "SUP-10",
+    "supplier_name": "ScanTech Devices",
+    "lead_time_days": 14,
+    "long_description": "Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Barcode Scanner USB Handheld is stocked for electronics accessories customers who need dependable supplies on a predictable schedule. Ships from the main distribution centre; split shipments are consolidated where possible. Returns are accepted under the standard returns policy provided the packaging is intact.",
+    "spec_sheet": {
+      "country_of_origin": "PL",
+      "pack_weight_kg": "7.42",
+      "pack_dimensions_mm": "535x199x75",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "60",
+      "hazardous": "no",
+      "certification": "CE, RoHS"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1032-V1",
+        "option": "Standard",
+        "stock_level": 41
+      }
+    ],
+    "tags": [
+      "barcode",
+      "scanner",
+      "usb"
+    ]
+  },
+  {
+    "sku": "SKU-1033",
+    "name": "Label Printer Thermal 4 inch",
+    "category": "Electronics Accessories",
+    "unit_price_usd": 159.0,
+    "unit": "each",
+    "stock_level": 0,
+    "reorder_point": 20,
+    "location": {
+      "aisle": 5,
+      "bin": 14
+    },
+    "supplier_id": "SUP-10",
+    "supplier_name": "ScanTech Devices",
+    "lead_time_days": 14,
+    "long_description": "Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Label Printer Thermal 4 inch is stocked for electronics accessories customers who need dependable supplies on a predictable schedule. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Returns are accepted under the standard returns policy provided the packaging is intact.",
+    "spec_sheet": {
+      "country_of_origin": "CN",
+      "pack_weight_kg": "3.80",
+      "pack_dimensions_mm": "578x299x275",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no",
+      "certification": "CE, RoHS"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1033-V1",
+        "option": "Standard",
+        "stock_level": 9
+      }
+    ],
+    "tags": [
+      "label",
+      "printer",
+      "thermal"
+    ]
+  },
+  {
+    "sku": "SKU-1034",
+    "name": "AA Batteries Alkaline (pack of 24)",
+    "category": "Electronics Accessories",
+    "unit_price_usd": 11.2,
+    "unit": "pack",
+    "stock_level": 270,
+    "reorder_point": 67,
+    "location": {
+      "aisle": 5,
+      "bin": 17
+    },
+    "supplier_id": "SUP-09",
+    "supplier_name": "Voltage Accessories",
+    "lead_time_days": 4,
+    "long_description": "Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Ships from the main distribution centre; split shipments are consolidated where possible. This line is reviewed quarterly against usage data so that reorder points stay realistic. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. AA Batteries Alkaline (pack of 24) is stocked for electronics accessories customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "DE",
+      "pack_weight_kg": "3.52",
+      "pack_dimensions_mm": "519x348x313",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no",
+      "certification": "CE, RoHS"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1034-V1",
+        "option": "Standard",
+        "stock_level": 24
+      },
+      {
+        "variant_sku": "SKU-1034-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 57
+      },
+      {
+        "variant_sku": "SKU-1034-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 0
+      }
+    ],
+    "tags": [
+      "aa",
+      "batteries",
+      "alkaline"
+    ]
+  },
+  {
+    "sku": "SKU-1035",
+    "name": "Paper Towels 2-ply (case of 12 rolls)",
+    "category": "Cleaning and Janitorial",
+    "unit_price_usd": 27.5,
+    "unit": "case",
+    "stock_level": 64,
+    "reorder_point": 16,
+    "location": {
+      "aisle": 5,
+      "bin": 20
+    },
+    "supplier_id": "SUP-11",
+    "supplier_name": "CleanRoom Supplies",
+    "lead_time_days": 2,
+    "long_description": "Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. This line is reviewed quarterly against usage data so that reorder points stay realistic. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Paper Towels 2-ply (case of 12 rolls) is stocked for cleaning and janitorial customers who need dependable supplies on a predictable schedule. Ships from the main distribution centre; split shipments are consolidated where possible.",
+    "spec_sheet": {
+      "country_of_origin": "DE",
+      "pack_weight_kg": "4.12",
+      "pack_dimensions_mm": "580x353x308",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "12",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1035-V1",
+        "option": "Standard",
+        "stock_level": 38
+      }
+    ],
+    "tags": [
+      "paper",
+      "towels",
+      "2-ply"
+    ]
+  },
+  {
+    "sku": "SKU-1036",
+    "name": "Floor Cleaner Concentrate 5L",
+    "category": "Cleaning and Janitorial",
+    "unit_price_usd": 16.4,
+    "unit": "each",
+    "stock_level": 46,
+    "reorder_point": 11,
+    "location": {
+      "aisle": 6,
+      "bin": 2
+    },
+    "supplier_id": "SUP-11",
+    "supplier_name": "CleanRoom Supplies",
+    "lead_time_days": 2,
+    "long_description": "Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Returns are accepted under the standard returns policy provided the packaging is intact. Floor Cleaner Concentrate 5L is stocked for cleaning and janitorial customers who need dependable supplies on a predictable schedule.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "9.26",
+      "pack_dimensions_mm": "525x170x252",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1036-V1",
+        "option": "Standard",
+        "stock_level": 25
+      },
+      {
+        "variant_sku": "SKU-1036-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 36
+      }
+    ],
+    "tags": [
+      "floor",
+      "cleaner",
+      "concentrate"
+    ]
+  },
+  {
+    "sku": "SKU-1037",
+    "name": "Refuse Sacks Heavy Duty (roll of 100)",
+    "category": "Cleaning and Janitorial",
+    "unit_price_usd": 14.9,
+    "unit": "roll",
+    "stock_level": 246,
+    "reorder_point": 61,
+    "location": {
+      "aisle": 6,
+      "bin": 5
+    },
+    "supplier_id": "SUP-11",
+    "supplier_name": "CleanRoom Supplies",
+    "lead_time_days": 2,
+    "long_description": "Refuse Sacks Heavy Duty (roll of 100) is stocked for cleaning and janitorial customers who need dependable supplies on a predictable schedule. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. This line is reviewed quarterly against usage data so that reorder points stay realistic. Supplier batch numbers are retained for twelve months to support warranty claims and recalls.",
+    "spec_sheet": {
+      "country_of_origin": "PL",
+      "pack_weight_kg": "4.39",
+      "pack_dimensions_mm": "503x192x361",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "60",
+      "hazardous": "irritant"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1037-V1",
+        "option": "Standard",
+        "stock_level": 39
+      },
+      {
+        "variant_sku": "SKU-1037-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 29
+      }
+    ],
+    "tags": [
+      "refuse",
+      "sacks",
+      "heavy"
+    ]
+  },
+  {
+    "sku": "SKU-1038",
+    "name": "Microfibre Cloths (pack of 10)",
+    "category": "Cleaning and Janitorial",
+    "unit_price_usd": 7.3,
+    "unit": "pack",
+    "stock_level": 243,
+    "reorder_point": 60,
+    "location": {
+      "aisle": 6,
+      "bin": 8
+    },
+    "supplier_id": "SUP-11",
+    "supplier_name": "CleanRoom Supplies",
+    "lead_time_days": 2,
+    "long_description": "Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. This line is reviewed quarterly against usage data so that reorder points stay realistic. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Ships from the main distribution centre; split shipments are consolidated where possible. Returns are accepted under the standard returns policy provided the packaging is intact.",
+    "spec_sheet": {
+      "country_of_origin": "PL",
+      "pack_weight_kg": "1.81",
+      "pack_dimensions_mm": "150x145x168",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "36",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1038-V1",
+        "option": "Standard",
+        "stock_level": 48
+      },
+      {
+        "variant_sku": "SKU-1038-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 42
+      }
+    ],
+    "tags": [
+      "microfibre",
+      "cloths",
+      "pack"
+    ]
+  },
+  {
+    "sku": "SKU-1039",
+    "name": "Hand Sanitiser Gel 500ml",
+    "category": "Cleaning and Janitorial",
+    "unit_price_usd": 4.2,
+    "unit": "each",
+    "stock_level": 80,
+    "reorder_point": 20,
+    "location": {
+      "aisle": 6,
+      "bin": 11
+    },
+    "supplier_id": "SUP-11",
+    "supplier_name": "CleanRoom Supplies",
+    "lead_time_days": 2,
+    "long_description": "This line is reviewed quarterly against usage data so that reorder points stay realistic. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Returns are accepted under the standard returns policy provided the packaging is intact.",
+    "spec_sheet": {
+      "country_of_origin": "GB",
+      "pack_weight_kg": "8.57",
+      "pack_dimensions_mm": "521x358x385",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1039-V1",
+        "option": "Standard",
+        "stock_level": 25
+      }
+    ],
+    "tags": [
+      "hand",
+      "sanitiser",
+      "gel"
+    ]
+  },
+  {
+    "sku": "SKU-1040",
+    "name": "Mop Bucket with Wringer 15L",
+    "category": "Cleaning and Janitorial",
+    "unit_price_usd": 33.0,
+    "unit": "each",
+    "stock_level": 118,
+    "reorder_point": 29,
+    "location": {
+      "aisle": 6,
+      "bin": 14
+    },
+    "supplier_id": "SUP-12",
+    "supplier_name": "Janitorial Wholesale",
+    "lead_time_days": 5,
+    "long_description": "Supplier batch numbers are retained for twelve months to support warranty claims and recalls. Returns are accepted under the standard returns policy provided the packaging is intact. Compatible with the standard Stockroom replenishment workflow, including scheduled restock requests. Ships from the main distribution centre; split shipments are consolidated where possible. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay.",
+    "spec_sheet": {
+      "country_of_origin": "IT",
+      "pack_weight_kg": "10.55",
+      "pack_dimensions_mm": "402x253x86",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "no"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1040-V1",
+        "option": "Standard",
+        "stock_level": 38
+      }
+    ],
+    "tags": [
+      "mop",
+      "bucket",
+      "with"
+    ]
+  },
+  {
+    "sku": "SKU-1041",
+    "name": "Dispenser Soap Wall-mounted 1L",
+    "category": "Cleaning and Janitorial",
+    "unit_price_usd": 18.5,
+    "unit": "each",
+    "stock_level": 173,
+    "reorder_point": 43,
+    "location": {
+      "aisle": 6,
+      "bin": 17
+    },
+    "supplier_id": "SUP-12",
+    "supplier_name": "Janitorial Wholesale",
+    "lead_time_days": 5,
+    "long_description": "Dispenser Soap Wall-mounted 1L is stocked for cleaning and janitorial customers who need dependable supplies on a predictable schedule. This line is reviewed quarterly against usage data so that reorder points stay realistic. Each unit is inspected on receipt, labelled with a scannable barcode and stored in a climate-controlled bay. Ships from the main distribution centre; split shipments are consolidated where possible. Bulk pricing applies automatically at checkout once the order quantity crosses the pack-size threshold.",
+    "spec_sheet": {
+      "country_of_origin": "US",
+      "pack_weight_kg": "11.10",
+      "pack_dimensions_mm": "492x174x97",
+      "barcode_format": "GS1-128",
+      "shelf_life_months": "24",
+      "hazardous": "irritant"
+    },
+    "variants": [
+      {
+        "variant_sku": "SKU-1041-V1",
+        "option": "Standard",
+        "stock_level": 31
+      },
+      {
+        "variant_sku": "SKU-1041-V2",
+        "option": "Bulk 5-pack",
+        "stock_level": 33
+      },
+      {
+        "variant_sku": "SKU-1041-V3",
+        "option": "Bulk 10-pack",
+        "stock_level": 7
+      }
+    ],
+    "tags": [
+      "dispenser",
+      "soap",
+      "wall-mounted"
+    ]
+  }
+]

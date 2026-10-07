@@ -1,0 +1,29 @@
+{
+  "case_id": "G046",
+  "description": "Schema drift: the model omits the ORD- prefix, receives a validation error, then retries correctly.",
+  "turns": [
+    {
+      "tool_calls": [
+        {
+          "name": "get_order_status",
+          "input": {
+            "order_id": "1002"
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "name": "get_order_status",
+          "input": {
+            "order_id": "ORD-1002"
+          }
+        }
+      ]
+    },
+    {
+      "text": "Order ORD-1002 for Priya Raman was delivered on 2026-09-08 (UPS, tracking UP55019842)."
+    }
+  ]
+}

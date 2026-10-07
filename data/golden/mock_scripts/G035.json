@@ -1,0 +1,29 @@
+{
+  "case_id": "G035",
+  "description": "Two-step: read the order, then check stock for the item on it.",
+  "turns": [
+    {
+      "tool_calls": [
+        {
+          "name": "get_order_status",
+          "input": {
+            "order_id": "ORD-1004"
+          }
+        }
+      ]
+    },
+    {
+      "tool_calls": [
+        {
+          "name": "get_stock_level",
+          "input": {
+            "sku": "SKU-1024"
+          }
+        }
+      ]
+    },
+    {
+      "text": "Order ORD-1004 (processing) contains 10 x SKU-1024 Bubble Wrap Roll 500mm x 50m. We currently have 274 units of SKU-1024 in stock at aisle 4, bin 8."
+    }
+  ]
+}
