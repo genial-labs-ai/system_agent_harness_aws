@@ -44,10 +44,11 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [x] `.github/workflows/agent_eval_ci.yml`, `agent_eval_nightly.yml` (OIDC), `docs/aws/iam_policy.json`, `oidc_trust_policy.json`, `docs/aws/README.md`
 - [x] `scripts/sync_datasets_s3.py` (versioned golden/report sync, model check)
 - [x] `make eval` verified (50/50, writes `reports/eval_results.json` with CIs and DeepEval pass rates)
-- [ ] `make promptfoo` verified (first `npx promptfoo@0.124.0` install was still running at the end of session 1; check `reports/promptfoo_results.json`)
+- [x] `make promptfoo` verified: 18/18 offline (10 golden + 8 red team); Node tooling now pinned in `package.json`/`package-lock.json`, installed by `make setup` and CI (`npm ci`)
 - [x] Eval suite verified over `STOCKROOM_TOOL_TRANSPORT=mcp-http` with the server in the background (50/50)
 - [x] `make baseline` → `reports/baseline/main.json` committed (sha 18855ee data 1.0.0)
-- [ ] `make ci` passes; `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` fails at the gate with a readable summary
+- [x] Gate verified step by step: clean run passes; `STOCKROOM_WEAKNESSES=ambiguous_tool_desc` run fails (tool selection 0.64, answer 0.78, 4 Promptfoo failures) with the Markdown summary
+- [ ] Full `make ci` end to end once notebooks and `check_lecture_refs.py` are merged
 - [x] Lint clean again (`make lint`)
 - [x] `tests/test_check_thresholds.py` (gate pass/fail, baseline regression, red-team split, CLI, promptfoo asserts)
 - [x] `tests/test_live_adapters.py`: stubbed boto3 clients for `BedrockConverseClient`, `BedrockJudge`, DeepEval live bridge, `sync_datasets_s3` dry run
@@ -62,11 +63,12 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [ ] Setup cell pattern: `%pip install` guarded by `find_spec("stockroom")`, `REPO_URL` placeholder, `detect_mode()` banner
 - [ ] `make notebooks` executes all 8 notebooks in mock mode (nbmake)
 
-## Phase 6 — Teaching materials `[~]` (two sub-agents in worktrees: Day 1–2 lectures + slides; Day 3–4 lectures + instructor guide + `check_lecture_refs.py`; merge, then run the checker and `make slides`)
-- [ ] `lectures/day1_llm_eval_foundations.md` … `day4_aws_ci_cd_redteaming.md` (objectives, timed agenda, Mermaid, notebook link, discussion questions, common mistakes)
-- [ ] `slides/DAY1_MOTIVATIONAL_SLIDES.md` (Marp, 15–20 slides, speaker notes, composite post-mortem labelled hypothetical, no invented numbers); `make slides` renders
-- [ ] `docs/INSTRUCTOR_GUIDE.md` (timings, setup checklist, common participant failures)
-- [ ] `scripts/check_lecture_refs.py` — every `src/...py` path and `symbol()` reference in lectures/slides resolves (AST)
+## Phase 6 — Teaching materials `[~]`
+- [x] `lectures/day1_llm_eval_foundations.md`, `lectures/day2_llm_as_a_judge_and_otel.md` (merged from worktree branch, commit `e474a8f`)
+- [ ] `lectures/day3_agent_harness_and_mcp_mocking.md`, `lectures/day4_aws_ci_cd_redteaming.md` (sub-agent in worktree)
+- [x] `slides/DAY1_MOTIVATIONAL_SLIDES.md` (19 slides with notes; `make slides` renders 19 sections)
+- [ ] `docs/INSTRUCTOR_GUIDE.md` (sub-agent in worktree)
+- [ ] `scripts/check_lecture_refs.py` (sub-agent in worktree; `make ci` already calls it)
 - [ ] Attribute error-analysis practice to Hamel Husain / Shreya Shankar with links; real incidents only with sources
 
 ## Phase 7 — README and DECISIONS `[~]`

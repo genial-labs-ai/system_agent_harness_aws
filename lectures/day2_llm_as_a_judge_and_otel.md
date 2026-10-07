@@ -299,7 +299,7 @@ Facts worth stating precisely:
   `execute_tool {gen_ai.tool.name}`, `invoke_agent {gen_ai.agent.name}`.
 - `gen_ai.provider.name` has well-known values that include `aws.bedrock`; the fake client
   reports `stockroom.fake` so mock traces are never mistaken for live ones
-  (`PROVIDER_AWS_BEDROCK`, `PROVIDER_FAKE` in `semconv.py`).
+  (`PROVIDER_AWS_BEDROCK`, `PROVIDER_FAKE` in `src/stockroom/evals/semconv.py`).
 - Workshop-specific attributes are namespaced `stockroom.*` so they cannot collide with a
   future `gen_ai.*` name.
 - `openinference.span.kind` (`LLM`, `TOOL`, `AGENT`, `CHAIN`) is set alongside the `gen_ai.*`
@@ -491,7 +491,7 @@ without credentials. Sections:
   `JudgeVerdict.rubric_version` exist so a metric movement can be attributed to a rubric change
   rather than an agent change.
 - **Importing `gen_ai.*` names from an incubating module.** Spell them out in one place and
-  test them against the installed package, as `semconv.py` and `tests/test_tracer.py` do.
+  test them against the installed package, as `src/stockroom/evals/semconv.py` and `tests/test_tracer.py` do.
 - **Installing the `phoenix` and `cloudwatch` extras together.** They conflict on the OTEL SDK
   version; pick one per environment.
 - **Treating the mock exporter as the production exporter.** `memory` is for tests; a process

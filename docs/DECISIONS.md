@@ -138,3 +138,11 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     `setup-node` npm cache) instead of relying on an ad-hoc `npx` download: the first Promptfoo
     download is several minutes on a slow connection and the lockfile makes the tool versions
     reproducible. `make promptfoo` / `make slides` still work with the npx cache alone.
+27. **`scripts/check_lecture_refs.py` resolves symbols generously.** Besides functions, classes
+    and methods found by AST, it accepts attribute, parameter and keyword names used anywhere in the
+    code base, identifier-shaped string constants, the vocabulary of `eval_thresholds.yaml` and
+    `promptfooconfig.yaml`, bare file names in the repo, and an explicit ignore list for shell
+    commands, IAM actions, model/profile IDs, case IDs and environment-variable names. This keeps the
+    phase-6 check ("every code reference in the lectures points to a real file and function")
+    strict for paths and `name()` references without flagging prose; missing notebooks are warnings
+    until `make build-notebooks` has run.

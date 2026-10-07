@@ -89,10 +89,16 @@ ci: ## The PR gate, step by step (mirrors .github/workflows/agent_eval_ci.yml)
 	$(MAKE) lint
 	$(MAKE) validate-data
 	$(MAKE) test-unit
-	$(MAKE) mcp-server & echo $$! > $(REPORTS)/.mcp.pid; sleep 3; $(MAKE) mcp-smoke; kill $$(cat $(REPORTS)/.mcp.pid) || true
-	$(MAKE) eval
+	mkdir -p $(REPORTS)
+	$(PY) -m stockroom.mock_server.mcp_inventory_server --transport streamable-http --port $(MCP_PORT) \
+	  > $(REPORTS)/mcp_server.log 2>&1 & echo $$! > $(REPORTS)/.mcp.pid
+	for i in 1 2 3 4 5 6 7 8 9 10; do $(MAKE) -s mcp-smoke >/dev/null 2>&1 && break; sleep 1; done; $(MAKE) mcp-smoke
+	STOCKROOM_TOOL_TRANSPORT=mcp-http $(MAKE) eval || { kill $$(cat $(REPORTS)/.mcp.pid) 2>/dev/null; exit 1; }
+	kill $$(cat $(REPORTS)/.mcp.pid) 2>/dev/null || true
 	$(MAKE) promptfoo
 	$(MAKE) notebooks
+	$(MAKE) slides
+	$(PY) scripts/check_lecture_refs.py
 	$(MAKE) thresholds
 
 clean: ## Remove caches, build artefacts and generated reports

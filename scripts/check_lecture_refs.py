@@ -143,6 +143,9 @@ IGNORE_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^(spanIds|evaluatorId|spanContext|modelResponses|referenceResponse)$"),
     re.compile(r"^(modelIdentifier|invoke_agent_runtime|get_inference_profile)$"),
     re.compile(r"^(role-to-assume|aws-region|role-session-name|id-token)$"),
+    re.compile(
+        r"^(OTEL|AWS|AGENT_OBSERVABILITY|PHOENIX|DEEPEVAL|PROMPTFOO|GITHUB)_[A-Z0-9_]+$"
+    ),  # env vars
 )
 
 PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
