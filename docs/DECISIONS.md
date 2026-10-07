@@ -117,7 +117,8 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     background step and smoke-tested) so the process boundary is exercised on every PR; `make ci`
     mirrors the same steps locally because `act` is unavailable.
 22. **Nightly workflow guard.** It is skipped unless the repository variable `AWS_OIDC_ROLE_ARN` is
-    set, so forks and the un-configured upstream never fail; it never blocks PRs. Model/bucket IDs
+    set, so forks and the un-configured upstream never fail; it never blocks PRs. (Since entry 37 it
+    also has no schedule.) Model/bucket IDs
     come from repository variables, never from the workflow file.
 
 ## Phase 6 — teaching materials (2026-10-06/07)
@@ -195,3 +196,9 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     2026-10-07) failed in "Set up job" with "unable to find version `v10`": that action publishes
     release tags only (v10.2.0), not a moving `v10` major tag, unlike the `actions/*` actions. It
     never surfaced locally because `make ci` replaces `act` (DECISIONS phase 4).
+37. **The live workflow is `workflow_dispatch`-only; the daily cron was removed** (user decision,
+    2026-10-07) so Bedrock spend happens only when an instructor asks for a run, e.g. before a
+    cohort. The file name `agent_eval_nightly.yml`, the workflow name and the "nightly tier"
+    wording in the teaching materials are kept: "nightly" names the scheduled-live layer of the
+    offline / nightly / online model taught on Day 4, and the materials now say explicitly that
+    this repository dispatches that layer by hand.

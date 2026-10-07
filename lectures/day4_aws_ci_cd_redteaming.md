@@ -1,8 +1,9 @@
 # Day 4 — Production CI/CD for agents on AWS: regression gates, red-teaming, Bedrock Evaluations
 
 **Thesis of the day:** an eval suite that does not block a merge is a dashboard. Today we turn the
-Stockroom metrics into a gate that fails a pull request (deterministically, offline), a nightly
-live run on Amazon Bedrock that reports confidence intervals instead of gating, a red-team suite
+Stockroom metrics into a gate that fails a pull request (deterministically, offline), an on-demand
+live run on Amazon Bedrock (the "nightly" tier, dispatched manually here to keep spend opt-in)
+that reports confidence intervals instead of gating, a red-team suite
 whose every case encodes "the attack must *not* succeed", and an IAM/OIDC setup with no long-lived
 keys. We then map what the repo does to what Amazon Bedrock Evaluations and AgentCore Evaluations
 can do for you — and what they cannot.
@@ -80,7 +81,7 @@ flowchart LR
     a8 -- pass --> ok[merge allowed]
     a8 -- fail --> no[PR comment with the metrics table]
   end
-  subgraph Nightly["Nightly (live, report-only)"]
+  subgraph Nightly["Nightly tier (live, report-only, manual dispatch)"]
     b1[OIDC → IAM role] --> b2[check-models] --> b3[sync-golden]
     b3 --> b4[golden regression × STOCKROOM_EVAL_REPEATS]
     b4 --> b5[promptfoo live] --> b6[check_thresholds.py --no-gate]

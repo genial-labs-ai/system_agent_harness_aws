@@ -79,7 +79,7 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 
 ## Session log
 - 2026-10-06/07, session 1: phases 1–7 completed; three worktree sub-agents produced notebooks, lectures, slides, instructor guide and the reference checker; all verified on a clean clone.
-- 2026-10-07, session 2: published to GitHub. Org `genial-labs-ai` (the requested `genial-labs` is taken on GitHub), public repo `system_agent_harness_aws`; placeholders replaced (DECISIONS 2); first hosted CI run exposed the `setup-uv@v10` tag bug, fixed by pinning `v10.2.0` (DECISIONS 36).
+- 2026-10-07, session 2: published to GitHub. Org `genial-labs-ai` (the requested `genial-labs` is taken on GitHub), public repo `system_agent_harness_aws`; placeholders replaced (DECISIONS 2); first hosted CI run exposed the `setup-uv@v10` tag bug, fixed by pinning `v10.2.0` (DECISIONS 36). Live workflow switched to manual dispatch only, no cron (DECISIONS 37).
 
 ## Follow-ups worth doing (not required by the brief)
 - Add a guard-plugin seam to `Harness` so `MaxToolPayloadGuard` (Day 3 exercise) can be a real guard rather than an executor wrapper (DECISIONS 32).

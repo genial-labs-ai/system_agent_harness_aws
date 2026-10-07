@@ -74,7 +74,7 @@ Summarised here; the README (phase 7) is the authoritative list.
   credentials *and* both model IDs are present.
 - For S3 publishing: an existing bucket in `S3_BUCKET` (and optionally `S3_PREFIX`); the IAM
   policy in `docs/aws/iam_policy.json` scoped to it.
-- For the nightly workflow: the OIDC provider, the role with `docs/aws/oidc_trust_policy.json`
+- For the live (manually dispatched) workflow: the OIDC provider, the role with `docs/aws/oidc_trust_policy.json`
   and `docs/aws/iam_policy.json`, and the repository variables `AWS_REGION`, `AWS_OIDC_ROLE_ARN`,
   `AGENT_MODEL_ID`, `JUDGE_MODEL_ID`, `S3_BUCKET`.
 - For the Bedrock Evaluations lab: a separate service role and `CreateEvaluationJob` permissions

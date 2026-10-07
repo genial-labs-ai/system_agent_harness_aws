@@ -199,8 +199,8 @@ no longer required), create a role with `docs/aws/oidc_trust_policy.json` as its
 their underlying foundation models, S3 read/write under one prefix, nothing else — see
 `docs/aws/README.md`). Then set repository **variables** `AWS_OIDC_ROLE_ARN`, `AWS_REGION`,
 `AGENT_MODEL_ID`, `JUDGE_MODEL_ID`, `S3_BUCKET` (and optionally `S3_PREFIX`,
-`STOCKROOM_EVAL_REPEATS`). The nightly workflow is skipped until `AWS_OIDC_ROLE_ARN` exists and
-never blocks pull requests. References: [GitHub: configuring OIDC in AWS](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services),
+`STOCKROOM_EVAL_REPEATS`). The live workflow is manual-only (`workflow_dispatch`), is skipped until `AWS_OIDC_ROLE_ARN`
+exists and never blocks pull requests. References: [GitHub: configuring OIDC in AWS](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services),
 [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials).
 
 ### 5. Optional: Bedrock Knowledge Base (Day 1)
@@ -269,6 +269,8 @@ baseline as a sticky PR comment and as the job summary. Regenerate the baseline 
 
 `agent_eval_nightly.yml` runs the same suite in live mode with `STOCKROOM_EVAL_REPEATS=3`,
 reports 95% confidence intervals, uploads reports to S3 and as an artifact, and never blocks PRs.
+It has **no schedule**: start it by hand from the Actions tab or with
+`gh workflow run agent-eval-nightly -f repeats=3`, so Bedrock spend happens only on request.
 
 ## Placeholders to replace before going live
 

@@ -83,7 +83,7 @@ print("repository root:", REPO_ROOT)
 # | | what runs | when | catches | cannot catch |
 # |---|---|---|---|---|
 # | **offline** (`make ci`) | golden set + red team through the mock harness | every PR | regressions in tool selection, arguments, termination, guards, injection handling | real-model behaviour, drift in the live model |
-# | **nightly** (`agent_eval_nightly.yml`) | the same suites against Bedrock, repeated for confidence intervals | once a day, report only | model-side regressions, judge disagreement, cost | traffic you did not write a case for |
+# | **nightly** (`agent_eval_nightly.yml`) | the same suites against Bedrock, repeated for confidence intervals | on demand (`workflow_dispatch`, no schedule), report only | model-side regressions, judge disagreement, cost | traffic you did not write a case for |
 # | **online** (AgentCore Evaluations, CloudWatch) | evaluators over real session traces | continuously | new query types, user-visible failures | nothing is deterministic; needs sampling and human review |
 #
 # The rest of this notebook moves left to right along that table.
@@ -690,7 +690,8 @@ else:
 # * **`agent_eval_ci.yml`** — the PR gate. Mock mode, no credentials, no network: lint, data
 #   validation, unit tests, the golden suite over the MCP server, the Promptfoo suite, these
 #   notebooks, then `check_thresholds.py`. It requests no AWS permissions at all.
-# * **`agent_eval_nightly.yml`** — live mode, report only. It declares `permissions: id-token:
+# * **`agent_eval_nightly.yml`** — live mode, report only, started by hand (`workflow_dispatch`; the
+#   repo keeps no cron so Bedrock spend happens only when someone asks for a run). It declares `permissions: id-token:
 #   write`, and `aws-actions/configure-aws-credentials` exchanges the job's GitHub OIDC token for
 #   short-lived credentials of an IAM role (`AWS_OIDC_ROLE_ARN`, a repository variable). The role's
 #   trust policy (`docs/aws/oidc_trust_policy.json`) only accepts tokens whose `sub` is this

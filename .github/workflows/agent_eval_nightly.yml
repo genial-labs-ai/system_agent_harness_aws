@@ -1,11 +1,11 @@
-# Nightly live-mode evaluation on Amazon Bedrock via GitHub OIDC. Reports only; never blocks PRs.
+# On-demand live-mode evaluation on Amazon Bedrock via GitHub OIDC. Reports only; never blocks PRs.
+# Triggered manually (Actions tab -> Run workflow, or `gh workflow run agent-eval-nightly`); there is
+# deliberately no schedule, so it incurs Bedrock spend only when someone asks for a run.
 # Requires repository variables: AWS_REGION, AWS_OIDC_ROLE_ARN, AGENT_MODEL_ID, JUDGE_MODEL_ID,
 # S3_BUCKET (and optionally S3_PREFIX, STOCKROOM_EVAL_REPEATS). No long-lived keys anywhere.
 name: agent-eval-nightly
 
 on:
-  schedule:
-    - cron: "0 3 * * *" # 03:00 UTC daily
   workflow_dispatch:
     inputs:
       repeats:
