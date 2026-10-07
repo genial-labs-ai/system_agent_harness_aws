@@ -237,15 +237,17 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
 
 40. **The website has its own design, shared with the sister workshop site rather than a stock
     Bootswatch theme** (user request, 2026-10-07: the default-looking site was to be brought up to
-    the standard of other workshop sites). `site/theme.scss` defines every colour as a token and
-    holds every rule; `site/theme-dark.scss` overrides only the tokens, so one set of rules serves
+    the standard of other workshop sites). `site/_tokens.scss` defines every colour as a token, `site/theme.scss` imports it and
+    holds every rule (and publishes the tokens as `--ws-*` custom properties for the Mermaid
+    script, so the diagram palette is not a second copy); `site/theme-dark.scss` overrides only the tokens, so one set of rules serves
     both themes and the dark theme is `cosmo` plus the overrides instead of a second Bootswatch
     theme (`darkly`, which fought the custom rules). Inter and Source Serif 4 are vendored as
     latin-subset variable fonts under `site/fonts/` (SIL OFL, from Fontsource) so the site depends
     on no font CDN; Mermaid 11 is the one remaining CDN script. The landing page uses
     `page-layout: full` with a `landing` body class and no sidebar: the sidebar now has an `id`,
     and Quarto shows an id'd sidebar only on the pages it lists. `site/filters/gfm.lua` splits a
-    lecture or notebook H1 of the form "Day N — rest" into the title ("rest") and a subtitle
+    lecture or notebook H1 of the form "Day N — rest" (for notebooks, the `title` Quarto's
+    jupyter engine has already taken from that heading) into the title ("rest") and a subtitle
     ("Day N · lecture notes" / "lab notebook") that the theme sets as an eyebrow above the title;
     the Markdown sources are still unchanged for GitHub. The Mermaid palette is passed as
     `themeVariables` and chosen from the stored colour scheme, because Quarto adds the

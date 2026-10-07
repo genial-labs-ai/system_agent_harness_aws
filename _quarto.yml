@@ -198,19 +198,42 @@ format:
         </script>
         <script type="module">
           import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-          // Quarto adds `quarto-dark` to <body> after this module runs, so read its stored choice too.
-          let dark = document.body.classList.contains("quarto-dark");
-          try { dark = dark || localStorage.getItem("quarto-color-scheme") === "alternate"; } catch (e) {}
-          mermaid.initialize({
-            startOnLoad: true,
-            securityLevel: "strict",
-            theme: "base",
-            themeVariables: dark
-              ? { fontFamily: "Inter, system-ui, sans-serif", background: "#0e141b", primaryColor: "#1b3a60",
-                  primaryTextColor: "#eef2f6", primaryBorderColor: "#86bde6", lineColor: "#9aa7b5",
-                  secondaryColor: "#2a211a", tertiaryColor: "#161e28", edgeLabelBackground: "#161e28" }
-              : { fontFamily: "Inter, system-ui, sans-serif", background: "#ffffff", primaryColor: "#e8eef6",
-                  primaryTextColor: "#101f33", primaryBorderColor: "#132a4a", lineColor: "#5a6879",
-                  secondaryColor: "#fdf3e6", tertiaryColor: "#f5f7fa", edgeLabelBackground: "#ffffff" },
-          });
+          // Mermaid would otherwise render every diagram with its own defaults at the load event,
+          // before the wait below has finished.
+          mermaid.initialize({ startOnLoad: false });
+          // The palette comes from the --ws-* custom properties that site/theme.scss publishes, so
+          // diagrams follow whichever theme's stylesheet is active. Quarto swaps the stylesheet
+          // (and sets the body class) from its own script after this module has run, so wait
+          // until the published scheme matches the stored choice, which the script above has
+          // already settled (capped at about two seconds).
+          const scheme = () => getComputedStyle(document.documentElement).getPropertyValue("--ws-scheme").trim();
+          const wanted = () => {
+            try { return localStorage.getItem("quarto-color-scheme") === "alternate" ? "dark" : "light"; } catch (e) {}
+            return document.body.classList.contains("quarto-dark") ? "dark" : "light";
+          };
+          const render = () => {
+            const css = getComputedStyle(document.documentElement);
+            const v = (name) => css.getPropertyValue(name).trim();
+            mermaid.initialize({
+              startOnLoad: false,
+              securityLevel: "strict",
+              theme: "base",
+              themeVariables: {
+                fontFamily: "Inter, system-ui, sans-serif",
+                background: v("--ws-bg"),
+                primaryColor: v("--ws-diagram-node"),
+                primaryTextColor: v("--ws-heading"),
+                primaryBorderColor: v("--ws-diagram-node-border"),
+                lineColor: v("--ws-muted"),
+                secondaryColor: v("--ws-accent-soft"),
+                tertiaryColor: v("--ws-surface"),
+                edgeLabelBackground: v("--ws-bg"),
+              },
+            });
+            mermaid.run();
+          };
+          const tick = (n) => {
+            if (scheme() === wanted() || n > 120) { render(); } else { requestAnimationFrame(() => tick(n + 1)); }
+          };
+          tick(0);
         </script>

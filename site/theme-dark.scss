@@ -1,7 +1,8 @@
 /*-- scss:defaults --*/
 
-// The dark palette. This file overrides the tokens of site/theme.scss and holds no rules:
+// The dark palette. This file overrides the tokens of site/_tokens.scss and holds no rules:
 // change how something looks in theme.scss, change its dark colour here.
+$ws-scheme: "dark";
 $ws-bg: #0e141b;
 $ws-surface: #161e28;
 $ws-raised: #131b24;
@@ -25,6 +26,8 @@ $ws-danger: #f08a90;
 $ws-danger-soft: #2b1a1c;
 $ws-code: #f3b98c;
 $ws-code-bg: #121a23;
+$ws-diagram-node: #1b3a60;
+$ws-diagram-node-border: #86bde6;
 $ws-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.3);
 
 $navbar-bg: #0a1119;

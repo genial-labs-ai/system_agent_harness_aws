@@ -1,0 +1,31 @@
+// The light palette, one token per colour. site/theme.scss (the website) and site/slides.scss
+// (the kickoff deck) import this file; site/theme-dark.scss overrides the tokens for the dark
+// theme. The website also publishes them as CSS custom properties (--ws-*) so the Mermaid
+// script in _quarto.yml draws diagrams from the same palette. Change a colour here only.
+$ws-scheme: "light" !default; // published as --ws-scheme; the Mermaid script waits for it
+$ws-bg: #ffffff !default; // page
+$ws-surface: #f5f7fa !default; // cards, code blocks, table heads
+$ws-raised: #ffffff !default; // cards that sit on a surface
+$ws-border: #e1e7ee !default;
+$ws-border-strong: #c3cdd9 !default;
+$ws-text: #1f2a37 !default;
+$ws-heading: #101f33 !default;
+$ws-muted: #5a6879 !default;
+$ws-link: #1a5c8c !default;
+$ws-navy: #132a4a !default; // navbar and hero band
+$ws-on-navy: #ffffff !default;
+$ws-on-navy-muted: #bccbdc !default;
+$ws-accent: #b45309 !default; // calls to action, active markers (amber-700 on white: 4.6:1)
+$ws-accent-soft: #fdf3e6 !default;
+$ws-on-accent: #ffffff !default;
+$ws-cta: #f0a030 !default; // the one filled button on the navy hero
+$ws-on-cta: #1b1206 !default;
+$ws-teal: #1f7a6d !default; // the thesis, "what the evals show"
+$ws-teal-soft: #e9f5f2 !default;
+$ws-danger: #b4232c !default; // "what breaks"
+$ws-danger-soft: #fbeaea !default;
+$ws-code: #9a3412 !default; // inline code
+$ws-code-bg: #f6f8fa !default;
+$ws-diagram-node: #e8eef6 !default; // Mermaid nodes
+$ws-diagram-node-border: #132a4a !default;
+$ws-shadow: 0 1px 2px rgba(16, 31, 51, 0.06), 0 6px 18px rgba(16, 31, 51, 0.06) !default;

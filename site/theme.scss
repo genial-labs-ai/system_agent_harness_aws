@@ -1,47 +1,12 @@
 /*-- scss:defaults --*/
 
 // A quiet, academic palette over cosmo: ink navy for structure, one warm amber accent (a nod to
-// the AWS orange without shouting). Every colour is a token; site/theme-dark.scss overrides the
-// tokens and nothing else, so a rule written here works in both themes. Use the tokens: a literal
-// colour in a rule will be wrong in one of the two themes.
-$ws-bg: #ffffff !default; // page
-$ws-surface: #f5f7fa !default; // cards, code blocks, table heads
-$ws-raised: #ffffff !default; // cards that sit on a surface
-$ws-border: #e1e7ee !default;
-$ws-border-strong: #c3cdd9 !default;
-$ws-text: #1f2a37 !default;
-$ws-heading: #101f33 !default;
-$ws-muted: #5a6879 !default;
-$ws-link: #1a5c8c !default;
-$ws-navy: #132a4a !default; // navbar and hero band
-$ws-on-navy: #ffffff !default;
-$ws-on-navy-muted: #bccbdc !default;
-$ws-accent: #b45309 !default; // calls to action, active markers (amber-700 on white: 4.6:1)
-$ws-accent-soft: #fdf3e6 !default;
-$ws-on-accent: #ffffff !default;
-$ws-cta: #f0a030 !default; // the one filled button on the navy hero
-$ws-on-cta: #1b1206 !default;
-$ws-teal: #1f7a6d !default; // the thesis, "what the evals show"
-$ws-teal-soft: #e9f5f2 !default;
-$ws-danger: #b4232c !default; // "what breaks"
-$ws-danger-soft: #fbeaea !default;
-$ws-code: #9a3412 !default; // inline code
-$ws-code-bg: #f6f8fa !default;
-$ws-shadow: 0 1px 2px rgba(16, 31, 51, 0.06), 0 6px 18px rgba(16, 31, 51, 0.06) !default;
+// the AWS orange without shouting). Every colour is a token in site/_tokens.scss;
+// site/theme-dark.scss overrides the tokens and nothing else, so a rule written here works in both
+// themes. Use the tokens: a literal colour in a rule will be wrong in one of the two themes.
+@import "tokens";
 
-$primary: $ws-navy !default;
-$body-bg: $ws-bg !default;
-$body-color: $ws-text !default;
-$link-color: $ws-link !default;
-$border-color: $ws-border !default;
-$headings-color: $ws-heading !default;
-$navbar-bg: $ws-navy !default;
-$navbar-fg: $ws-on-navy !default;
-$code-color: $ws-code !default;
-$code-bg: $ws-code-bg !default;
-$code-block-bg: $ws-code-bg !default;
-$footer-bg: $ws-surface !default;
-$footer-fg: $ws-muted !default;
+@import "bootstrap-vars";
 
 $font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 $font-family-monospace: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
@@ -50,6 +15,22 @@ $headings-font-weight: 600;
 $font-size-root: 17px;
 
 /*-- scss:rules --*/
+
+// The palette as custom properties: the Mermaid script in _quarto.yml reads these, so diagrams
+// follow the theme without a second copy of the colours.
+:root {
+  --ws-scheme: #{$ws-scheme};
+  --ws-bg: #{$ws-bg};
+  --ws-surface: #{$ws-surface};
+  --ws-border: #{$ws-border};
+  --ws-text: #{$ws-text};
+  --ws-heading: #{$ws-heading};
+  --ws-muted: #{$ws-muted};
+  --ws-navy: #{$ws-navy};
+  --ws-accent-soft: #{$ws-accent-soft};
+  --ws-diagram-node: #{$ws-diagram-node};
+  --ws-diagram-node-border: #{$ws-diagram-node-border};
+}
 
 // ---------------------------------------------------------------------------
 // Reading experience
@@ -91,6 +72,14 @@ h1.title {
     order: -1;
     margin: 0 0 0.6rem;
     color: $ws-accent;
+  }
+
+  // Below 992px Quarto hides h1.title on sidebar pages (`d-none d-lg-block`) and shows the title
+  // in the secondary navbar instead; the eyebrow that labels it goes with it.
+  @media (max-width: 991.98px) {
+    .subtitle {
+      display: none;
+    }
   }
 
   .quarto-title-meta {
@@ -157,19 +146,6 @@ hr {
   color: $ws-muted;
 }
 
-.chip {
-  display: inline-block;
-  padding: 0.08rem 0.55rem;
-  border: 1px solid $ws-border;
-  border-radius: 999px;
-  background: $ws-surface;
-  color: $ws-muted;
-  font-family: $font-family-sans-serif;
-  font-size: 0.76rem;
-  font-weight: 500;
-  line-height: 1.5;
-  white-space: nowrap;
-}
 
 // Tables: light rules, no heavy borders, comfortable padding.
 main.content table {
@@ -344,20 +320,6 @@ blockquote {
   overflow-x: auto;
 }
 
-// Shields in README-style sections render small and quiet.
-.badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-
-  p {
-    display: contents;
-  }
-
-  img {
-    height: 20px;
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Site chrome: navbar, sidebar, table of contents, page navigation, footer
