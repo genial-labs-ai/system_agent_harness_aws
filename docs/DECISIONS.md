@@ -214,4 +214,24 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     never runs fork code with write permissions. `SECURITY.md` points at GitHub private
     vulnerability reporting, which was enabled on the repository the same day; it states
     explicitly that the seeded weaknesses and the planted injection are lab features.
+39. **The website is built with Quarto 1.6.40 and deployed to GitHub Pages from `pages.yml`**
+    (user decision, 2026-10-07). Quarto was chosen over MkDocs Material and Jupyter Book because
+    the sources are Markdown lectures with many Mermaid diagrams, executed-notebook pages and a
+    reveal.js deck, all of which Quarto renders without plugins. Three choices follow from the
+    repo's rules: (a) the lectures and docs stay GitHub-flavoured Markdown and are rendered
+    **unchanged** through `site/filters/gfm.lua`, which promotes the first H1 to the page title
+    and turns ```mermaid fences into `<pre class="mermaid">` blocks rendered by Mermaid 11 from
+    jsDelivr at view time (Quarto's native diagram engine only handles `{mermaid}` cells in
+    `.qmd` files, and adding YAML front matter to the lectures would render as a table on GitHub);
+    (b) the committed notebooks carry no outputs, so `notebooks/_metadata.yml` makes the site
+    build **execute them in mock mode** with the project virtualenv (`QUARTO_PYTHON`), which is
+    the same offline run `make notebooks` performs, and `make site` then regenerates the output-free
+    notebooks from `notebooks/src` because Quarto writes executed outputs back into the `.ipynb`; (c) the site build is **not part of the PR
+    gate**: Quarto is a binary outside `uv`/`npm`, so `make site` is opt-in locally and runs in
+    CI only on pushes to `main`. `quarto-dev/quarto-actions/setup` is pinned to the exact tag
+    `v2.2.0` because, like `setup-uv`, it publishes no moving major tag. Pages was switched to
+    the "GitHub Actions" build type on the repository the same day. The kickoff deck
+    `slides/intro.qmd` is Quarto reveal.js rather than Marp so it lives inside the site; the
+    Day 1 Marp deck is still built by `make slides` and copied in as a static resource. Both
+    `slides/*.qmd` and `index.qmd` are now scanned by `scripts/check_lecture_refs.py`.
 

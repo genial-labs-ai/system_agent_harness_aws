@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """Check that lectures, slides and the instructor guide only reference things that exist.
 
-Scans ``lectures/*.md``, ``slides/*.md`` and ``docs/INSTRUCTOR_GUIDE.md`` and verifies:
+Scans ``lectures/*.md``, ``slides/*.md``, ``slides/*.qmd``, ``docs/INSTRUCTOR_GUIDE.md`` and
+``index.qmd`` (the website landing page) and verifies:
 
 * **Paths.** Every token that looks like ``src/...py``, ``scripts/...py``, ``tests/...py``,
   ``notebooks/...ipynb`` or ``data/...`` exists on disk. Notebook paths are only *warnings* while
@@ -35,7 +36,13 @@ from typing import Any
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DOC_GLOBS: tuple[str, ...] = ("lectures/*.md", "slides/*.md", "docs/INSTRUCTOR_GUIDE.md")
+DOC_GLOBS: tuple[str, ...] = (
+    "lectures/*.md",
+    "slides/*.md",
+    "slides/*.qmd",
+    "docs/INSTRUCTOR_GUIDE.md",
+    "index.qmd",
+)
 CODE_DIRS: tuple[str, ...] = ("src/stockroom", "scripts", "tests")
 # Configuration files whose keys and string values (metric names, suite/category labels, gate
 # names) lectures may cite verbatim.

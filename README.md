@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Offline by default](https://img.shields.io/badge/runs-offline%20by%20default-informational)](#modes)
 [![Judges on Bedrock](https://img.shields.io/badge/judges-Amazon%20Bedrock-FF9900?logo=amazonwebservices&logoColor=white)](#live-mode-on-amazon-bedrock)
+[![Website](https://img.shields.io/badge/website-GitHub%20Pages-222?logo=github)](https://genial-labs-ai.github.io/system_agent_harness_aws/)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/genial-labs-ai/system_agent_harness_aws?quickstart=1)
 
 A four-day, hands-on workshop repository. Participants clone it; instructors teach from it.
@@ -23,19 +24,27 @@ Everything runs **offline by default** (`STOCKROOM_MODE=mock`): a deterministic 
 client and a deterministic fake judge make the whole suite reproducible with no AWS credentials
 and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Amazon Bedrock.
 
+**Website:** everything below is also published at
+[genial-labs-ai.github.io/system_agent_harness_aws](https://genial-labs-ai.github.io/system_agent_harness_aws/):
+lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, both slide
+decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and deployed by
+`.github/workflows/pages.yml` on every push to `main`.
+
 ## Contents
 
 | | |
 |---|---|
 | `lectures/` | four lecture notes (objectives, timed agenda, Mermaid diagrams, discussion questions, common mistakes) |
 | `slides/DAY1_MOTIVATIONAL_SLIDES.md` | Marp deck *Why Your AI Agent Fails in Production (and How Evals Fix It)* |
+| `slides/intro.qmd` | Quarto reveal.js kickoff deck: why we are here, the thesis, Stockroom, the four days, setup check, rules of the road |
 | `notebooks/` | four notebooks (`Day1…Day4`), generated from `notebooks/src/*.py`; solutions in `notebooks/solutions/` |
 | `src/stockroom/` | the agent (tools, harness, Bedrock adapter + fake), the eval suite (metrics, judges, calibration, tracing) and the MCP server |
 | `data/` | catalogue, orders, policy docs (one contains a seeded prompt injection), golden set + dataset card, judge calibration set |
 | `tests/` | unit tests, guard tests, seeded-weakness tests and the golden-set regression suite |
 | `promptfooconfig.yaml` | Promptfoo suite: golden slice + red-team cases (offline) |
 | `eval_thresholds.yaml` | the single place CI thresholds live |
-| `.github/workflows/` | `agent_eval_ci.yml` (PR gate, mock) and `agent_eval_nightly.yml` (live via OIDC, report only) |
+| `.github/workflows/` | `agent_eval_ci.yml` (PR gate, mock), `agent_eval_nightly.yml` (live via OIDC, manual dispatch, report only), `pages.yml` (website) |
+| `_quarto.yml`, `index.qmd`, `site/` | the website: project config, landing page, theme and the Lua filter that renders the GitHub-flavoured lectures unchanged |
 | `docs/` | `DECISIONS.md` (every deviation and version pin), `INSTRUCTOR_GUIDE.md`, `TASKS.md`, `aws/` IAM policies |
 | `.github/` | issue and PR templates, `CODEOWNERS`, Dependabot (grouped monthly PRs for uv, npm and Actions), path labeler, release-notes categories |
 | `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CITATION.cff` | how to contribute, how to report a real vulnerability (the seeded ones are features), and how to cite the workshop |

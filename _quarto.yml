@@ -1,0 +1,136 @@
+# Quarto website for GitHub Pages. `make site` renders it; .github/workflows/pages.yml deploys it.
+# Lectures and docs are rendered from their GitHub-flavoured Markdown sources unchanged
+# (site/filters/gfm.lua); notebooks are executed in mock mode at build time (notebooks/_metadata.yml).
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - lectures/*.md
+    - notebooks/*.ipynb
+    - notebooks/solutions/*.ipynb
+    - slides/intro.qmd
+    - docs/INSTRUCTOR_GUIDE.md
+    - docs/DECISIONS.md
+    - docs/aws/README.md
+    - CONTRIBUTING.md
+    - SECURITY.md
+  resources:
+    - slides/DAY1_MOTIVATIONAL_SLIDES.html
+    - docs/social-preview.png
+  preview:
+    port: 4321
+    browser: false
+
+website:
+  title: "Evaluating Autonomous Agents"
+  description: "A four-day workshop on evaluating AI agents: systems, harnesses and AWS production CI/CD, built around the Stockroom reference agent."
+  site-url: https://genial-labs-ai.github.io/system_agent_harness_aws/
+  repo-url: https://github.com/genial-labs-ai/system_agent_harness_aws
+  repo-actions: [edit, issue]
+  image: docs/social-preview.png
+  open-graph: true
+  twitter-card: true
+  search:
+    location: navbar
+    type: overlay
+  page-navigation: true
+  back-to-top-navigation: true
+  navbar:
+    pinned: true
+    left:
+      - text: Lectures
+        href: lectures/day1_llm_eval_foundations.md
+      - text: Notebooks
+        href: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
+      - text: Slides
+        menu:
+          - text: Workshop kickoff (intro deck)
+            href: slides/intro.qmd
+          - text: "Day 1: Why Your AI Agent Fails in Production (Marp)"
+            href: slides/DAY1_MOTIVATIONAL_SLIDES.html
+      - text: Instructor guide
+        href: docs/INSTRUCTOR_GUIDE.md
+    right:
+      - icon: github
+        href: https://github.com/genial-labs-ai/system_agent_harness_aws
+        aria-label: GitHub repository
+  sidebar:
+    style: docked
+    collapse-level: 2
+    contents:
+      - text: Overview
+        href: index.qmd
+      - section: Lectures
+        contents:
+          - text: "Day 1 · LLM evaluation foundations"
+            href: lectures/day1_llm_eval_foundations.md
+          - text: "Day 2 · LLM-as-a-judge, calibration, OTel"
+            href: lectures/day2_llm_as_a_judge_and_otel.md
+          - text: "Day 3 · Agent harness and MCP mocking"
+            href: lectures/day3_agent_harness_and_mcp_mocking.md
+          - text: "Day 4 · AWS CI/CD and red-teaming"
+            href: lectures/day4_aws_ci_cd_redteaming.md
+      - section: Notebooks (student)
+        contents:
+          - text: "Day 1 · Deterministic and RAG evals"
+            href: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
+          - text: "Day 2 · Judge calibration and OTel traces"
+            href: notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
+          - text: "Day 3 · Building a custom agent harness"
+            href: notebooks/Day3_Building_Custom_Agent_Harness.ipynb
+          - text: "Day 4 · Bedrock Evaluations and CI gating"
+            href: notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
+      - section: Notebooks (solutions)
+        contents:
+          - text: "Day 1 · solutions"
+            href: notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb
+          - text: "Day 2 · solutions"
+            href: notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
+          - text: "Day 3 · solutions"
+            href: notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb
+          - text: "Day 4 · solutions"
+            href: notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
+      - section: Slides
+        contents:
+          - text: Workshop kickoff
+            href: slides/intro.qmd
+          - text: "Day 1 · Why Your AI Agent Fails in Production"
+            href: slides/DAY1_MOTIVATIONAL_SLIDES.html
+      - section: Running the workshop
+        contents:
+          - text: Instructor guide
+            href: docs/INSTRUCTOR_GUIDE.md
+          - text: AWS policies (OIDC, IAM)
+            href: docs/aws/README.md
+          - text: Decisions and version pins
+            href: docs/DECISIONS.md
+          - text: Contributing
+            href: CONTRIBUTING.md
+          - text: Security policy
+            href: SECURITY.md
+  page-footer:
+    left: "© 2026 Genial Labs · MIT licence · Agent = Model + Harness"
+    right:
+      - icon: github
+        href: https://github.com/genial-labs-ai/system_agent_harness_aws
+
+format:
+  html:
+    theme:
+      light: [cosmo, site/theme.scss]
+      dark: [darkly, site/theme.scss]
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    link-external-newwindow: true
+    filters:
+      - site/filters/gfm.lua
+    include-in-header:
+      text: |
+        <script type="module">
+          import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+          const dark = document.body.classList.contains("quarto-dark");
+          mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", securityLevel: "strict" });
+        </script>

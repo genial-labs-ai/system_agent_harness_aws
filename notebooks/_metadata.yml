@@ -1,0 +1,11 @@
+# Quarto settings for the notebooks (website build only; nbmake and `make notebooks` ignore this file).
+# The committed .ipynb files carry no outputs, so the site build executes them in mock mode
+# (STOCKROOM_MODE unset => mock; no AWS credentials needed) to publish cells with their outputs.
+execute:
+  enabled: true
+  error: false
+  cache: false
+format:
+  html:
+    code-tools: true
+    code-line-numbers: false

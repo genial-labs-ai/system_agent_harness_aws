@@ -8,6 +8,7 @@ PYTEST        := $(UV) run pytest
 PROMPTFOO_VER ?= 0.124.0
 MARP_VER      ?= 4.5.1
 MCP_PORT      ?= 8765
+QUARTO        ?= quarto
 REPORTS       := reports
 
 export STOCKROOM_MODE ?= mock
@@ -82,6 +83,14 @@ slides: ## Render the Marp deck to HTML
 	# stdin is redirected: marp-cli otherwise treats a non-TTY stdin as an extra markdown input and hangs under CI/make.
 	npx --yes --prefer-offline @marp-team/marp-cli@$(MARP_VER) slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html < /dev/null
 
+site: slides ## Render the Quarto website to _site (executes the notebooks in mock mode; needs quarto on PATH)
+	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
+	# Quarto writes the executed outputs back into the .ipynb files; regenerate them output-free from notebooks/src.
+	$(PY) scripts/build_notebooks.py
+
+site-preview: slides ## Serve the Quarto website locally with live reload (http://localhost:4321)
+	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) preview
+
 phoenix: ## Launch Arize Phoenix locally (port 6006) for Day 2
 	$(UV) run --extra phoenix python -m phoenix.server.main serve
 
@@ -105,5 +114,5 @@ ci: ## The PR gate, step by step (mirrors .github/workflows/agent_eval_ci.yml)
 	$(PY) scripts/check_lecture_refs.py
 
 clean: ## Remove caches, build artefacts and generated reports
-	rm -rf .pytest_cache .ruff_cache reports/eval_results.json reports/promptfoo_results.json reports/summary.md
+	rm -rf .pytest_cache .ruff_cache _site .quarto reports/eval_results.json reports/promptfoo_results.json reports/summary.md
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +

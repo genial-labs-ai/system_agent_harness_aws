@@ -1,0 +1,72 @@
+# Builds the Quarto site (lectures, executed notebooks in mock mode, slides, docs) and deploys it to
+# GitHub Pages. Runs only on main; it is not part of the PR gate. No AWS credentials are involved.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  STOCKROOM_MODE: mock
+  DEEPEVAL_TELEMETRY_OPT_OUT: "1"
+  PROMPTFOO_DISABLE_TELEMETRY: "1"
+  PROMPTFOO_DISABLE_UPDATE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  UV_FROZEN: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      # Pinned to the exact tag: this action publishes no moving major tag (same as setup-uv).
+      - uses: quarto-dev/quarto-actions/setup@v2.2.0
+        with:
+          version: "1.6.40"
+
+      - name: Install
+        run: |
+          uv sync --group dev
+          npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Render the site (Marp deck, then Quarto with notebooks executed in mock mode)
+        run: make site
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

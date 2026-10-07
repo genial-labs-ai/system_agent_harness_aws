@@ -1,0 +1,13 @@
+/*-- scss:defaults --*/
+$presentation-heading-color: #0b1220;
+$link-color: #d97706;
+$presentation-font-size-root: 30px;
+$code-block-font-size: 0.8em;
+
+/*-- scss:rules --*/
+.reveal .slide-number, .reveal .footer { color: #96a3b8; }
+.reveal .small { font-size: 0.6em; color: #5b6778; margin-top: 1em; }
+.reveal table { font-size: 0.75em; }
+.reveal .r-fit-text { color: #2a9d8f; font-weight: 800; }
+.reveal h2 { border-bottom: 3px solid #ff9900; display: inline-block; padding-bottom: .1em; }
+.reveal code { color: #b45309; }

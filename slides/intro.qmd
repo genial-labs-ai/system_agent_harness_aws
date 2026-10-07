@@ -1,0 +1,187 @@
+---
+title: "Evaluating Autonomous Agents"
+subtitle: "Systems, Harnesses & AWS Production CI/CD · workshop kickoff"
+author: "Genial Labs"
+format:
+  revealjs:
+    theme: [simple, ../site/slides.scss]
+    slide-number: true
+    footer: "genial-labs-ai/system_agent_harness_aws · Agent = Model + Harness"
+    transition: fade
+    code-line-numbers: false
+    mermaid:
+      theme: neutral
+    width: 1280
+    height: 720
+---
+
+## Why we are here
+
+An agent that works in a demo is not evidence that it works.
+
+- A single-prompt eval scores the final answer and nothing else.
+- Agents break in the **harness**: tool-call formatting, loop control, context truncation, state drift.
+- And in the **environment**: tools, data, permissions.
+- Most of those failures leave the final answer *looking* fine.
+
+::: {.fragment}
+**This week:** build the evals that catch them, then wire those evals into a CI gate on AWS.
+:::
+
+## The thesis
+
+::: {.r-fit-text}
+Agent = Model + Harness
+:::
+
+```{mermaid}
+%%| fig-width: 11
+flowchart LR
+  U[user query] --> H[Harness state machine]
+  H -->|Converse API or FakeBedrockClient| M[Model]
+  M -->|tool calls| H
+  H -->|schema validation, guards, quarantine| T[Tools: local or MCP server]
+  T -->|results| H
+  H --> R[RunResult]
+  R --> E[Evals: metrics, judges, traces]
+```
+
+The harness is `src/stockroom/agent/harness.py`; its states are
+`PLAN → CALL_MODEL → EXECUTE_TOOLS → OBSERVE → DONE | FAILED`.
+
+## One running example: Stockroom
+
+An inventory and order-support agent. Small enough to read in an afternoon, real enough to fail in interesting ways.
+
+:::: {.columns}
+::: {.column width="50%"}
+**Five tools**
+
+- `search_products`
+- `get_stock_level`
+- `get_order_status`
+- `create_restock_request`
+- `search_policy_docs`
+:::
+::: {.column width="50%"}
+**Data**
+
+- a product catalogue and an order book
+- six policy documents for RAG, one with a **seeded prompt injection**
+- a 50-case golden set, versioned (`data/golden/manifest.json`)
+- a judge calibration set with human labels
+:::
+::::
+
+## Four seeded weaknesses, behind feature flags
+
+| flag | what breaks |
+|---|---|
+| `ambiguous_tool_desc` | `search_products` claims to cover stock and orders |
+| `oversized_payload` | every field of every product comes back, no limit |
+| `naive_retry` | the legacy order shard is down and nothing bounds the retries |
+| `injection_unguarded` | tool output is not quarantined |
+
+The shipped default has all four **fixed**, so the repo passes its own gate.
+Day 3 switches them on one at a time with `STOCKROOM_WEAKNESSES=<flag>`.
+
+## What the gate sees
+
+```bash
+STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci
+```
+
+| metric | fixed | ambiguous tool description |
+|---|---|---|
+| tool-selection accuracy | 1.00 | 0.64 |
+| answer correctness | 1.00 | 0.78 |
+| red-team cases held | 8 / 8 | 8 / 8 |
+
+The gate fails on the first row. Answers still *look* right far more often than the tool calls are
+right, which is the whole point of evaluating trajectories.
+
+::: {.small}
+Mock-mode figures, reproduced from the repository. They are an upper bound: the mock model is a deterministic simulator. Live runs report confidence intervals.
+:::
+
+## The four days
+
+| | lecture | lab |
+|---|---|---|
+| **Day 1** | LLM evaluation foundations: golden sets, deterministic metrics, DeepEval, RAGAS | deterministic and RAG evals |
+| **Day 2** | LLM-as-a-judge: error analysis first, calibration against human labels, bias probes, OpenTelemetry | judge calibration and OTel traces |
+| **Day 3** | the harness: state machine, guards, compaction, MCP as the tool boundary, AgentCore | building a custom agent harness |
+| **Day 4** | production CI/CD: thresholds from baseline variance, flaky evals, red-teaming, Bedrock Evaluations | Bedrock Evaluations and CI gating |
+
+## Daily rhythm
+
+| clock | block |
+|---|---|
+| 09:00 | recap / warm-up (today: introductions and setup check) |
+| 09:15 | lecture (90 min) |
+| 11:00 | lab part 1 (90 min) |
+| 13:15 | lab part 2 (150 min) |
+| 16:00 | review and discussion (60 min) |
+
+Breaks at 10:45 and 15:45, lunch at 12:30.
+
+## How the labs work
+
+- Each day is one notebook, generated from `notebooks/src/*.py`. Edit the source, not the `.ipynb`.
+- **Exercise cells** carry a `TODO`. Every one has a matching cell in the solutions notebook.
+- Everything runs in **mock mode** by default: a deterministic fake Bedrock client and a deterministic fake judge. No AWS account, no network after setup.
+- The same notebooks open in Google Colab and SageMaker Studio: the setup cell clones and installs the repo when it is missing.
+- Traces go to the console or to a local Arize Phoenix (`make phoenix`).
+
+## Setup check (do this now)
+
+```bash
+git clone https://github.com/genial-labs-ai/system_agent_harness_aws.git
+cd system_agent_harness_aws
+make setup
+make test
+uv run stockroom run "How many units of SKU-1015 are in stock?"
+```
+
+Or open a Codespace from the README badge: the devcontainer runs `make setup` for you.
+
+::: {.fragment}
+If `make test` is green, you are ready for Day 1. If not, the README's troubleshooting table covers the usual causes.
+:::
+
+## Mock today, live when you choose
+
+| | mock | live |
+|---|---|---|
+| switch | default | `STOCKROOM_MODE=live` |
+| model and judge | scripted fakes | `AGENT_MODEL_ID`, `JUDGE_MODEL_ID` from the environment |
+| credentials | none | your AWS profile locally; GitHub OIDC → IAM role in CI |
+| spend | zero | bounded by `MAX_STEPS` and `TOKEN_BUDGET`; estimated cost printed after every run |
+
+The live workflow has no schedule. An instructor dispatches it by hand, so nothing in this repo
+spends money without a person asking.
+
+## Rules of the road
+
+1. **Offline-first.** Every test and notebook runs with no credentials.
+2. **No hardcoded model IDs.** They come from the environment (`src/stockroom/config.py`).
+3. **Judges run on Bedrock, never OpenAI.**
+4. **No fabricated numbers.** Figures in the materials are reproduced from this repo.
+5. **Weaknesses are feature flags.** Do not "fix" one by deleting the branch; the Day 3 lab needs it.
+6. **Verify APIs, don't recall them.** Library versions are pinned and recorded in `docs/DECISIONS.md`.
+
+## What you leave with
+
+- A harness with guards you wrote: max steps, token budget, repeated-call detection, quarantine of instruction-like tool output.
+- A judge you calibrated against human labels and probed for bias.
+- Trace-based evals over OpenTelemetry spans.
+- A CI gate whose thresholds come from baseline variance (`eval_thresholds.yaml`, `scripts/check_thresholds.py`), with a red-team suite that must hold.
+- A live workflow on Amazon Bedrock through OIDC, with budgets and a cost estimate.
+
+## Let's go
+
+- Site: [genial-labs-ai.github.io/system_agent_harness_aws](https://genial-labs-ai.github.io/system_agent_harness_aws/)
+- Repo: [github.com/genial-labs-ai/system_agent_harness_aws](https://github.com/genial-labs-ai/system_agent_harness_aws)
+- Day 1 opens with *Why Your AI Agent Fails in Production (and How Evals Fix It)*.
+
+Questions before the setup check?
