@@ -54,7 +54,7 @@ Timing notes:
 | Tests | `make test` (unit + golden regression; writes `reports/eval_results.json`) | all green, no AWS variables set |
 | Data | `make validate-data` | prints schema and coverage checks |
 | Devcontainer | `.devcontainer/devcontainer.json`: Python 3.12 image, Node 22, AWS CLI, forwards ports 6006 (Phoenix) and 8765 (MCP); `postCreateCommand` installs uv and runs `make setup` | open in VS Code / Codespaces |
-| Colab / SageMaker | the notebooks' setup cell checks `find_spec("stockroom")` and otherwise clones `<GITHUB_ORG>/<GITHUB_REPO>` and `%pip install`s it; replace the placeholder before publishing (DECISIONS phase 1) | run the first cell; the banner from `detect_mode()` should say `MOCK` |
+| Colab / SageMaker | the notebooks' setup cell checks `find_spec("stockroom")` and otherwise clones `genial-labs-ai/system_agent_harness_aws` and `%pip install`s it (DECISIONS entry 2) | run the first cell; the banner from `detect_mode()` should say `MOCK` |
 | Phoenix (Day 2, optional) | `make phoenix` serves on port 6006; set `STOCKROOM_TRACE_EXPORTER=phoenix` | open `http://localhost:6006` |
 | Promptfoo offline | after one online `npx` run the package is cached; `PROMPTFOO_DISABLE_UPDATE=1` and `PROMPTFOO_DISABLE_TELEMETRY=1` are exported by the Makefile | `make promptfoo` works with the network off |
 

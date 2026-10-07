@@ -463,7 +463,7 @@ sequenceDiagram
   AWS side exists (`if: vars.AWS_OIDC_ROLE_ARN != ''`). No long-lived keys exist anywhere.
 - **Trust policy** (`docs/aws/oidc_trust_policy.json`): principal is the account's GitHub OIDC
   provider; action `sts:AssumeRoleWithWebIdentity`; conditions `aud = sts.amazonaws.com` and
-  `sub = repo:<GITHUB_ORG>/<GITHUB_REPO>:ref:refs/heads/main`. Only `main` of this repository can
+  `sub = repo:genial-labs-ai/system_agent_harness_aws:ref:refs/heads/main`. Only `main` of this repository can
   assume the role; PR-triggered live runs are deliberately not allowed (you would add a
   `pull_request` subject if you wanted them — `docs/aws/README.md` explains the trade-off).
 - **Permissions policy** (`docs/aws/iam_policy.json`), least privilege in four statements:

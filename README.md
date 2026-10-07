@@ -37,8 +37,8 @@ GNU make. Docker is optional (devcontainer). The first `make setup` needs networ
 packages; everything afterwards runs offline.
 
 ```bash
-git clone https://github.com/<GITHUB_ORG>/<GITHUB_REPO>.git
-cd <GITHUB_REPO>
+git clone https://github.com/genial-labs-ai/system_agent_harness_aws.git
+cd system_agent_harness_aws
 make setup          # uv sync (+ Phoenix extra) and a Jupyter kernel
 make test           # unit tests + golden-set regression suite (writes reports/eval_results.json)
 make notebooks      # build student + solution notebooks and execute all eight in mock mode
@@ -194,7 +194,7 @@ uv run python scripts/sync_datasets_s3.py upload-reports --run-id local
 No long-lived keys anywhere. In IAM: create the GitHub OIDC identity provider
 (`token.actions.githubusercontent.com`, audience `sts.amazonaws.com`; a certificate thumbprint is
 no longer required), create a role with `docs/aws/oidc_trust_policy.json` as its trust policy
-(restricted to `repo:<GITHUB_ORG>/<GITHUB_REPO>:ref:refs/heads/main`) and
+(restricted to `repo:genial-labs-ai/system_agent_harness_aws:ref:refs/heads/main`) and
 `docs/aws/iam_policy.json` as its permissions (Bedrock invoke on the two configured profiles and
 their underlying foundation models, S3 read/write under one prefix, nothing else — see
 `docs/aws/README.md`). Then set repository **variables** `AWS_OIDC_ROLE_ARN`, `AWS_REGION`,
@@ -270,11 +270,12 @@ baseline as a sticky PR comment and as the job summary. Regenerate the baseline 
 `agent_eval_nightly.yml` runs the same suite in live mode with `STOCKROOM_EVAL_REPEATS=3`,
 reports 95% confidence intervals, uploads reports to S3 and as an artifact, and never blocks PRs.
 
-## Placeholders to replace before publishing
+## Placeholders to replace before going live
 
-`<GITHUB_ORG>/<GITHUB_REPO>` in this README, `docs/aws/oidc_trust_policy.json`, the notebooks'
-setup cells (`REPO_URL`) and `docs/INSTRUCTOR_GUIDE.md`; `<ACCOUNT_ID>`, `<AWS_REGION>`,
-`<S3_BUCKET>`, `<S3_PREFIX>` in `docs/aws/*.json`.
+The repository lives at `genial-labs-ai/system_agent_harness_aws` (already filled in here, in
+`docs/aws/oidc_trust_policy.json`, the notebooks' setup cells (`REPO_URL`) and
+`docs/INSTRUCTOR_GUIDE.md`). Still to replace: `<ACCOUNT_ID>`, `<AWS_REGION>`, `<S3_BUCKET>`,
+`<S3_PREFIX>` in `docs/aws/*.json`.
 
 ## Troubleshooting
 

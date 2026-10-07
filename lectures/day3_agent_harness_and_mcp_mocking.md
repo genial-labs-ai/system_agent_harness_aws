@@ -524,7 +524,7 @@ variant has every exercise filled in). Its exercises follow this lecture's order
    watch the bars move back.
 
 The setup cell detects the mode with `detect_mode()` and prints `StockroomConfig.describe()`; in
-Colab or SageMaker it clones `<GITHUB_ORG>/<GITHUB_REPO>` first (see `docs/INSTRUCTOR_GUIDE.md`).
+Colab or SageMaker it clones `genial-labs-ai/system_agent_harness_aws` first (see `docs/INSTRUCTOR_GUIDE.md`).
 
 ---
 

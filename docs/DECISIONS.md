@@ -9,10 +9,11 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
 1. **Repository root.** The brief's layout shows a top-level `agent-evals-aws-workshop/` folder. The
    working directory is itself the repository root (`agent_systems_harnesses_aws`), so the layout is
    applied directly at the root without a nested folder.
-2. **GitHub org/repo placeholder.** The target GitHub repository was not yet decided, so
-   `<GITHUB_ORG>/<GITHUB_REPO>` is used in `docs/aws/oidc_trust_policy.json`, the README clone
-   commands, the notebook setup cells (`REPO_URL`) and the CI PR-comment step. Replace it with a
-   single search-and-replace before publishing.
+2. **GitHub org/repo.** The target repository was not decided during the build, so a
+   `<GITHUB_ORG>/<GITHUB_REPO>` placeholder was used in `docs/aws/oidc_trust_policy.json`, the
+   README clone commands, the notebook setup cells (`REPO_URL`) and the docs. On 2026-10-07 it was
+   replaced everywhere with `genial-labs-ai/system_agent_harness_aws` (the local checkout keeps its original
+   directory name `agent_systems_harnesses_aws`).
 3. **OpenTelemetry version range instead of a single pin.** `arize-phoenix-otel==0.17.2` requires
    `opentelemetry-exporter-otlp-proto-http>=1.45`, while `aws-opentelemetry-distro==0.21.0` (ADOT,
    needed for CloudWatch GenAI observability in live mode) pins `opentelemetry-sdk==1.44.0`. The two
@@ -164,7 +165,7 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     `importlib.util.find_spec("stockroom")` (a no-op when the repo is installed), pins the versions
     from `pyproject.toml`, and adds `langchain-community>=0.3.27,<0.4` explicitly because uv's
     `constraint-dependencies` do not apply to plain pip (ragas 0.4.3 fails to import with
-    langchain-community 0.4). `REPO_URL` is the `<GITHUB_ORG>/<GITHUB_REPO>` placeholder.
+    langchain-community 0.4). `REPO_URL` points at `genial-labs-ai/system_agent_harness_aws` (entry 2).
 31. **Phoenix export in notebooks is opt-in via `PHOENIX_COLLECTOR_ENDPOINT`**, not via importability:
     an OTLP exporter with no collector would stall nbmake on export timeouts. The Day 2 cell prints
     how to start Phoenix (`make phoenix`) when the variable is unset.

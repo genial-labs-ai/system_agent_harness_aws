@@ -11,7 +11,7 @@
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:<GITHUB_ORG>/<GITHUB_REPO>:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": "repo:genial-labs-ai/system_agent_harness_aws:ref:refs/heads/main"
         }
       }
     }

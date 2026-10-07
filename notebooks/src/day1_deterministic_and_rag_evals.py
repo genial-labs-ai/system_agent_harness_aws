@@ -33,10 +33,9 @@ import os
 import subprocess
 from pathlib import Path
 
-# PLACEHOLDER: replace <GITHUB_ORG>/<GITHUB_REPO> with the published repository (one
-# search-and-replace across the repo; see docs/DECISIONS.md). Only used when the package is not
-# already installed, e.g. in a fresh Colab or SageMaker Studio kernel.
-REPO_URL = "https://github.com/<GITHUB_ORG>/<GITHUB_REPO>"
+# Published repository (docs/DECISIONS.md entry 2). Only used when the package is not already
+# installed, e.g. in a fresh Colab or SageMaker Studio kernel.
+REPO_URL = "https://github.com/genial-labs-ai/system_agent_harness_aws"
 REPO_DIR = Path("stockroom-workshop")
 
 os.environ.setdefault("DEEPEVAL_TELEMETRY_OPT_OUT", "1")  # keep DeepEval fully offline

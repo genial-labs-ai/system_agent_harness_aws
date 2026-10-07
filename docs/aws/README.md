@@ -1,7 +1,7 @@
 # AWS policies for the nightly live-mode workflow
 
 Two JSON documents, both with placeholders to replace (`<ACCOUNT_ID>`, `<AWS_REGION>`,
-`<S3_BUCKET>`, `<S3_PREFIX>`, `<GITHUB_ORG>/<GITHUB_REPO>`):
+`<S3_BUCKET>`, `<S3_PREFIX>`; the repository `genial-labs-ai/system_agent_harness_aws` is already filled in):
 
 | file | attach to | purpose |
 |---|---|---|
@@ -28,4 +28,4 @@ Notes:
   listed in the AWS "Add observability to your Amazon Bedrock AgentCore resources" page; they are
   also outside this policy because they are not part of the CI gate.
 - The trust policy's `sub` is pinned to `main`. For PR-triggered live runs you would add
-  `repo:<GITHUB_ORG>/<GITHUB_REPO>:pull_request`; the workshop intentionally keeps live runs off PRs.
+  `repo:genial-labs-ai/system_agent_harness_aws:pull_request`; the workshop intentionally keeps live runs off PRs.

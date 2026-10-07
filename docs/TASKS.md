@@ -72,7 +72,7 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [x] Error-analysis practice attributed (Husain blog, Shankar et al. arXiv 2404.12272, both fetched); no real incidents used anywhere
 
 ## Phase 7 — README and DECISIONS `[x]`
-- [x] `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (`<GITHUB_ORG>/<GITHUB_REPO>`)
+- [x] `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (AWS account/bucket values)
 - [x] `docs/DECISIONS.md` entries 1–35; `AGENTS.md` refreshed
 - [x] Clean-clone verification with AWS vars unset: `make setup` (48 s) → `make test` (128 passed) → `make notebooks` (8 passed) → `make ci` (gate passed, 0 checker errors). `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` fails at the gate with the metrics table (tool selection 0.64, answer correctness 0.78, 4 golden Promptfoo cases failed, 8/8 red team held)
 - [x] Phases committed on `main` (plus merge commits from the three worktree branches and small follow-ups)
@@ -84,7 +84,7 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - Add a guard-plugin seam to `Harness` so `MaxToolPayloadGuard` (Day 3 exercise) can be a real guard rather than an executor wrapper (DECISIONS 32).
 - Add more bias-probe pairs to `data/judge_calibration` before trusting the probes on a live judge (DECISIONS 25).
 - Exercise live mode end to end on a machine with a working `aws` CLI and record real nightly numbers.
-- Replace the `<GITHUB_ORG>/<GITHUB_REPO>` placeholders once the repository is published.
+- [x] 2026-10-07: `<GITHUB_ORG>/<GITHUB_REPO>` replaced with `genial-labs-ai/system_agent_harness_aws` across README, docs, lectures and notebook sources (DECISIONS 2).
 
 ## Known gaps / ideas (not required by the brief)
 - Mock-mode scores are an upper bound (deterministic simulator); live nightly reports the real numbers with CIs.
