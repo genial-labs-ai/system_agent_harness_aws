@@ -380,7 +380,7 @@ Nothing here explains what a token or a tool call is. You should be comfortable 
 - **CI:** you have edited a GitHub Actions workflow.
 - **AWS:** optional. Every lab runs without an account; the live sections show what changes with one.
 
-Bring a laptop with Python 3.12, `uv`, Node 22 and `make`. Or open the repository in
+Bring a laptop with Python 3.12, `uv`, Node 20 or newer with npm, and `make`. Or open the repository in
 [GitHub Codespaces](https://codespaces.new/genial-labs-ai/system_agent_harness_aws?quickstart=1)
 and skip the setup.
 :::

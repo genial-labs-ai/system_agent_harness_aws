@@ -39,7 +39,12 @@ $font-size-root: 17px;
 body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  overflow-x: clip; // the landing hero bleeds to the viewport edge
+}
+
+// Only the landing page clips sideways overflow: its hero bleeds past the column on purpose.
+// Content pages keep horizontal scrolling for anything wider than a phone.
+body.landing {
+  overflow-x: clip;
 }
 
 main.content p,
@@ -160,12 +165,10 @@ main.content table {
   border-color: $ws-border;
 
   thead th {
+    @include eyebrow;
+    display: table-cell;
     border-bottom: 1.5px solid $ws-border-strong;
-    font-size: 0.78rem;
-    font-weight: 650;
     letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: $ws-muted;
     vertical-align: bottom;
   }
 
@@ -871,6 +874,7 @@ main.content a.btn-lab {
   }
 
   .path-num {
+    @include eyebrow;
     position: relative;
     z-index: 1;
     display: flex;
@@ -882,9 +886,6 @@ main.content a.btn-lab {
     border-radius: 50%;
     background: $ws-navy;
     color: $ws-on-navy;
-    font-family: $font-family-sans-serif;
-    font-size: 0.72rem;
-    font-weight: 700;
     letter-spacing: 0.04em;
   }
 
@@ -964,14 +965,11 @@ main.content a.btn-lab {
 
   .breaks::before,
   .shows::before {
+    @include eyebrow;
     position: absolute;
     left: 0;
     top: 0.1rem;
-    font-family: $font-family-sans-serif;
-    font-size: 0.72rem;
-    font-weight: 650;
     letter-spacing: 0.06em;
-    text-transform: uppercase;
     line-height: 1.9;
   }
 

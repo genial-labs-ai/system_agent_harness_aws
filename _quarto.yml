@@ -211,9 +211,11 @@ format:
           const scheme = () => getComputedStyle(document.documentElement).getPropertyValue("--ws-scheme").trim();
           const wanted = () => (document.body.classList.contains("quarto-dark") ? "dark" : "light");
           let drawn = null;
+          let running = Promise.resolve(); // runs are chained: a toggle mid-render waits its turn
           const draw = () => {
             const css = getComputedStyle(document.documentElement);
             const v = (name) => css.getPropertyValue(name).trim();
+            if (v("--ws-bg") === "") { return; } // no palette yet (stylesheet missing): keep the source
             for (const pre of document.querySelectorAll("pre.mermaid")) {
               if (!sources.has(pre)) { sources.set(pre, pre.textContent); }
               pre.textContent = sources.get(pre);
@@ -236,7 +238,9 @@ format:
               },
             });
             drawn = scheme();
-            mermaid.run();
+            running = running
+              .then(() => mermaid.run())
+              .catch((e) => console.warn("mermaid:", e));
           };
           let pending = 0;
           const sync = () => {
@@ -245,7 +249,7 @@ format:
             const tick = () => {
               const ready = scheme() === wanted();
               if (ready || Date.now() - started > 2000) {
-                if (scheme() !== drawn) { draw(); }
+                if (scheme() !== drawn) { running.then(draw); }
               } else {
                 pending = setTimeout(tick, 30);
               }
