@@ -1,0 +1,6 @@
+// reveal.js variables mapped onto the palette tokens of site/_tokens.scss. Kept apart from
+// slides.scss for the same reason site/_bootstrap-vars.scss exists: Quarto checks a theme's
+// defaults for variables used before their declaration without following @import.
+$presentation-heading-color: $ws-heading !default;
+$link-color: $ws-link !default;
+$code-color: $ws-code !default;

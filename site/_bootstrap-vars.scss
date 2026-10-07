@@ -1,0 +1,16 @@
+// Bootstrap (cosmo) variables mapped onto the palette tokens of site/_tokens.scss. Kept apart
+// from theme.scss because Quarto checks a theme's defaults for variables used before their
+// declaration without following @import; an imported file is not checked.
+$primary: $ws-navy !default;
+$body-bg: $ws-bg !default;
+$body-color: $ws-text !default;
+$link-color: $ws-link !default;
+$border-color: $ws-border !default;
+$headings-color: $ws-heading !default;
+$navbar-bg: $ws-navy !default;
+$navbar-fg: $ws-on-navy !default;
+$code-color: $ws-code !default;
+$code-bg: $ws-code-bg !default;
+$code-block-bg: $ws-code-bg !default;
+$footer-bg: $ws-surface !default;
+$footer-fg: $ws-muted !default;

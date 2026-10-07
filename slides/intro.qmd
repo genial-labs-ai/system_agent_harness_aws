@@ -5,6 +5,7 @@ author: "Genial Labs"
 format:
   revealjs:
     theme: [simple, ../site/slides.scss]
+    css: ../site/fonts/fonts.css
     slide-number: true
     footer: "genial-labs-ai/system_agent_harness_aws · Agent = Model + Harness"
     transition: fade

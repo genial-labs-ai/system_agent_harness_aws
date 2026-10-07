@@ -1,13 +1,25 @@
 /*-- scss:defaults --*/
-$presentation-heading-color: #0b1220;
-$link-color: #d97706;
+// The kickoff deck (slides/intro.qmd) shares the website palette: the tokens come from
+// site/_tokens.scss and the fonts from site/fonts/fonts.css (loaded by slides/intro.qmd).
+@import "tokens";
+@import "reveal-vars"; // the reveal.js variables that map onto the tokens (see the note there)
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 $presentation-font-size-root: 30px;
 $code-block-font-size: 0.8em;
 
 /*-- scss:rules --*/
-.reveal .slide-number, .reveal .footer { color: #96a3b8; }
-.reveal .small { font-size: 0.6em; color: #5b6778; margin-top: 1em; }
+// Set as a rule, not through $presentation-heading-font: Quarto emits that variable unquoted, and
+// an unquoted family name containing a digit ("Source Serif 4") is invalid CSS, so the browser
+// would drop it and fall back to the body font.
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 { font-family: "Source Serif 4", Georgia, "Times New Roman", serif; }
+.reveal .slide-number, .reveal .footer { color: $ws-muted; }
+.reveal .small { font-size: 0.6em; color: $ws-muted; margin-top: 1em; }
 .reveal table { font-size: 0.75em; }
-.reveal .r-fit-text { color: #2a9d8f; font-weight: 800; }
-.reveal h2 { border-bottom: 3px solid #ff9900; display: inline-block; padding-bottom: .1em; }
-.reveal code { color: #b45309; }
+.reveal table thead th { font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.04em; color: $ws-muted; }
+.reveal .r-fit-text { color: $ws-teal; font-weight: 700; }
+.reveal h2 { border-bottom: 3px solid $ws-cta; display: inline-block; padding-bottom: .1em; }
+.reveal code { color: $ws-code; }
+.reveal pre code { border-radius: 8px; }
+.reveal .title-slide h1 { font-size: 2.2em; }
+.reveal .title-slide .subtitle { color: $ws-muted; font-style: italic; font-family: "Source Serif 4", Georgia, serif; }
