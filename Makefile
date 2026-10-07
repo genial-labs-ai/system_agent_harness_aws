@@ -97,10 +97,10 @@ ci: ## The PR gate, step by step (mirrors .github/workflows/agent_eval_ci.yml)
 	STOCKROOM_TOOL_TRANSPORT=mcp-http $(MAKE) eval || { kill $$(cat $(REPORTS)/.mcp.pid) 2>/dev/null; exit 1; }
 	kill $$(cat $(REPORTS)/.mcp.pid) 2>/dev/null || true
 	$(MAKE) promptfoo
+	$(MAKE) thresholds
 	$(MAKE) notebooks
 	$(MAKE) slides
 	$(PY) scripts/check_lecture_refs.py
-	$(MAKE) thresholds
 
 clean: ## Remove caches, build artefacts and generated reports
 	rm -rf .pytest_cache .ruff_cache reports/eval_results.json reports/promptfoo_results.json reports/summary.md

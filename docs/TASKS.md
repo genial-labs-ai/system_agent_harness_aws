@@ -36,7 +36,7 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - Check passed: `make test-unit`; every weakness flag produces its expected failing metric
   (ambiguous desc → tool selection 1.0→0.64; oversized → TOKEN_BUDGET; naive retry → MAX_STEPS + loop; injection → forbidden call + prompt leak)
 
-## Phase 4 — Eval suite and CI `[~]` (checkpoint commit after `ac21773`)
+## Phase 4 — Eval suite and CI `[x]`
 - [x] `eval_thresholds.yaml` (single source of thresholds)
 - [x] `tests/test_trajectory_regression.py` (DeepEval test cases over the golden set → `reports/eval_results.json`, repeats + CIs)
 - [x] `scripts/check_thresholds.py` (gates, baseline diff, red-team gate, Markdown summary, `--write-baseline`)
@@ -48,7 +48,7 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [x] Eval suite verified over `STOCKROOM_TOOL_TRANSPORT=mcp-http` with the server in the background (50/50)
 - [x] `make baseline` → `reports/baseline/main.json` committed (sha 18855ee data 1.0.0)
 - [x] Gate verified step by step: clean run passes; `STOCKROOM_WEAKNESSES=ambiguous_tool_desc` run fails (tool selection 0.64, answer 0.78, 4 Promptfoo failures) with the Markdown summary
-- [~] Full `make ci` end to end (running at the end of session 1)
+- [x] Full `make ci` end to end passes (lint → data → unit → MCP server → eval over mcp-http → Promptfoo → thresholds → notebooks → slides → lecture checker)
 - [x] Lint clean again (`make lint`)
 - [x] `tests/test_check_thresholds.py` (gate pass/fail, baseline regression, red-team split, CLI, promptfoo asserts)
 - [x] `tests/test_live_adapters.py`: stubbed boto3 clients for `BedrockConverseClient`, `BedrockJudge`, DeepEval live bridge, `sync_datasets_s3` dry run
@@ -73,8 +73,8 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 
 ## Phase 7 — README and DECISIONS `[~]`
 - [x] (draft, commit `246a5d6`) `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (`<GITHUB_ORG>/<GITHUB_REPO>`)
-- [ ] `docs/DECISIONS.md` complete; `AGENTS.md` refreshed
-- [ ] Clean-clone verification in a scratch dir with AWS vars unset: `make setup && make test && make notebooks && make ci`
+- [x] `docs/DECISIONS.md` entries 1–35; `AGENTS.md` refreshed
+- [~] Clean-clone verification in a scratch dir with AWS vars unset: `make setup && make test && make notebooks && make ci` (setup/lint/test passed on the first clone; full run in progress)
 - [ ] Final commit; `git log` shows one commit per phase
 
 ## Known gaps / ideas (not required by the brief)

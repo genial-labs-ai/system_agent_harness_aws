@@ -76,6 +76,10 @@ jobs:
           PROMPTFOO_PYTHON: ${{ github.workspace }}/.venv/bin/python
         run: make promptfoo
 
+      - name: Enforce thresholds and write summary
+        id: gate
+        run: make thresholds
+
       - name: Build and execute notebooks (mock mode)
         run: make notebooks
 
@@ -83,10 +87,6 @@ jobs:
         run: |
           make slides
           uv run python scripts/check_lecture_refs.py
-
-      - name: Enforce thresholds and write summary
-        id: gate
-        run: make thresholds
 
       - name: Stop MCP server
         if: always()
