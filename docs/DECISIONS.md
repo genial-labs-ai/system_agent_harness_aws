@@ -118,3 +118,23 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
 22. **Nightly workflow guard.** It is skipped unless the repository variable `AWS_OIDC_ROLE_ARN` is
     set, so forks and the un-configured upstream never fail; it never blocks PRs. Model/bucket IDs
     come from repository variables, never from the workflow file.
+
+## Phase 6 — teaching materials (2026-10-06/07)
+
+23. **Lectures and slides quote mock-mode numbers only, labelled as upper bounds.** Every figure in
+    `lectures/` and `slides/` (tool selection 1.00 → 0.64, kappa 0.25 → 0.83, 9.4k vs 1.9k input
+    tokens, …) was reproduced by running the repository in mock mode; live numbers come from the
+    nightly report. No external incidents, company names or statistics are used.
+24. **The deck's cost example uses Amazon Nova Pro's published price as a labelled illustration**
+    because the Claude entries in `pricing.yaml` are `null` (Marketplace-billed models are absent
+    from the Price List API); the slide states this explicitly.
+25. **Bias probes ship one pair per probe group.** `data/judge_calibration` contains one position
+    pair (both orders), one verbosity pair and one self-preference pair: enough to demonstrate the
+    mechanism and to show the deterministic fake judge is unbiased by construction, not enough to
+    characterise a live judge. The Day 2 lecture says so and asks participants to add pairs before
+    trusting the probe on Bedrock.
+26. **Node tooling is pinned in `package.json` + `package-lock.json`** (promptfoo 0.124.0,
+    @marp-team/marp-cli 4.5.1) and installed with `npm ci` by `make setup` and CI (with the
+    `setup-node` npm cache) instead of relying on an ad-hoc `npx` download: the first Promptfoo
+    download is several minutes on a slow connection and the lockfile makes the tool versions
+    reproducible. `make promptfoo` / `make slides` still work with the npx cache alone.

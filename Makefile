@@ -27,6 +27,7 @@ setup: ## Create the virtualenv and install all dependency groups (offline-safe 
 	$(UV) python install 3.12
 	$(UV) sync --extra phoenix --group dev
 	$(PY) -m ipykernel install --user --name stockroom --display-name "Python (stockroom)" >/dev/null
+	npm ci --ignore-scripts --no-audit --no-fund   # promptfoo + marp pinned in package-lock.json
 
 lint: ## Ruff lint + format check
 	$(UV) run ruff check src tests scripts
@@ -58,7 +59,7 @@ mcp-smoke: ## List tools from a running MCP HTTP server
 
 promptfoo: ## Run the Promptfoo suite (golden slice + red team) via the Python provider
 	mkdir -p $(REPORTS)
-	npx --yes promptfoo@$(PROMPTFOO_VER) eval -c promptfooconfig.yaml --no-cache --no-progress-bar \
+	npx --yes --prefer-offline promptfoo@$(PROMPTFOO_VER) eval -c promptfooconfig.yaml --no-cache --no-progress-bar \
 	  --output $(REPORTS)/promptfoo_results.json
 
 thresholds: ## Enforce eval_thresholds.yaml against the latest results and write reports/summary.md
@@ -76,7 +77,7 @@ notebooks: build-notebooks ## Build and execute every notebook in mock mode
 	$(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb notebooks/solutions/*.ipynb -p no:cacheprovider
 
 slides: ## Render the Marp deck to HTML
-	npx --yes @marp-team/marp-cli@$(MARP_VER) slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html
+	npx --yes --prefer-offline @marp-team/marp-cli@$(MARP_VER) slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html
 
 phoenix: ## Launch Arize Phoenix locally (port 6006) for Day 2
 	$(UV) run --extra phoenix python -m phoenix.server.main serve

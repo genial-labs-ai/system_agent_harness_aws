@@ -69,8 +69,8 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [ ] `scripts/check_lecture_refs.py` — every `src/...py` path and `symbol()` reference in lectures/slides resolves (AST)
 - [ ] Attribute error-analysis practice to Hamel Husain / Shreya Shankar with links; real incidents only with sources
 
-## Phase 7 — README and DECISIONS `[ ]`
-- [ ] `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (`<GITHUB_ORG>/<GITHUB_REPO>`)
+## Phase 7 — README and DECISIONS `[~]`
+- [x] (draft, commit `246a5d6`) `README.md`: install, mock vs live, AWS prerequisites (model access + Anthropic use-case form, region, optional KB, S3 bucket, OIDC role), listing model IDs, cost expectations (Nova priced; Claude = unknown until filled), CloudWatch GenAI observability env vars, troubleshooting, pinned versions (`make pins`), placeholder list (`<GITHUB_ORG>/<GITHUB_REPO>`)
 - [ ] `docs/DECISIONS.md` complete; `AGENTS.md` refreshed
 - [ ] Clean-clone verification in a scratch dir with AWS vars unset: `make setup && make test && make notebooks && make ci`
 - [ ] Final commit; `git log` shows one commit per phase

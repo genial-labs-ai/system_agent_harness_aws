@@ -39,11 +39,13 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
+          cache: npm
 
       - name: Install (no Phoenix extra needed in CI)
         run: |
           uv sync --group dev
           uv run python -m ipykernel install --user --name stockroom --display-name "Python (stockroom)"
+          npm ci --ignore-scripts --no-audit --no-fund
 
       - name: Lint
         run: make lint
@@ -76,6 +78,11 @@ jobs:
 
       - name: Build and execute notebooks (mock mode)
         run: make notebooks
+
+      - name: Render the slide deck and check lecture references
+        run: |
+          make slides
+          uv run python scripts/check_lecture_refs.py
 
       - name: Enforce thresholds and write summary
         id: gate

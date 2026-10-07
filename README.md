@@ -31,8 +31,10 @@ and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Ama
 
 ## Quick start (no AWS needed)
 
-Requirements: Python 3.12 (uv installs it), [uv](https://docs.astral.sh/uv/), Node ≥ 20 (for
-`npx promptfoo` and Marp), GNU make. Docker is optional (devcontainer).
+Requirements: Python 3.12 (uv installs it), [uv](https://docs.astral.sh/uv/), Node ≥ 20 with npm
+(Promptfoo and Marp are pinned in `package.json`/`package-lock.json` and installed by `make setup`),
+GNU make. Docker is optional (devcontainer). The first `make setup` needs network to download
+packages; everything afterwards runs offline.
 
 ```bash
 git clone https://github.com/<GITHUB_ORG>/<GITHUB_REPO>.git
@@ -224,6 +226,8 @@ export AGENT_OBSERVABILITY_ENABLED=true OTEL_PYTHON_DISTRO=aws_distro OTEL_PYTHO
 export OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf OTEL_TRACES_EXPORTER=otlp
 export OTEL_RESOURCE_ATTRIBUTES="service.name=stockroom-agent,aws.log.group.names=/aws/bedrock-agentcore/runtimes/stockroom"
 export OTEL_EXPORTER_OTLP_LOGS_HEADERS="x-aws-log-group=/aws/bedrock-agentcore/runtimes/stockroom,x-aws-log-stream=runtime-logs,x-aws-metric-namespace=stockroom"
+# optional (ADOT >= 0.18): deliver spans to your own log group instead of aws/spans ("unified telemetry")
+export OTEL_EXPORTER_OTLP_TRACES_HEADERS="x-aws-log-group=/aws/bedrock-agentcore/runtimes/stockroom,x-aws-log-stream=spans"
 export STOCKROOM_TRACE_EXPORTER=cloudwatch
 uv run opentelemetry-instrument python -m stockroom.cli run "What's the status of order ORD-1001?"
 ```

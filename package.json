@@ -1,0 +1,14 @@
+{
+  "name": "stockroom-agent-evals-tooling",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Node tooling pinned for the workshop: Promptfoo (eval suite) and Marp (slides). Python lives in pyproject.toml.",
+  "license": "MIT",
+  "devDependencies": {
+    "@marp-team/marp-cli": "4.5.1",
+    "promptfoo": "0.124.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
