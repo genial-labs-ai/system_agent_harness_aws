@@ -115,7 +115,8 @@ def sync_golden(config: StockroomConfig, dry_run: bool = False) -> None:
     local = _manifest()
     if remote.get("sha256") != local.get("sha256"):
         raise RuntimeError(
-            f"golden {version} in S3 (sha256 {remote.get('sha256', '')[:12]}) differs from the repo "
+            f"golden {version} in S3 (sha256 {remote.get('sha256', '')[:12]}) differs from "
+            "the repo "
             f"({local.get('sha256', '')[:12]}); bump the manifest version instead of overwriting"
         )
     print(f"golden {version} verified against S3 (sha256 {local['sha256'][:12]})")

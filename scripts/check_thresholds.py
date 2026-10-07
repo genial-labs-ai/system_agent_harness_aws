@@ -150,7 +150,8 @@ def render(
             delta = f"{d:+.3f}"
         gate = " ".join(f"{k} {v}" for k, v in r["rule"].items())
         lines.append(
-            f"| {r['metric']} | {fmt(r['value'])} | {fmt(r['baseline'])} | {delta} | {gate} | {r['status']} |"
+            f"| {r['metric']} | {fmt(r['value'])} | {fmt(r['baseline'])} | {delta} | "
+            f"{gate} | {r['status']} |"
         )
     m = results["metrics"]
     extra = [
@@ -188,7 +189,8 @@ def render(
             "|---|---|---|---|",
         ]
         lines += [
-            f"| {c} | {v['cases']} | {fmt(v['tool_selection_accuracy'])} | {fmt(v['answer_correctness'])} |"
+            f"| {c} | {v['cases']} | {fmt(v['tool_selection_accuracy'])} | "
+            f"{fmt(v['answer_correctness'])} |"
             for c, v in by_cat.items()
         ]
         lines += ["", "</details>"]
