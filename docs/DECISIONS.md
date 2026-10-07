@@ -184,3 +184,8 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
 34. **Day 4 Exercise 2 uses an explicitly illustrative variance table** (labelled made-up) as input
     for setting a threshold with the rule "mean − 2·pstdev, rounded down", presented as one
     reasonable rule rather than a standard.
+35. **`make slides` redirects stdin from `/dev/null`.** marp-cli treats a non-TTY stdin as an
+    additional markdown input; under `make ci` (and on CI runners) stdin is an open pipe, so the
+    render hung indefinitely waiting for it, and with a closed pipe it fails with "Output path
+    cannot specify with processing multiple files". Redirecting stdin makes the render
+    deterministic in both environments.
