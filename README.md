@@ -311,7 +311,7 @@ Verified against current documentation and installed on 2026-10-06 (full tree in
 | pytest / ruff / jupytext / nbmake / ipykernel | 9.1.1 / 0.16.10 / 1.19.6 / 1.5.5 / 7.4.0 |
 | promptfoo (npm) | 0.124.0 |
 | @marp-team/marp-cli (npm) | 4.5.1 |
-| GitHub Actions | checkout v7, setup-uv v10, setup-node v7, upload-artifact v7, github-script v9, aws-actions/configure-aws-credentials v6.3.0 |
+| GitHub Actions | checkout v7, setup-uv v10.2.0 (exact tag; the action publishes no moving major tag), setup-node v7, upload-artifact v7, github-script v9, aws-actions/configure-aws-credentials v6.3.0 |
 
 See `docs/DECISIONS.md` for why each deviation from the brief was made (for example the
 `phoenix`/`cloudwatch` extra conflict, the hand-written red-team suite, and why Bedrock

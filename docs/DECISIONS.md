@@ -42,7 +42,7 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
    opentelemetry-semantic-conventions 0.66b1, openinference-semantic-conventions 0.1.41,
    arize-phoenix 20.19.0, arize-phoenix-otel 0.17.2, pydantic 2.13.5, jsonschema 4.26.0,
    pytest 9.1.1, ruff 0.16.10, jupytext 1.19.6, nbmake 1.5.5, ipykernel 7.4.0; npm promptfoo 0.124.0,
-   @marp-team/marp-cli 4.5.1. GitHub Actions: actions/checkout v7, astral-sh/setup-uv v10,
+   @marp-team/marp-cli 4.5.1. GitHub Actions: actions/checkout v7, astral-sh/setup-uv v10.2.0,
    actions/setup-node v7, actions/upload-artifact v7, actions/github-script v9,
    aws-actions/configure-aws-credentials v6.3.0. The full transitive set is in `uv.lock`.
 
@@ -190,3 +190,8 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     render hung indefinitely waiting for it, and with a closed pipe it fails with "Output path
     cannot specify with processing multiple files". Redirecting stdin makes the render
     deterministic in both environments.
+36. **`astral-sh/setup-uv` is pinned to the exact tag `v10.2.0`.** The first GitHub-hosted run of
+    `agent_eval_ci.yml` (after publishing to `genial-labs-ai/system_agent_harness_aws` on
+    2026-10-07) failed in "Set up job" with "unable to find version `v10`": that action publishes
+    release tags only (v10.2.0), not a moving `v10` major tag, unlike the `actions/*` actions. It
+    never surfaced locally because `make ci` replaces `act` (DECISIONS phase 4).
