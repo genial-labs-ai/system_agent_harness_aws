@@ -1,0 +1,27 @@
+{
+  "name": "stockroom-agent-evals",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" },
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && export PATH=\"$HOME/.local/bin:$PATH\" && make setup",
+  "forwardPorts": [6006, 8765],
+  "portsAttributes": {
+    "6006": { "label": "Arize Phoenix" },
+    "8765": { "label": "MCP inventory server" }
+  },
+  "containerEnv": {
+    "STOCKROOM_MODE": "mock",
+    "DEEPEVAL_TELEMETRY_OPT_OUT": "1",
+    "PROMPTFOO_DISABLE_TELEMETRY": "1",
+    "PROMPTFOO_DISABLE_UPDATE": "1"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "charliermarsh.ruff", "ms-toolsai.jupyter", "marp-team.marp-vscode"],
+      "settings": { "python.defaultInterpreterPath": ".venv/bin/python" }
+    }
+  }
+}

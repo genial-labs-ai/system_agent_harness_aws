@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Notebooks
+.ipynb_checkpoints/
+notebooks/**/*.nbconvert.ipynb
+
+# Node / Promptfoo / Marp
+node_modules/
+.promptfoo/
+slides/*.html
+slides/*.pdf
+
+# Eval outputs (the committed baseline is whitelisted below)
+reports/*
+!reports/baseline/
+!reports/baseline/main.json
+
+# Env / secrets
+.env
+.env.*
+*.pem
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
