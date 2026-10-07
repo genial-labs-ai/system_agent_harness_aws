@@ -1,0 +1,116 @@
+# PR gate: deterministic, offline, mock mode. Required check on main.
+name: agent-eval-ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  STOCKROOM_MODE: mock
+  DEEPEVAL_TELEMETRY_OPT_OUT: "1"
+  PROMPTFOO_DISABLE_TELEMETRY: "1"
+  PROMPTFOO_DISABLE_UPDATE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  UV_FROZEN: "1"
+
+jobs:
+  eval-gate:
+    name: lint · tests · MCP · evals · promptfoo · notebooks · gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install (no Phoenix extra needed in CI)
+        run: |
+          uv sync --group dev
+          uv run python -m ipykernel install --user --name stockroom --display-name "Python (stockroom)"
+
+      - name: Lint
+        run: make lint
+
+      - name: Validate datasets
+        run: make validate-data
+
+      - name: Unit tests
+        run: make test-unit
+
+      - name: Start MCP mock server (streamable HTTP)
+        run: |
+          nohup uv run python -m stockroom.mock_server.mcp_inventory_server --transport streamable-http --port 8765 > reports_mcp.log 2>&1 &
+          echo $! > mcp.pid
+          for i in $(seq 1 20); do
+            if uv run python scripts/mcp_smoke.py --url http://127.0.0.1:8765/mcp; then exit 0; fi
+            sleep 1
+          done
+          cat reports_mcp.log; exit 1
+
+      - name: Golden-set regression suite over MCP
+        env:
+          STOCKROOM_TOOL_TRANSPORT: mcp-http
+        run: make eval
+
+      - name: Promptfoo suite (golden slice + red team)
+        env:
+          PROMPTFOO_PYTHON: ${{ github.workspace }}/.venv/bin/python
+        run: make promptfoo
+
+      - name: Build and execute notebooks (mock mode)
+        run: make notebooks
+
+      - name: Enforce thresholds and write summary
+        id: gate
+        run: make thresholds
+
+      - name: Stop MCP server
+        if: always()
+        run: kill "$(cat mcp.pid)" 2>/dev/null || true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: eval-reports-${{ github.run_id }}
+          path: |
+            reports/eval_results.json
+            reports/promptfoo_results.json
+            reports/summary.md
+          if-no-files-found: warn
+
+      - name: Comment metrics on the PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'reports/summary.md';
+            if (!fs.existsSync(path)) { core.info('no summary to post'); return; }
+            const body = fs.readFileSync(path, 'utf8') + '\n<!-- stockroom-eval-summary -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 });
+            const existing = comments.data.find(c => c.body && c.body.includes('<!-- stockroom-eval-summary -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }

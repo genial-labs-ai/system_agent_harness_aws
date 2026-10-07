@@ -1,0 +1,102 @@
+# Nightly live-mode evaluation on Amazon Bedrock via GitHub OIDC. Reports only; never blocks PRs.
+# Requires repository variables: AWS_REGION, AWS_OIDC_ROLE_ARN, AGENT_MODEL_ID, JUDGE_MODEL_ID,
+# S3_BUCKET (and optionally S3_PREFIX, STOCKROOM_EVAL_REPEATS). No long-lived keys anywhere.
+name: agent-eval-nightly
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # 03:00 UTC daily
+  workflow_dispatch:
+    inputs:
+      repeats:
+        description: "Times to run each golden case (confidence intervals)"
+        default: "3"
+        required: false
+
+permissions:
+  id-token: write # OIDC token for aws-actions/configure-aws-credentials
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  STOCKROOM_MODE: live
+  DEEPEVAL_TELEMETRY_OPT_OUT: "1"
+  PROMPTFOO_DISABLE_TELEMETRY: "1"
+  PROMPTFOO_DISABLE_UPDATE: "1"
+  UV_FROZEN: "1"
+
+jobs:
+  live-eval:
+    name: live evals on Bedrock (report only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    # Skip cleanly on forks / before the AWS side is configured.
+    if: vars.AWS_OIDC_ROLE_ARN != ''
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AGENT_MODEL_ID: ${{ vars.AGENT_MODEL_ID }}
+      JUDGE_MODEL_ID: ${{ vars.JUDGE_MODEL_ID }}
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      S3_PREFIX: ${{ vars.S3_PREFIX || 'stockroom-workshop' }}
+      STOCKROOM_EVAL_REPEATS: ${{ inputs.repeats || vars.STOCKROOM_EVAL_REPEATS || '3' }}
+      MAX_STEPS: "8"
+      TOKEN_BUDGET: "20000"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: uv sync --group dev
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: stockroom-nightly-${{ github.run_id }}
+
+      - name: Verify model access (no inference yet)
+        run: |
+          uv run python scripts/sync_datasets_s3.py check-models
+
+      - name: Pull the golden set version pinned in the repo (uploads it if missing)
+        run: uv run python scripts/sync_datasets_s3.py sync-golden
+
+      - name: Live regression suite with repeated sampling
+        run: make eval
+
+      - name: Promptfoo suite in live mode
+        env:
+          PROMPTFOO_PYTHON: ${{ github.workspace }}/.venv/bin/python
+        run: make promptfoo
+
+      - name: Report (never gates)
+        run: |
+          uv run python scripts/check_thresholds.py \
+            --results reports/eval_results.json \
+            --promptfoo reports/promptfoo_results.json \
+            --baseline reports/baseline/main.json \
+            --summary reports/summary.md --no-gate
+
+      - name: Publish reports to S3
+        if: always()
+        run: uv run python scripts/sync_datasets_s3.py upload-reports --run-id "${{ github.run_id }}"
+
+      - name: Upload reports as workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-live-reports-${{ github.run_id }}
+          path: reports/
+          if-no-files-found: warn

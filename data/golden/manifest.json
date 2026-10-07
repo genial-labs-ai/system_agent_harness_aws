@@ -2,7 +2,7 @@
   "name": "stockroom_golden",
   "version": "1.0.0",
   "file": "stockroom_golden_v1.jsonl",
-  "sha256": "7d56b684e0ee6a53ba383ef37d46ec710390331a854cb43a2c88e217605e62ea",
+  "sha256": "ea32e88c4c9cfea1fa8ce861dbe5b25684426b7ff0a4bb002ac31f72ec2e4260",
   "cases": 50,
   "by_category": {
     "ambiguous_query": 2,
