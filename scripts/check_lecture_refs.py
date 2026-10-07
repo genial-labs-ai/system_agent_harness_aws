@@ -146,6 +146,10 @@ IGNORE_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(
         r"^(OTEL|AWS|AGENT_OBSERVABILITY|PHOENIX|DEEPEVAL|PROMPTFOO|GITHUB)_[A-Z0-9_]+$"
     ),  # env vars
+    re.compile(
+        r"^(ragas|deepeval|mcp|opentelemetry|boto3|botocore|phoenix|openinference|jsonschema"
+        r"|pydantic)\."
+    ),  # third-party module paths
 )
 
 PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
