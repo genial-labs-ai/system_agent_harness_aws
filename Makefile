@@ -77,7 +77,8 @@ notebooks: build-notebooks ## Build and execute every notebook in mock mode
 	$(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb notebooks/solutions/*.ipynb -p no:cacheprovider
 
 slides: ## Render the Marp deck to HTML
-	npx --yes --prefer-offline @marp-team/marp-cli@$(MARP_VER) slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html
+	# stdin is redirected: marp-cli otherwise treats a non-TTY stdin as an extra markdown input and hangs under CI/make.
+	npx --yes --prefer-offline @marp-team/marp-cli@$(MARP_VER) slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html < /dev/null
 
 phoenix: ## Launch Arize Phoenix locally (port 6006) for Day 2
 	$(UV) run --extra phoenix python -m phoenix.server.main serve
