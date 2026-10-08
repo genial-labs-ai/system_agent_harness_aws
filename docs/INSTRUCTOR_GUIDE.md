@@ -37,8 +37,11 @@ Timing notes:
   *before* lunch so the failing run is ready at 13:15.
 - `make notebooks` executes all notebooks with a 900 s per-notebook timeout; on slow laptops run
   only the day's notebook with `uv run pytest --nbmake notebooks/<name>.ipynb`.
-- Keep 10 minutes at the end of each lab part for participants to save their `reports/` outputs
-  under a new name; Day 4 reuses Day 3 results.
+- Keep 5 minutes at the end of each Day 1–3 lab for the notebook's last section, "Save your work
+  for Day 4". It writes `reports/participant/day<N>.json` (`src/stockroom/handoff.py`) once that
+  day's exercises have passed; the Day 4 capstone reads the three files and falls back to the
+  reference artefacts in `data/handoff/` for any day that is missing. See the Day 4 lecture's lab
+  plan for what each file holds and how to resume.
 
 ---
 
@@ -105,6 +108,8 @@ Summarised here; the README (phase 7) is the authoritative list.
 | Thresholds step says "results file not found" | `make thresholds` run before `make eval` | run `make eval` (or `make test`) first |
 | Baseline regression failure on a fresh clone | no `reports/baseline/main.json` yet, or it was generated with a flag on | `make baseline` from a clean mock run; check `mode`/`weaknesses` inside the file |
 | Lecture/slide references drift after refactors | a renamed function or moved file | `uv run python scripts/check_lecture_refs.py` (add it to your pre-commit) |
+| Day 4 prints `REFERENCE fallback` for a day the participant did | that day's save cell never ran or its exercises had not passed, `STOCKROOM_HANDOFF_DIR` differs between days, or a Colab runtime was recycled | re-run that day's notebook to its save cell (seconds in mock mode), or copy the files into `reports/participant/`; in Colab set `STOCKROOM_HANDOFF_DIR` to a mounted Google Drive folder |
+| `HandoffError: … is not a valid Day N hand-off file` | the file was edited by hand or is truncated | re-run that day's save cell, or delete the file to use the reference artefact |
 
 ---
 
@@ -176,6 +181,14 @@ Summarised here; the README (phase 7) is the authoritative list.
   participants change the gate, keep `main` green and write the review. Accept any rule the evidence
   supports (per-category termination, a token-cost limit, a new golden case); insist that the review
   says what happens to the baseline. Their before/after summaries land in `reports/day4/`.
+- *Evidence from Days 1–3.* Section 6 opens with the participant's own artefacts (loaded with
+  `load_handoff()`): the Day 1 case through the label validator and on every build, the Day 2
+  calibration item graded by the gate's judge, the Day 3 assertion and guard verdicts per build.
+  With the reference artefacts they catch only the two regressions the aggregate gate already
+  rejects; ask who found something different. The review file ends with a provenance table, so
+  `reference` rows show who skipped a save cell; that is fine, but the review should not claim
+  them as the participant's work. `make notebooks` and `make ci` use a scratch hand-off directory
+  (`reports/notebooks_handoff/`), so running them never overwrites `reports/participant/`.
 - *`make ci` fail then pass.* Run the failing one with the flag exported in **that** shell only:
   `STOCKROOM_WEAKNESSES=naive_retry make ci` (or `ambiguous_tool_desc`). Keep both
   `reports/summary.md` files.
@@ -196,6 +209,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 | Eval results | `make eval` (golden regression only) or `make test` (everything) | before `make thresholds` |
 | Baseline | `make baseline` → `reports/baseline/main.json` | after an intentional metric/rubric/description/golden change, from a clean mock run with no flags; explain the diff in the PR |
 | Notebooks | `make build-notebooks` (student + `solutions/` from `notebooks/src/*.py`); `make notebooks` builds and executes them | after editing a notebook source; never edit the generated `.ipynb` |
+| Reference hand-off artefacts (`data/handoff/`) | `STOCKROOM_HANDOFF_DIR=data/handoff STOCKROOM_STRICT_EXERCISES=1 uv run pytest --nbmake notebooks/solutions/Day[123]_*.ipynb` | after changing a Day 1–3 solution or save cell; commit the three JSON files |
 | Slides | `make slides` renders `slides/DAY1_MOTIVATIONAL_SLIDES.md` with Marp | after editing the deck |
 | Pricing table | `uv run python scripts/fetch_pricing.py` | occasionally; the only non-live network call in the repo, never in CI |
 | Lecture reference check | `uv run python scripts/check_lecture_refs.py` | after renaming anything the lectures cite |

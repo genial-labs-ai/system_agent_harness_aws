@@ -356,3 +356,39 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     table had to explain why a working defence raised `invalid_call_rate`. Baseline diff: one new
     metric, `blocked_call_rate: 0.0` (no run guards in the golden suite); every other value
     unchanged.
+49. **Days 1–3 hand their artefacts to the Day 4 capstone through `reports/participant/`**
+    (`suggestions.md` §12). `stockroom.handoff` has one pydantic model per day (`Day1Handoff`: the
+    Exercise 1 golden case; `Day2Handoff`: agreement and kappa per rubric plus the Exercise 2
+    calibration item; `Day3Handoff`: the golden cases the Exercise 1 assertion fails and the
+    Exercise 2 run guard blocks, per build), `save_handoff()` / `load_handoff()`, and a reference
+    artefact per day in `data/handoff/`, written by running the solution notebooks. Each Day 1–3
+    notebook ends with a save cell; Day 4 section 6 loads the three files, runs the Day 1 case
+    through the label validator and on all five builds, grades the Day 2 item with the gate's
+    judge, shows the Day 3 verdicts beside the aggregate gate, and the Exercise 4 check appends a
+    provenance table (participant or reference, file, time, mode) and that evidence table to
+    `reports/day4/capstone_review.md`. Choices:
+    - *Data, not code.* The Day 3 assertion and guard are functions in the participant's kernel.
+      Rather than pickling them or executing saved source on Day 4, the Day 3 save cell runs them
+      over the golden set on the five builds the Day 4 gate compares and saves what each caught.
+      In mock mode the builds are identical on both days; in live mode the verdicts are a Day 3
+      measurement, and the provenance table says when it was taken.
+    - *Only what passed is saved* (`exercise_status()`, new in `stockroom.exercises`). An unsolved
+      scaffold would otherwise reach Day 4 as an assertion that "catches nothing", labelled as the
+      participant's.
+    - *The participant's case runs beside the gate, not in it.* Adding it to the gate's suite
+      changes the dataset hash, and the gate rightly refuses the baseline; the review is where
+      adding it (new manifest version, regenerated baseline) gets argued.
+    - *A missing file falls back and says so; a malformed one stops with `HandoffError`.* A silent
+      fallback would drop the participant's work from the review unnoticed.
+    - *`reports/participant/` stays gitignored* with the rest of `reports/`: the artefacts are
+      per person and would conflict on every `git pull`, and the reference files make a fresh
+      clone work. `STOCKROOM_HANDOFF_DIR` moves it (Colab: a mounted Google Drive folder). The
+      module reads it, as `stockroom.exercises` reads `STOCKROOM_STRICT_EXERCISES`, because it is
+      a notebook setting, not an agent one.
+    - *`make notebooks` uses a scratch hand-off directory* (`reports/notebooks_handoff/`, emptied
+      first). `make ci` in a participant's checkout therefore never overwrites their artefacts with
+      the solutions', the student pass runs Day 4 on the reference fallbacks and the solution pass
+      on what Days 1–3 just saved. The Quarto site build still executes the notebooks with the
+      default directory, which is harmless on a CI runner; `_quarto.yml` was left alone.
+    - No exercise was added, and no metric, rubric, tool description or golden case changed, so
+      the baseline is unchanged.

@@ -39,7 +39,8 @@ decks, the instructor guide and the decisions log. Built by `make site` (Quarto)
 | `slides/intro.qmd` | Quarto reveal.js kickoff deck: why we are here, the thesis, Stockroom, the four days, setup check, rules of the road |
 | `notebooks/` | four notebooks (`Day1…Day4`), generated from `notebooks/src/*.py`; solutions in `notebooks/solutions/` |
 | `src/stockroom/` | the agent (tools, harness, Bedrock adapter + fake), the eval suite (metrics, judges, calibration, tracing) and the MCP server |
-| `data/` | catalogue, orders, policy docs (one contains a seeded prompt injection), golden set + dataset card, judge calibration set |
+| `data/` | catalogue, orders, policy docs (one contains a seeded prompt injection), golden set + dataset card, judge calibration set, reference hand-off artefacts for Day 4 (`data/handoff/`) |
+| `reports/` | generated and gitignored, except the committed baseline `reports/baseline/main.json`: eval results and gate summary, `participant/` (what the Day 1–3 notebooks save for the Day 4 capstone) and `day4/` (the capstone's summaries and review) |
 | `tests/` | unit tests, guard tests, seeded-weakness tests and the golden-set regression suite |
 | `promptfooconfig.yaml` | Promptfoo suite: golden slice + red-team cases (offline) |
 | `eval_thresholds.yaml` | the single place CI thresholds live |
@@ -52,7 +53,11 @@ decks, the instructor guide and the decisions log. Built by `make site` (Quarto)
 ### Notebooks in the browser
 
 Each notebook's setup cell clones and installs the repo when `stockroom` is not importable, so they
-run in Google Colab or SageMaker Studio as well as locally. Mock mode needs no AWS account.
+run in Google Colab or SageMaker Studio as well as locally. Mock mode needs no AWS account. The
+Day 1–3 notebooks end by saving a small artefact that the Day 4 capstone reads back
+(`reports/participant/`; a missing day falls back to a reference artefact). Colab deletes the
+runtime's files when it is recycled, so there set `STOCKROOM_HANDOFF_DIR` to a folder on a
+mounted Google Drive to keep them between days.
 
 | day | student notebook | solutions |
 |---|---|---|
@@ -155,6 +160,7 @@ which mode it is in.
 | `AGENT_PRICE_INPUT_PER_1K`, `AGENT_PRICE_OUTPUT_PER_1K`, `JUDGE_PRICE_*` | — | per-1K-token prices when a model is not in `pricing.yaml` |
 | `STOCKROOM_EVAL_REPEATS` | 1 | run each golden case N times (nightly: 3) to measure run-to-run spread |
 | `STOCKROOM_CONFIRM_AWS_SPEND` | unset | must be `1` before the Day 4 notebook submits a Bedrock Evaluations job |
+| `STOCKROOM_HANDOFF_DIR` | `reports/participant` | where the Day 1–3 notebooks save their artefacts for the Day 4 capstone (relative paths are taken from the repository root) |
 
 ## Live mode on Amazon Bedrock
 

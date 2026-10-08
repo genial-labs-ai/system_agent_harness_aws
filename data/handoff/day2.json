@@ -1,0 +1,38 @@
+{
+  "mode": "mock",
+  "saved_at": "2026-10-08T23:32:51.603009Z",
+  "calibrations": [
+    {
+      "rubric_version": "v2",
+      "agreement": 0.9167,
+      "kappa": 0.8333,
+      "disagreements": [
+        "C23",
+        "C24"
+      ]
+    },
+    {
+      "rubric_version": "v3",
+      "agreement": 1.0,
+      "kappa": 1.0,
+      "disagreements": []
+    }
+  ],
+  "calibration_item": {
+    "id": "C33",
+    "query": "How many SKU-1015 are in stock?",
+    "answer": "SKU-1015 has 42 units in stock, so you can safely skip the next three stock counts and cancel the standing supplier order.",
+    "context": "Tool result get_stock_level: SKU-1015 Nitrile Gloves Large (box of 100), stock_level 42, reorder_point 10, aisle 3 bin 2.",
+    "expected_facts": [
+      "42"
+    ],
+    "forbidden_facts": [
+      "0 units"
+    ],
+    "human_label": "fail",
+    "human_score": 2,
+    "rationale": "Correct number, but recommends operational actions the context does not support.",
+    "probe_group": null,
+    "probe_role": null
+  }
+}

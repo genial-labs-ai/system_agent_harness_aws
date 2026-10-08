@@ -15,6 +15,7 @@ from stockroom.exercises import (
     ExerciseNotSolved,
     exercise_passed,
     exercise_pending,
+    exercise_status,
     exercise_summary,
     reset_exercises,
     strict_mode,
@@ -74,6 +75,16 @@ def test_summary_counts_and_fails_strictly_on_unfinished(
 def test_exercise_ids_are_validated() -> None:
     with pytest.raises(ValueError, match=r"day4\.ex2"):
         exercise_passed("exercise-2")
+    with pytest.raises(ValueError, match=r"day4\.ex2"):
+        exercise_status("exercise-2")
+
+
+def test_exercise_status_reports_one_exercise() -> None:
+    assert exercise_status("day3.ex1") == "not run"
+    exercise_pending("day3.ex1", strict=False)
+    assert exercise_status("day3.ex1") == "not solved yet"
+    exercise_passed("day3.ex1")
+    assert exercise_status("day3.ex1") == "passed"
 
 
 def _source(check_body: str, summary: str = '["day9.ex1"]') -> str:

@@ -594,9 +594,16 @@ optional extensions.
    within-noise PRs and fail the real regression.
 4. **The gate and its blind spot** — `check_evidence()`, `evaluate()` and `render()` on all five
    configurations; the aggregate-only gate passes `naive_retry` and `oversized_payload`.
-5. **Capstone (Exercise 4)** — change the thresholds so every seeded regression fails and the fixed
-   agent passes; write the PR review (evidence used, baseline implications). The check saves the
-   before/after summaries, the thresholds and the review under `reports/day4/`.
+5. **Capstone (Exercise 4)** — first the participant's own evidence from Days 1–3, read back with
+   `load_handoff()` (`src/stockroom/handoff.py`): their Day 1 golden case goes through the
+   Exercise 1 label validator and runs on all five builds, their Day 2 calibration item is graded
+   by the judge behind the gate's `answer_correctness`, and the cases their Day 3 trajectory
+   assertion fails and run guard blocks sit next to the aggregate gate's verdict per build. A day
+   with nothing saved falls back to the reference artefact in `data/handoff/`, and the notebook
+   says so. Then change the thresholds so every seeded regression fails and the fixed agent
+   passes, and write the PR review (evidence used, baseline implications). The check saves the
+   before/after summaries, the thresholds and the review under `reports/day4/`; the review ends
+   with the provenance of each Day 1–3 input (participant or reference) and the evidence table.
 6. **Optional: Bedrock Evaluations job builder** — the JSONL payload (section 6.2 mapping) and the
    `CreateEvaluationJob` request body, validated offline against botocore's service model;
    submission only with `STOCKROOM_MODE=live`, `STOCKROOM_CONFIRM_AWS_SPEND=1`, the service role
@@ -615,9 +622,28 @@ optional extensions.
 | Lab 1a (45 min) | Label validation (notebook section 2, Exercise 1) | the four invalid candidates rejected with stated reasons; S013 accepted and classified as a known failure |
 | Lab 1b (45 min) | A red-team case (section 3, Exercise 2); optionally add it to `promptfooconfig.yaml` and run `make promptfoo` | it holds on two phrasings, asserts on the trajectory, and fails on a successful attack |
 | Lab 2a (40 min) | Floor, noise, allowed regression (section 4, Exercise 3) | the three decisions match the table in section 2.3; one sentence on why 0.85 is not safe for the illustrative `answer_correctness` |
-| Lab 2b (70 min) | Capstone (sections 5–6, Exercise 4) | the gate rejects all four flags and passes `main`; the review explains the evidence and the baseline; `reports/day4/` holds the before/after summaries |
+| Lab 2b (70 min) | Capstone (sections 5–6, Exercise 4), starting from the Days 1–3 evidence table | the gate rejects all four flags and passes `main`; the review explains the evidence and the baseline and says which Day 1–3 inputs were the participant's own; `reports/day4/` holds the before/after summaries |
 | Lab 2c (20 min) | `make ci` passes; `STOCKROOM_WEAKNESSES=naive_retry make ci` fails at `make thresholds` | both `reports/summary.md` files saved side by side for the review block |
 | Lab 2d (20 min, optional) | Bedrock Evaluations payload (section 7); live participants: AgentCore `evaluate` (section 8) | JSONL validates (≤1000 lines, one `modelIdentifier`) |
+
+**What carries over from Days 1–3, and how to resume.** The last section of each Day 1–3 notebook,
+"Save your work for Day 4", writes one JSON file to the hand-off directory, `reports/participant/`
+(gitignored), once the exercises it draws on have passed (`exercise_status()`):
+
+| file | model | what it holds | what the capstone does with it |
+|---|---|---|---|
+| `day1.json` | `Day1Handoff` | the golden case from Day 1, Exercise 1 | label validation, then a run on every build |
+| `day2.json` | `Day2Handoff` | agreement and kappa for rubric v2 and the participant's rubric; the calibration item from Exercise 2 | the item is graded by the gate's judge: does it still disagree with the human label? |
+| `day3.json` | `Day3Handoff` | the golden cases the Day 3 trajectory assertion fails and the run guard blocks, on the fixed agent and each weakness | shown per build next to the aggregate gate |
+
+To resume on a later day, nothing has to be re-run: Day 4 reads whatever is there and uses the
+reference artefact in `data/handoff/` for any missing day, printing `REFERENCE fallback` for it
+and recording `reference` in the review. To carry work to another machine, copy
+`reports/participant/`; in Colab, whose files go when the runtime is recycled, set
+`STOCKROOM_HANDOFF_DIR` to a folder on a mounted Google Drive in every notebook (relative paths
+are taken from the repository root). A file that exists but does not parse stops the capstone
+with a `HandoffError` naming the file, rather than silently using the reference; re-run that
+day's save cell or delete the file.
 
 ---
 
