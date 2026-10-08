@@ -26,7 +26,7 @@ and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Ama
 
 **Website:** everything below is also published at
 [genial-labs-ai.github.io/system_agent_harness_aws](https://genial-labs-ai.github.io/system_agent_harness_aws/):
-lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, both slide
+lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, the slide
 decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and by
 `.github/workflows/pages.yml` on every pull request (which also runs `make site-check`: pages,
 titles, links, and layout in Chrome at desktop and phone widths), and deployed on every push to
@@ -38,6 +38,7 @@ titles, links, and layout in Chrome at desktop and phone widths), and deployed o
 |---|---|
 | `lectures/` | four lecture notes (objectives, timed agenda, Mermaid diagrams, discussion questions, common mistakes) |
 | `slides/DAY1_MOTIVATIONAL_SLIDES.md` | Marp deck *Why Your AI Agent Fails in Production (and How Evals Fix It)* |
+| `slides/DAY2_TEACHING_SLIDES.md`, `slides/DAY3_TEACHING_SLIDES.md`, `slides/DAY4_TEACHING_SLIDES.md` | Marp teaching decks for Days 2–4, with speaker notes: *When a Model Grades a Model (and What the Trace Shows)*, *The Model Proposes, the Harness Decides*, *An Eval That Does Not Block a Merge Is a Dashboard* |
 | `slides/intro.qmd` | Quarto reveal.js kickoff deck: why we are here, the thesis, Stockroom, the four days, setup check, rules of the road |
 | `notebooks/` | four notebooks (`Day1…Day4`), generated from `notebooks/src/*.py`; solutions in `notebooks/solutions/` |
 | `src/stockroom/` | the agent (tools, harness, Bedrock adapter + fake), the eval suite (metrics, judges, calibration, tracing) and the MCP server |

@@ -94,10 +94,11 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - [x] 2026-10-08: Days 1–2 lecture agendas aligned with the guide's 90-minute morning lab (DECISIONS 41).
 - [x] 2026-10-08: guard seam on `Harness` (`run_guards`, DECISIONS 45); `MaxToolPayloadGuard` stays a payload wrapper by design.
 - [x] 2026-10-08: rendered-site checks per day in light/dark and desktop/phone (`make site-check`, on PRs; DECISIONS 50); duplicated labels stay validated rather than generated (DECISIONS 52).
-- From the 2026-10-08 review, in progress on branch `followups`: Day 2–4 teaching decks (§11).
 - Dependency alerts with no in-range fix (DECISIONS 51): revisit `katex`, `node-forge`, `basic-ftp`, `extract-zip`, `diskcache`, RAGAS and `pydantic-ai-slim` when Marp, Promptfoo or RAGAS release.
 - [x] 2026-10-08: guard-blocked calls counted apart from invalid ones (`blocked_call_rate`, DECISIONS 47).
 - [x] 2026-10-08: Days 1–3 save artefacts to `reports/participant/` and the Day 4 capstone consumes them, with reference fallbacks in `data/handoff/` (`suggestions.md` §12, DECISIONS 49).
+- [x] 2026-10-08: Day 2–4 Marp teaching decks with speaker notes (`slides/DAY2_TEACHING_SLIDES.md` to `slides/DAY4_TEACHING_SLIDES.md`; 19, 18 and 19 slides), wired into `make slides`, the site menus, the landing-page day cards, the README and the instructor guide (DECISIONS 48).
+- From the 2026-10-08 review, not done: one validated timetable source for the decks, lectures and guide (`suggestions.md` §11; the decks quote `docs/INSTRUCTOR_GUIDE.md`, DECISIONS 48).
 - `scripts/validate_data.py` keeps its own list of termination reasons; a new `TerminationReason` value would need adding there too.
 - The live workflow reports without a baseline, since the committed one is mock and would never be comparable (DECISIONS 42). Once a live run exists, decide whether to commit a separate live baseline for its report.
 - Add more bias-probe pairs to `data/judge_calibration` before trusting the probes on a live judge (DECISIONS 25).

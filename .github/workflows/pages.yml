@@ -54,7 +54,7 @@ jobs:
           uv sync --group dev
           npm ci --ignore-scripts --no-audit --no-fund
 
-      - name: Render the site (Marp deck, then Quarto with notebooks executed in mock mode)
+      - name: Render the site (Marp decks, then Quarto with notebooks executed in mock mode)
         run: make site
 
       # Pages, titles and links from the HTML, then every day's pages in Chrome (preinstalled on

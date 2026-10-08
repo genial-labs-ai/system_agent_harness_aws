@@ -356,6 +356,28 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     table had to explain why a working defence raised `invalid_call_rate`. Baseline diff: one new
     metric, `blocked_call_rate: 0.0` (no run guards in the golden suite); every other value
     unchanged.
+48. **Days 2–4 get Marp teaching decks in the Day 1 format** (`suggestions.md` §11):
+    `slides/DAY2_TEACHING_SLIDES.md`, `slides/DAY3_TEACHING_SLIDES.md` and
+    `slides/DAY4_TEACHING_SLIDES.md`, with the Day 1 deck's front matter keys, the gaia theme, a lead
+    title slide and a speaker-notes comment on every slide (19, 18 and 19 slides). Marp rather than
+    Quarto reveal.js (the kickoff deck's format) keeps one authoring format for the daily decks, keeps
+    presenter notes in Marp's presenter view, and adds nothing to the site build: `make slides`
+    renders all four Marp decks in one pinned `marp` call (`MARP_DECKS` in the Makefile) and
+    `_quarto.yml` copies the HTML as resources. Titles and short labels are in `docs/workshop.yml`
+    under `decks:`; the generated HTML stays uncommitted. Each deck follows one structure: how the day
+    runs (lecture sections read beforehand, what the 90-minute block teaches, what the lab practises),
+    a prerequisite recap, one motivating failure taken from a seeded weakness or the calibration set
+    and labelled as such, objectives mapped to exercises, worked examples, a prediction checkpoint
+    before a reveal, the lab task, the expected evidence, review questions from the lecture, and a
+    bridge to the next day (Day 4: a close-out). Every figure was reproduced in mock mode at
+    `aee3567`; each note names the test, notebook cell or `uv run python -c` command that reproduces
+    it. The Day 4 checkpoint uses the lecture's illustrative nightly runs, labelled synthetic on the
+    slide. Deviations from the suggestion: the decks also carry the 09:00 recap, the lab briefing
+    and the 16:00 review, not only the 90 minutes; the "one timetable source" part is not done
+    (decks quote `docs/INSTRUCTOR_GUIDE.md` and nothing validates the copies); notes cite notebook
+    exercises by number and cells by topic, not by section number, because the notebooks were being
+    revised at the same time; and two figures come from solution cells (the Day 2 rubric v3 result
+    and the Day 3 run-guard table), so a change to those solutions must be checked against the decks.
 49. **Days 1–3 hand their artefacts to the Day 4 capstone through `reports/participant/`**
     (`suggestions.md` §12). `stockroom.handoff` has one pydantic model per day (`Day1Handoff`: the
     Exercise 1 golden case; `Day2Handoff`: agreement and kappa per rubric plus the Exercise 2
@@ -446,4 +468,3 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     of prose and layout. `scripts/check_style.py` already fails CI when a rename misses any copy,
     which is the suggestion's acceptance criterion. `scripts/check_site.py` extends the same check
     to the rendered pages and browser tabs.
-
