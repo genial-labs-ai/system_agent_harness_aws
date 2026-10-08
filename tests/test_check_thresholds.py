@@ -363,6 +363,13 @@ def test_an_empty_suite_yields_results_the_gate_rejects(gate) -> None:
     assert gate.check_evidence(doc) == ["results contain no per-case scores"]
 
 
+def test_extra_fields_cannot_replace_what_the_gate_checks() -> None:
+    with pytest.raises(ValueError, match=r"extra may not replace \['metrics', 'mode'\]"):
+        results_document(
+            StockroomConfig.mock(), [], judge_label="j", extra={"mode": "live", "metrics": {}}
+        )
+
+
 def test_promptfoo_assert_helpers(asserts) -> None:
     out = json.dumps(
         {

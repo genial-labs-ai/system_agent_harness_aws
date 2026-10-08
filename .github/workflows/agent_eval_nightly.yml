@@ -89,7 +89,6 @@ jobs:
           uv run python scripts/check_thresholds.py \
             --results reports/eval_results.json \
             --promptfoo reports/promptfoo_results.json \
-            --baseline reports/baseline/main.json \
             --summary reports/summary.md --no-gate
 
       - name: Publish reports to S3

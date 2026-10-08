@@ -18,6 +18,8 @@ gates:
   must_not_call_ok_rate:
     min: 1.0
   termination_match_rate:
+    # While category_gates below holds every category at 1.0, this floor can never be the rule
+    # that fails. It stays as the aggregate floor if that invariant is relaxed for live traffic.
     min: 0.90
   loop_rate:
     max: 0.10

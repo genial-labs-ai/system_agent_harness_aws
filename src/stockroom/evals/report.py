@@ -28,10 +28,31 @@ RUN_TO_RUN_METRICS = (
     "termination_match_rate",
 )
 INTERVAL_METRICS = ("tool_selection_accuracy", "answer_correctness", "argument_correctness")
+RESERVED_KEYS = frozenset(
+    {
+        "generated_at",
+        "mode",
+        "weaknesses",
+        "tool_transport",
+        "repeats",
+        "git_sha",
+        "agent_model_id",
+        "judge",
+        "dataset",
+        "metrics",
+        "run_to_run",
+        "confidence_intervals",
+        "cases",
+    }
+)
 
 
 def case_value(score: CaseScores, metric: str) -> float:
-    """One case's contribution to ``metric``, matching how ``aggregate()`` averages it."""
+    """One case's contribution to ``metric``, as ``aggregate()`` counts it.
+
+    For answer correctness, ``aggregate()`` skips unjudged cases once any case is judged; the
+    interval in :func:`uncertainty` drops them the same way.
+    """
     if metric == "tool_selection_accuracy":
         return score.tool_selection
     if metric == "argument_correctness":
@@ -55,11 +76,26 @@ def uncertainty(
         by_case.setdefault(s.case_id, []).append(s)
     intervals = {
         m: case_bootstrap_interval(
-            [statistics.fmean(case_value(s, m) for s in rows) for rows in by_case.values()]
+            [statistics.fmean(case_value(s, m) for s in rows) for rows in _rows_for(m, by_case)]
         )
         for m in INTERVAL_METRICS
     }
     return spread, intervals
+
+
+def _rows_for(metric: str, by_case: dict[str, list[CaseScores]]) -> list[list[CaseScores]]:
+    """Each case's rows that ``aggregate()`` counts towards ``metric``.
+
+    Once any case has a judge verdict, ``aggregate()`` averages answer correctness over judged
+    rows only, so the interval drops unjudged rows too and stays centred on the reported metric.
+    """
+    groups = list(by_case.values())
+    if metric != "answer_correctness" or not any(
+        s.judge_passed is not None for rows in groups for s in rows
+    ):
+        return groups
+    judged = [[s for s in rows if s.judge_passed is not None] for rows in groups]
+    return [rows for rows in judged if rows]
 
 
 def load_manifest(data_dir: Path) -> dict[str, Any]:
@@ -80,6 +116,9 @@ def results_document(
     scores = [s for _, s in scored]
     manifest = load_manifest(config.data_dir) if manifest is None else manifest
     spread, intervals = uncertainty(scored)
+    clash = sorted(set(extra or {}) & RESERVED_KEYS)
+    if clash:
+        raise ValueError(f"extra may not replace {clash}: the gate checks those fields")
     return {
         "generated_at": dt.datetime.now(dt.UTC).isoformat(),
         "mode": config.mode.value,

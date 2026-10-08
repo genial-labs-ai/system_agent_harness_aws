@@ -293,9 +293,11 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     input tokens, which moves no aggregate past its floor or the 0.05 drop), so
     `eval_thresholds.yaml` (version 2) adds `category_gates.termination_match_rate: 1.0` and a
     `cost` rule (mean input tokens +10 % vs baseline); `test_pr_gate_rejects_every_seeded_weakness()`
-    keeps the property. The live workflow compares live results with a mock baseline, which is now
-    reported as not comparable (it runs `--no-gate`). Baseline diff: metrics unchanged; provenance
-    fields and per-case outcomes added.
+    keeps the property. The live workflow no longer passes the committed baseline: it is a mock
+    baseline, so every live report would read "not comparable" and show no regression or cost
+    delta. Live reports carry the floors, the run-to-run spread and the intervals until a live
+    baseline exists. Baseline diff: metrics unchanged; provenance fields and per-case outcomes
+    added.
 43. **Uncertainty is reported as run-to-run spread plus a case bootstrap; thresholds are taught as
     three separate numbers.** `_confidence_interval()` pooled every case×repeat score into one
     normal interval, which treats correlated repeats as independent and answers neither "how noisy

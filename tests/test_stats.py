@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from stockroom.evals.metrics import CaseScores
+from stockroom.evals.metrics import CaseScores, aggregate
 from stockroom.evals.report import uncertainty
 from stockroom.evals.stats import (
     case_bootstrap_interval,
@@ -79,3 +79,13 @@ def test_uncertainty_separates_run_noise_from_case_sampling() -> None:
     # G003 counts once, as 0.5: three cases, not six independent rows.
     assert intervals["answer_correctness"]["n"] == 3
     assert intervals["answer_correctness"]["mean"] == pytest.approx(0.8333, abs=1e-4)
+
+
+def test_answer_interval_counts_the_cases_aggregate_counts() -> None:
+    # Once any case is judged, aggregate() ignores unjudged ones; the interval must too.
+    unjudged = _score("G002", False).model_copy(update={"judge_passed": None})
+    scored = [(0, _score("G001", True)), (0, unjudged)]
+    _, intervals = uncertainty(scored)
+    assert aggregate([s for _, s in scored])["answer_correctness"] == 1.0
+    assert intervals["answer_correctness"]["mean"] == 1.0
+    assert intervals["answer_correctness"]["n"] == 1
