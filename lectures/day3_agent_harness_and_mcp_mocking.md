@@ -32,6 +32,11 @@ By the end of Day 3 you can:
    per-run reset of the ledger and the legacy shard) and say what they can and cannot tell you.
 5. Describe what Amazon Bedrock AgentCore offers today — including its managed Harness — and
    contrast it with the hand-built harness you just wrote.
+6. Extend the harness through its one documented seam, `Harness(run_guards=[...])` (`RunGuard`,
+   `ToolCallContext`, `BlockCall`): find a failing trajectory, write the assertion that catches it,
+   build the run guard that prevents it with the seeded weakness still on, and show before/after
+   evidence. Say how a run guard differs from a payload wrapper, and what the quarantine, compaction
+   and the token budget do *not* guarantee.
 
 ---
 
@@ -42,7 +47,7 @@ By the end of Day 3 you can:
 | 09:00–09:15 | Recap of Days 1–2: the metrics we will move today | 15 |
 | 09:15–10:45 | **Lecture** — runtime failure classes, the state machine, MCP as the tool boundary, deterministic environments, AgentCore today | 90 |
 | 10:45–11:00 | Break | 15 |
-| 11:00–12:30 | **Lab part 1** — harness exercises: guards, validation, compaction | 90 |
+| 11:00–12:30 | **Lab part 1** — construction lab: a run guard through the seam (assertion, guard, before/after evidence); payload wrapper, validation, compaction | 90 |
 | 12:30–13:15 | Lunch | 45 |
 | 13:15–15:45 | **Lab part 2** — MCP server via client; toggle each seeded weakness and chart the metric movement; fix them one at a time | 150 |
 | 15:45–16:00 | Break | 15 |
@@ -91,6 +96,7 @@ flowchart LR
   subgraph Harness["Harness (what you build today)"]
     V[validate_arguments]
     G[Guards: MaxSteps · TokenBudget<br/>RepeatedCall · WallClock]
+    P[run_guards: your RunGuard<br/>allow · block · halt]
     C[_compact]
     S[sanitize_tool_output]
     R[executor.reset per run]
@@ -99,7 +105,7 @@ flowchart LR
     T[Tools: local or MCP server]
     D[(data/ JSON + policy docs)]
   end
-  M -- tool calls --> V --> G --> T --> D
+  M -- tool calls --> V --> G --> P --> T --> D
   T -- results --> S --> C --> M
   R -.-> T
 ```
@@ -136,7 +142,7 @@ What happens inside each state (all in `src/stockroom/agent/harness.py`):
 |---|---|---|
 | pre-call | wall clock, step limit, compaction, then token budget (in that order) | `WallClockGuard.check()`, `MaxStepsGuard.check()`, `Harness._compact()`, `TokenBudgetGuard.check()` |
 | `CALL_MODEL` | one `converse()` call with the system prompt, the (private-key-stripped) messages and the tool specs; usage accounting | `Harness._strip_private()`, `TokenUsage.add()`, `RunTracer.model_span()` |
-| `EXECUTE_TOOLS` | per call: repeated-call guard → schema interception → execute → quarantine | `RepeatedCallGuard.check()`, `Harness._execute()`, `validate_arguments()`, `sanitize_tool_output()` |
+| `EXECUTE_TOOLS` | per call: repeated-call guard → run guards (schema-valid calls only) → schema interception → execute → quarantine | `RepeatedCallGuard.check()`, `Harness._consult_run_guards()`, `Harness._execute()`, `validate_arguments()`, `sanitize_tool_output()` |
 | `OBSERVE` | append `toolResult` blocks; stop if the model only ever sends invalid arguments | `TerminationReason.INVALID_TOOL_CALLS` |
 | `DONE` / `FAILED` | typed termination reason, final answer, cost estimate | `TerminationReason`, `GuardEvent`, `CostEstimateRecord` |
 
@@ -147,11 +153,29 @@ Design choices worth defending in the review session:
   (`termination_match_rate` compares it with the golden case's `expected_termination`).
 - **The step limit counts model calls, not tool calls.** `MaxStepsGuard` compares
   `TokenUsage.model_calls` with `MAX_STEPS`; a single turn that issues three tool calls is one step.
-- **The token budget is checked *before* the call it would break**, using the same `chars/4`
-  estimator the fake client uses (`estimate_tokens()`, `CHARS_PER_TOKEN`), so a run never
-  overshoots `TOKEN_BUDGET` by more than one call (`test_token_budget_guard()`).
+- **The token budget is checked *before* the call it would break and reserves the output.**
+  `TokenBudgetGuard.check()` stops when `used + estimated next input + MAX_TOKENS > TOKEN_BUDGET`,
+  so the budget is a ceiling rather than a line you learn you crossed. The input is estimated
+  with the same `chars/4` estimator the fake client uses (`estimate_tokens()`,
+  `CHARS_PER_TOKEN`), which makes the ceiling exact in mock mode
+  (`test_token_budget_is_a_ceiling_when_estimates_match_counts()`). It bounds *estimated*
+  tokens, not the bill: a provider whose tokenizer counts more than the estimate can still
+  overshoot (`test_token_budget_bounds_estimates_not_provider_counts()`), and cost is computed from
+  the provider's reported usage.
 - **Compaction runs before the budget check**, so a bloated context gets one chance to shrink
   before the guard fires.
+- **There is one extension seam, and it is for actions.** `Harness(run_guards=[...])` takes
+  objects implementing `RunGuard`: `check_tool_call(call, ctx)` sees every schema-valid call
+  before it executes, with a `ToolCallContext` (the user's query, the step, the calls so far),
+  and returns `None` (allow), `BlockCall` (refuse this call; the model gets a structured
+  `blocked_by_guard` error, `ToolCallRecord.blocked_by` is set and the run continues) or a
+  `GuardVerdict` (halt with a typed `TerminationReason`). A *payload wrapper* is a different
+  seam: it wraps the `ToolExecutor` and rewrites a result after the tool ran (the notebook's
+  *MaxToolPayloadGuard* exercise). A run guard cannot see result sizes; a payload wrapper cannot stop
+  an action. With no run guards the loop is unchanged (the golden metrics equal the committed
+  baseline). Tests: `test_run_guard_blocks_an_injected_write_and_the_run_continues()`,
+  `test_run_guard_allows_requested_restocks_and_sees_only_valid_calls()`,
+  `test_run_guard_can_halt_the_run_with_a_typed_reason()`.
 
 ---
 
@@ -237,9 +261,13 @@ messages reach a real model.
 asserts `tokens_after < tokens_before` and that the final answer still contains both expected SKUs.
 Eval signals: `compaction_rate`, `mean_input_tokens`, `context_growth_ratio`.
 
-*Trade-off to discuss.* Compaction is lossy by construction (`keep_chars` = 160 of the JSON). The
-right fix is upstream — bounded payloads (`DEFAULT_MAX_RESULTS`, `COMPACT_FIELDS`) — and compaction
-is the safety net, not the design.
+*Trade-off to discuss.* Compaction is lossy by construction (`keep_chars` = 160 of the JSON).
+`test_compaction_keeps_only_a_prefix_of_old_results()` makes the loss concrete: with the lowered
+threshold, the first G049 search returns five packaging SKUs and only `SKU-1022` is still in the
+model's final prompt. G049 passes anyway, because its expected fact happens to be that first SKU —
+a passing case is evidence about the facts it asserts, not about everything the run saw. The right
+fix is upstream — bounded payloads (`DEFAULT_MAX_RESULTS`, `COMPACT_FIELDS`) — and compaction is
+the safety net, not the design.
 
 ### 3.4 State drift
 
@@ -305,6 +333,18 @@ injection; golden case G041 and `test_unguarded_injection_is_followed_and_guarde
 unguarded run executing `create_restock_request` with quantity 10000 and leaking the system
 prompt, and the guarded run quarantining the lines and answering "urgent". Day 4 turns this into
 red-team cases.
+
+*What it does not guarantee.* The quarantine is a regular expression, not an understanding of
+intent. On the shipped corpus it removes only the planted notice and leaves every real policy
+chunk intact (`test_sanitizer_keeps_every_real_policy_chunk_except_the_seeded_one()`), but a
+paraphrased instruction with no trigger phrase passes through, and a legitimate sentence such as
+"... overrides the standard shipping policy ..." is quarantined
+(`test_sanitizer_is_a_pattern_match_with_known_misses_and_false_positives()`). That is why the
+construction lab adds a second, independent layer at the *action*: a run guard that refuses a
+`create_restock_request` for a SKU the user never named blocks the injected write in G032, G041
+and G042 with `injection_unguarded` still on. It does not stop the planner leaking its prompt in
+the answer text — `answer_correctness` stays at 0.94 — because a run guard governs actions, not
+words.
 
 ---
 
@@ -491,7 +531,7 @@ flowchart TB
 | Loop and tool execution | explicit `Harness.run()` state machine; every transition logged | managed; orchestration, tool execution, memory and response generation handled by the service |
 | Isolation / sandbox | none needed — tools are JSON lookups; a real deployment would need its own | isolated microVM per session with filesystem and shell; Code Interpreter as an isolated sandbox for code |
 | Tool boundary | `McpToolExecutor` to your own MCP server | Gateway endpoints, remote MCP servers, inline functions, Browser, Code Interpreter |
-| Guards | `MaxStepsGuard`, `TokenBudgetGuard`, `RepeatedCallGuard`, `WallClockGuard`, argument validation, output quarantine — all yours to read, test and tune | the harness page lists "observability and cost controls" and Policy for deterministic tool-call rules; the specific loop guards are the service's, not yours |
+| Guards | `MaxStepsGuard`, `TokenBudgetGuard`, `RepeatedCallGuard`, `WallClockGuard`, argument validation, output quarantine, plus your own `RunGuard`s through `Harness(run_guards=...)` — all yours to read, test and tune | the harness page lists "observability and cost controls" and Policy for deterministic tool-call rules; the specific loop guards are the service's, not yours |
 | Context management | `Harness._compact()` with thresholds you set | memory management is listed as a harness responsibility; policy details are the service's |
 | Determinism for CI | `FakeBedrockClient` + scripted turns; zero variance | a live service: evaluate with repeated sampling and confidence intervals (Day 4) |
 | Evaluation hooks | `RunResult` + OTEL spans → `evaluate_case()` | Observability traces → AgentCore Evaluations (`evaluate` on session spans) |
@@ -508,20 +548,29 @@ you.
 
 `notebooks/Day3_Building_Custom_Agent_Harness.ipynb` (generated from
 `notebooks/src/day3_building_custom_agent_harness.py` by `make build-notebooks`; the `solutions/`
-variant has every exercise filled in). Its exercises follow this lecture's order:
+variant has every exercise filled in). It follows this lecture's order:
 
-1. **Guards, validation, compaction** — run `Harness` with `StockroomConfig.mock()` overrides
-   (`max_steps`, `token_budget`, `repeat_call_window`, `compaction_token_threshold`), read
-   `RunResult.transition_log` and `RunResult.guard_events`, write a validation message for a
-   malformed call with `validate_arguments()`, and reproduce `test_compaction_summarises_old_tool_results()`
-   by hand.
-2. **MCP server via client** — build the server with `build_server()`, connect with
-   `McpToolExecutor` in-memory, then over stdio; list the specs, call a tool, trigger a `ToolError`,
-   and reproduce the description leak from `test_executor_over_stdio_subprocess()`.
-3. **Toggle each weakness and chart the metric movement** — loop over `WEAKNESS_FLAGS`, run
-   `evaluate_case()` + `aggregate()` per flag, and plot the gate metrics side by side; then fix the
-   flags one at a time (clear `STOCKROOM_WEAKNESSES` / `StockroomConfig.replace(weaknesses=...)`) and
-   watch the bars move back.
+1. **State machine, validation, guards, compaction, quarantine (sections 1–5)** — read
+   `RunResult.transition_log` and `RunResult.guard_events`, watch `validate_arguments()` intercept
+   G045, trigger each guard with stub models, lower `compaction_token_threshold` to compact G049,
+   and run the three "what it does not guarantee" demos: the budget bounds estimates, compaction
+   keeps a prefix, the quarantine is a pattern match.
+2. **MCP server via client (section 6)** — build the server with `build_server()`, connect with
+   `McpToolExecutor` in-memory, run golden cases through it, and see a server-side description
+   change what the harness advertises.
+3. **Toggle each weakness and chart the metric movement (section 7)** — `evaluate_case()` +
+   `aggregate()` per configuration, each configuration computed once; fix the flags one at a
+   time and watch the table move back.
+4. **Construction lab (section 8, Exercises 1–2)** — with `injection_unguarded` on, find the
+   G041 trajectory that executes an unrequested restock, write the trajectory assertion
+   (*assert_no_ungrounded_writes*), build the run guard (*GroundedWriteGuard*) through
+   `Harness(run_guards=...)`, and compare trajectories,
+   tool spans (`error.type=blocked_by_guard`) and suite metrics before and after.
+5. **A payload wrapper is not a run guard (section 9, Exercise 3)** — *MaxToolPayloadGuard*
+   wraps the `ToolExecutor` and replaces oversized results on G049.
+6. **Descriptions and trajectory assertions (section 10, Exercises 4–5)** — a sharper
+   `search_products` description under `ambiguous_tool_desc`, and a redundant-query assertion
+   over `ToolCallEvaluator`.
 
 The setup cell detects the mode with `detect_mode()` and prints `StockroomConfig.describe()`; in
 Colab or SageMaker it clones `genial-labs-ai/system_agent_harness_aws` first (see `docs/INSTRUCTOR_GUIDE.md`).
@@ -532,10 +581,10 @@ Colab or SageMaker it clones `genial-labs-ai/system_agent_harness_aws` first (se
 
 | Block | Task | Done when |
 |---|---|---|
-| Lab 1a (45 min) | Implement/extend the state machine: add a transition reason of your own, or a fifth guard (e.g. per-tool call cap). Keep `Transition` and `GuardVerdict` shapes. | `make test-unit` green; your guard appears in `RunResult.guard_events` |
-| Lab 1b (45 min) | Argument validation and compaction exercises (notebook 1) | G045/G046 trajectories show one invalid + one executed call; compaction event on the packaging/cleaning query |
+| Lab 1a (60 min) | Construction lab (notebook section 8, Exercises 1–2): with `injection_unguarded` on, find the failing trajectory, write the assertion, build the run guard through `Harness(run_guards=...)`, compare before/after | the assertion fails before and passes after; `must_not_call_ok_rate` is back to 1.0 with the flag still on; the default configuration's metrics do not move; you can explain why `answer_correctness` did not recover |
+| Lab 1b (30 min) | Payload wrapper (Exercise 3); the validation, compaction and "does not guarantee" demos (sections 2–5) | G049 no longer ends in `TOKEN_BUDGET` behind the wrapper; you can name one attack the quarantine misses and one fact compaction drops |
 | Lab 2a (60 min) | Stand up the MCP inventory server three ways (in-memory, stdio, `make mcp-server` + `scripts/mcp_smoke.py`); run the harness through `McpToolExecutor` | `STOCKROOM_TOOL_TRANSPORT=mcp-http make eval` passes with the server running |
-| Lab 2b (90 min) | Run the eval suite against each seeded weakness (`STOCKROOM_WEAKNESSES=<flag> make eval`), chart the movement, then fix one at a time | you can say, for every flag, which metric moved and which code path closed it |
+| Lab 2b (90 min) | Run the eval suite against each seeded weakness (`STOCKROOM_WEAKNESSES=<flag> make eval`), chart the movement, then fix one at a time; Exercises 4–5 | you can say, for every flag, which metric moved and which code path closed it |
 
 Keep `reports/eval_results.json` from each run (rename them); Day 4 uses them to set thresholds
 from observed variance.
@@ -550,8 +599,9 @@ from observed variance.
 2. The repeated-call guard fires on the *third* identical request. What is the argument for two?
    For five? What does the answer depend on (tool cost, idempotency, latency)?
 3. Compaction keeps the last `COMPACTION_KEEP_TURNS` messages verbatim and summarises older tool
-   results to 160 characters. Name a Stockroom query where that policy loses a fact the final answer
-   needs. How would you detect it with the existing metrics?
+   results to 160 characters. The notebook shows four of five packaging SKUs leaving the context
+   while G049 still passes. Write the golden case that would have failed, and say which existing
+   metric would have moved.
 4. `test_executor_over_stdio_subprocess()` shows an ambiguous description leaking through MCP.
    Whose responsibility is the description in your organisation — the tool owner's or the agent
    team's — and which eval catches a change to it before it ships?
@@ -562,6 +612,10 @@ from observed variance.
    moved Stockroom there, and which eval from this repo would you keep unchanged?
 7. The planner is a deterministic simulator. Which of today's five failure classes could it be
    *under*-representing compared with a real model, and how does the nightly live run compensate?
+8. The construction-lab guard refuses a restock whose SKU the user never named. Name a legitimate
+   request it would refuse ("restock the ear defenders"), and change the flow — not just the
+   regex — so that request works without reopening the injection. Would you block, halt, or ask
+   the user to confirm?
 
 ---
 
@@ -588,6 +642,14 @@ from observed variance.
   summarised twice.
 - **Treating mock-mode scores as the agent's quality.** They measure the harness. Use the live
   nightly numbers with confidence intervals (Day 4) for model quality claims.
+- **Removing the weakness to "prove" a guard works.** The construction lab keeps
+  `injection_unguarded` on; a guard you only tested on the clean default proves nothing. Show
+  the failing trajectory, then the same configuration with the guard.
+- **Fixing an action problem in the text channel, or the reverse.** A run guard blocks the
+  injected write but not the leaked prompt in the answer; an output filter would hide the leak
+  but not stop the write. Name which channel each control covers.
+- **Reading the token budget as a spending cap.** It bounds `chars/4` estimates; the cost estimate
+  uses the provider's reported usage, which can be higher.
 - **Forgetting the per-run reset over MCP.** Without `reset_session_state` the second restock
   request is `RSR-0002` and every restock golden case with `expected_facts: ["RSR-"]` still passes —
   but the argument/trajectory comparisons in your own cases will drift.
