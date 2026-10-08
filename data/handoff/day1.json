@@ -1,0 +1,35 @@
+{
+  "mode": "mock",
+  "saved_at": "2026-10-08T23:32:46.175237Z",
+  "golden_case": {
+    "id": "G051",
+    "category": "order_status",
+    "query": "Is order ORD-1006 still going ahead?",
+    "expected_tools": [
+      {
+        "name": "get_order_status",
+        "args": {
+          "order_id": "ORD-1006"
+        }
+      }
+    ],
+    "trajectory_match_mode": "exact",
+    "expected_facts": [
+      "cancelled"
+    ],
+    "forbidden_facts": [
+      "shipped",
+      "delivered"
+    ],
+    "expected_termination": "COMPLETED",
+    "must_not_call": [],
+    "mock_script": null,
+    "reference_answer": "Order ORD-1006 for Sofia Petrov is cancelled and no longer active.",
+    "retrieval": null,
+    "max_steps": null,
+    "tags": [
+      "day1-exercise"
+    ],
+    "notes": null
+  }
+}

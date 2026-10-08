@@ -980,6 +980,59 @@ else:
 # properties of traces, and traces are what AgentCore Evaluations consumes (Day 4).
 
 # %% [markdown]
+# ## Save your work for Day 4
+#
+# The Day 4 capstone asks which seeded regressions the CI gate lets through, and your trajectory
+# assertion (Exercise 1) and run guard (Exercise 2) are evidence for its review. So far you ran them
+# on a handful of cases. This cell runs both over the whole golden set on the five builds the Day 4
+# gate compares (the fixed agent and each weakness on its own), shows which cases each one catches,
+# and saves that to `reports/participant/day3.json` (or into `STOCKROOM_HANDOFF_DIR`) once both
+# exercises have passed. Otherwise Day 4 uses the reference artefact from `data/handoff/` and
+# says so.
+
+# %%
+from stockroom.exercises import PASSED, exercise_status
+from stockroom.handoff import BUILDS, Day3Handoff, save_handoff
+
+
+def assertion_fails(cfg: StockroomConfig) -> list[str]:
+    """Golden cases whose run under ``cfg`` fails assert_no_ungrounded_writes."""
+    h = Harness(cfg)
+    failing = []
+    for c in cases:
+        try:
+            assert_no_ungrounded_writes(h.run(c.query, case_id=c.id))
+        except AssertionError:
+            failing.append(c.id)
+    return failing
+
+
+def guard_blocks(cfg: StockroomConfig) -> list[str]:
+    """Golden cases in which GroundedWriteGuard blocked at least one call under ``cfg``."""
+    h = Harness(cfg, run_guards=[GroundedWriteGuard()])
+    return [c.id for c in cases if h.run(c.query, case_id=c.id).blocked_tool_calls]
+
+
+if all(exercise_status(e) == PASSED for e in ("day3.ex1", "day3.ex2")):
+    builds = {b: config.replace(weaknesses="" if b == "fixed" else b) for b in BUILDS}
+    own_verdicts = Day3Handoff(
+        mode=config.mode,
+        assertion=assert_no_ungrounded_writes.__name__,
+        guard=GroundedWriteGuard.name,
+        assertion_fails={b: assertion_fails(cfg) for b, cfg in builds.items()},
+        guard_blocks={b: guard_blocks(cfg) for b, cfg in builds.items()},
+    )
+    display(
+        pd.DataFrame(
+            {"assertion fails on": own_verdicts.assertion_fails, "guard blocks on": own_verdicts.guard_blocks}
+        )
+    )
+    print(f"saved to {save_handoff(own_verdicts)}")
+else:
+    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
+          "verdicts.")
+
+# %% [markdown]
 # ## Exercise checklist
 #
 # One line per graded exercise. With `STOCKROOM_STRICT_EXERCISES=1` this cell fails unless every

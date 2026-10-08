@@ -493,6 +493,33 @@ else:
     exercise_passed("day2.ex3", f"{answer[0]} was called {answer[1]} times with identical arguments")
 
 # %% [markdown]
+# ## Save your work for Day 4
+#
+# The Day 4 gate's `answer_correctness` is graded by a judge, so the capstone review should say how
+# far that judge can be trusted. This cell saves what you measured today: agreement and kappa for
+# rubric v2 and for your rubric (Exercise 1), and your calibration item (Exercise 2), which Day 4
+# hands to the gate's judge. It writes `reports/participant/day2.json` (or into
+# `STOCKROOM_HANDOFF_DIR`) once both exercises have passed; otherwise Day 4 uses the reference
+# artefact from `data/handoff/` and says so.
+
+# %%
+from stockroom.exercises import PASSED, exercise_status
+from stockroom.handoff import CalibrationSummary, Day2Handoff, save_handoff
+
+if all(exercise_status(e) == PASSED for e in ("day2.ex1", "day2.ex2")):
+    own_calibration = Day2Handoff(
+        mode=config.mode,
+        calibrations=[CalibrationSummary.from_report(r) for r in (report_v2, report_v3)],
+        calibration_item=new_calibration_item(),
+    )
+    saved = save_handoff(own_calibration)
+    print(f"saved rubrics {[c.rubric_version for c in own_calibration.calibrations]} and item "
+          f"{own_calibration.calibration_item.id} to {saved}")
+else:
+    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
+          "calibration.")
+
+# %% [markdown]
 # ## Exercise checklist
 #
 # One line per graded exercise. With `STOCKROOM_STRICT_EXERCISES=1` this cell fails unless every

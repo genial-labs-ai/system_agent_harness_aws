@@ -610,6 +610,27 @@ else:
     exercise_passed("day1.ex4", "all three failures classified correctly")
 
 # %% [markdown]
+# ## Save your work for Day 4
+#
+# The Day 4 capstone reuses your golden case from Exercise 1: it runs the case through Day 4's
+# label validator and on every seeded-weakness build, next to the CI gate's verdicts. This cell
+# saves the case to the hand-off directory (`reports/participant/day1.json`, or the folder named
+# by `STOCKROOM_HANDOFF_DIR`) once Exercise 1 has passed; re-run it whenever you change the case.
+# Nothing saved is fine too: Day 4 then uses the reference case from `data/handoff/` and says so.
+# In Colab, files on the runtime are lost when it is recycled: set `STOCKROOM_HANDOFF_DIR` to a
+# folder on a mounted Google Drive before running this cell, or download the file.
+
+# %%
+from stockroom.exercises import PASSED, exercise_status
+from stockroom.handoff import Day1Handoff, save_handoff
+
+if exercise_status("day1.ex1") == PASSED:
+    saved = save_handoff(Day1Handoff(mode=config.mode, golden_case=new_golden_case()))
+    print(f"saved your golden case {new_golden_case().id} to {saved}")
+else:
+    print("Nothing saved: Exercise 1 has not passed yet, so Day 4 will use the reference case.")
+
+# %% [markdown]
 # ## Exercise checklist
 #
 # One line per graded exercise. With `STOCKROOM_STRICT_EXERCISES=1` this cell fails unless every

@@ -60,6 +60,15 @@ def exercise_passed(exercise_id: str, detail: str = "") -> None:
     print(f"{_label(exercise_id)} passed" + (f": {detail}" if detail else ""))
 
 
+def exercise_status(exercise_id: str) -> str:
+    """``passed``, ``not solved yet`` or ``not run`` for one exercise in this kernel.
+
+    The notebooks' hand-off cells use it to save a day's work only once its check has passed.
+    """
+    _label(exercise_id)  # validates the id
+    return _status.get(exercise_id, NOT_RUN)
+
+
 def exercise_summary(exercise_ids: Sequence[str], *, strict: bool | None = None) -> dict[str, str]:
     """Print one status line per exercise; in strict mode raise unless every one passed."""
     statuses = {eid: _status.get(eid, NOT_RUN) for eid in exercise_ids}
