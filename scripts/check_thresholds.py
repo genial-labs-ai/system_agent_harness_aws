@@ -33,7 +33,7 @@ from typing import Any
 
 import yaml
 
-from stockroom.evals.stats import floor_is_safe, required_max_drop
+from stockroom.evals.stats import answer_value, floor_is_safe, required_max_drop
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = REPO_ROOT / "data" / "golden" / "manifest.json"
@@ -234,9 +234,15 @@ def evaluate(
             value = values.get(name)
             if value is None:
                 failures.append(f"{name} missing for category {category}")
-            elif "min" in rule and value < rule["min"]:
+                continue
+            if "min" in rule and value < rule["min"]:
                 failures.append(
                     f"{name} in category {category} = {value:.3f} < min {rule['min']} "
+                    f"({values.get('cases')} cases)"
+                )
+            if "max" in rule and value > rule["max"]:
+                failures.append(
+                    f"{name} in category {category} = {value:.3f} > max {rule['max']} "
                     f"({values.get('cases')} cases)"
                 )
 
@@ -261,11 +267,12 @@ def evaluate(
         if usable and (value is None or base is None):
             status = "missing"
             failures.append(f"cost metric {name} missing from the results or baseline")
-        elif usable and base > 0 and (value - base) / base > allowed:
+        elif usable and value > base * (1 + allowed):
             status = "FAIL"
+            rise = f"{100 * (value - base) / base:.1f}%" if base else "from zero"
             failures.append(
-                f"{name} rose {100 * (value - base) / base:.1f}% vs baseline "
-                f"({base:.1f} -> {value:.1f}), more than the allowed {100 * allowed:.0f}%"
+                f"{name} rose {rise} vs baseline ({base:.1f} -> {value:.1f}), "
+                f"more than the allowed {100 * allowed:.0f}%"
             )
         rows.append(
             {
@@ -295,8 +302,7 @@ def case_outcomes(results: dict[str, Any]) -> dict[str, dict[str, float]]:
         grouped.setdefault(str(row.get("case_id")), []).append(row)
 
     def answer(row: dict[str, Any]) -> float:
-        judged = row.get("judge_passed")
-        return float(judged if judged is not None else row.get("answer_correctness_deterministic"))
+        return answer_value(row.get("judge_passed"), row.get("answer_correctness_deterministic"))
 
     return {
         cid: {
@@ -513,6 +519,10 @@ def main(argv: list[str] | None = None) -> int:
     manifest = load_json(args.manifest)
     if args.write_baseline:
         problems = check_evidence(results, manifest, args.manifest)
+        if manifest is None:
+            problems.append(
+                f"dataset manifest {args.manifest} is missing; coverage was not checked"
+            )
         if results.get("weaknesses") and not args.allow_weaknesses:
             problems.append(
                 f"weakness flag(s) {results['weaknesses']} were on; a baseline must come from "

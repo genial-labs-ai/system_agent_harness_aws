@@ -44,6 +44,7 @@ def test_live_without_model_ids_is_a_clear_error() -> None:
         {"STOCKROOM_WEAKNESSES": "lazy_model"},
         {"MAX_STEPS": "0"},
         {"TOKEN_BUDGET": "10", "MAX_TOKENS": "100"},
+        {"TOKEN_BUDGET": "1024", "MAX_TOKENS": "1024"},  # the output reserve leaves no input room
         {"REPEAT_CALL_WINDOW": "1"},
     ],
 )

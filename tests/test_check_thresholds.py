@@ -10,7 +10,8 @@ from typing import Any
 import pytest
 import yaml
 
-from stockroom.config import REPO_ROOT
+from stockroom.config import REPO_ROOT, StockroomConfig
+from stockroom.evals.report import results_document
 
 SCRIPTS = REPO_ROOT / "scripts"
 
@@ -176,6 +177,14 @@ def test_category_gate_sees_what_the_aggregate_hides(gate) -> None:
     ]
 
 
+def test_category_gate_applies_max_rules_too(gate) -> None:
+    stock_lookup = _results()["metrics"]["by_category"]["stock_lookup"] | {"loop_rate": 0.5}
+    thresholds = THRESHOLDS | {"category_gates": {"loop_rate": {"max": 0.0}}}
+    results = _results(by_category={"stock_lookup": stock_lookup})
+    _, failures = gate.evaluate(thresholds, results, gate.promptfoo_summary(None), _baseline())
+    assert failures == ["loop_rate in category stock_lookup = 0.500 > max 0.0 (3 cases)"]
+
+
 def test_cost_gate_fails_on_token_growth(gate) -> None:
     rows, failures = gate.evaluate(
         THRESHOLDS, _results(mean_input_tokens=2300.0), gate.promptfoo_summary(None), _baseline()
@@ -186,6 +195,12 @@ def test_cost_gate_fails_on_token_growth(gate) -> None:
         THRESHOLDS, _results(mean_input_tokens=2150.0), gate.promptfoo_summary(None), _baseline()
     )
     assert ok == []
+    from_zero = _baseline()
+    from_zero["metrics"] = from_zero["metrics"] | {"mean_input_tokens": 0.0}
+    _, failures = gate.evaluate(THRESHOLDS, _results(), gate.promptfoo_summary(None), from_zero)
+    assert failures == [
+        "mean_input_tokens rose from zero vs baseline (0.0 -> 2000.0), more than the allowed 10%"
+    ]
 
 
 @pytest.mark.parametrize(
@@ -333,8 +348,19 @@ def test_write_baseline_refuses_weakened_or_incomplete_runs(gate, tmp_path: Path
         )
         == 0
     )
-    truncated = _results(cases=[_case("G001")])
-    assert gate.main(["--results", str(_write(tmp_path / "t.json", truncated)), *args]) == 2
+    truncated = _write(tmp_path / "t.json", _results(cases=[_case("G001")]))
+    assert gate.main(["--results", str(truncated), *args]) == 2
+    # Without a manifest, coverage cannot be checked, so nothing is written.
+    elsewhere = tmp_path / "other.json"
+    no_manifest = ["--manifest", str(tmp_path / "gone.json"), "--write-baseline", str(elsewhere)]
+    assert gate.main(["--results", str(truncated), *no_manifest]) == 2
+    assert not elsewhere.exists()
+
+
+def test_an_empty_suite_yields_results_the_gate_rejects(gate) -> None:
+    doc = results_document(StockroomConfig.mock(), [], judge_label="fake-judge:v2")
+    assert doc["metrics"] == {"cases": 0} and doc["run_to_run"] == {}
+    assert gate.check_evidence(doc) == ["results contain no per-case scores"]
 
 
 def test_promptfoo_assert_helpers(asserts) -> None:

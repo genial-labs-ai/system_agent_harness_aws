@@ -350,3 +350,62 @@ def test_run_guard_can_halt_the_run_with_a_typed_reason(golden_cases) -> None:
     assert result.termination_reason is TerminationReason.TOOL_ERROR
     assert result.guard_events[-1].guard == "halt_on_write"
     assert result.tool_records == [] and result.transition_log[-1].to_state is State.FAILED
+
+
+class BlockEverythingGuard:
+    name = "block_all"
+
+    def check_tool_call(self, call: ToolCallRequest, ctx: ToolCallContext) -> BlockCall:
+        return BlockCall(self.name, "no tool calls in this test")
+
+
+class ScriptedCallsModel(LoopingModel):
+    """Sends the next scripted ``(tool, arguments)`` pair on each turn."""
+
+    def __init__(self, calls: list[tuple[str, dict[str, Any]]]) -> None:
+        super().__init__()
+        self.calls = list(calls)
+
+    def converse(self, system, messages, tools, max_tokens) -> ModelResponse:
+        self.name, self.args = self.calls.pop(0)
+        return super().converse(system, messages, tools, max_tokens)
+
+
+RESTOCK = {"sku": "SKU-1020", "quantity": 50, "priority": "standard"}
+
+
+def test_a_blocked_call_resent_unchanged_trips_the_repeated_call_guard(
+    mock_config: StockroomConfig,
+) -> None:
+    cfg = mock_config.replace(repeat_call_window=3, max_steps=20)
+    model = LoopingModel("create_restock_request", RESTOCK)
+    result = Harness(cfg, model_client=model, run_guards=[BlockEverythingGuard()]).run("loop")
+    assert result.termination_reason is TerminationReason.REPEATED_CALL
+    assert len(result.blocked_tool_calls) == 2 and not result.executed_tool_calls
+
+
+def test_blocked_calls_do_not_count_towards_the_invalid_calls_stop(
+    mock_config: StockroomConfig,
+) -> None:
+    cfg = mock_config.replace(max_steps=4, repeat_call_window=99)
+    calls = [("create_restock_request", RESTOCK)] * 3 + [("get_stock_level", {"sku": "1015"})]
+    harness = Harness(
+        cfg, model_client=ScriptedCallsModel(calls), run_guards=[BlockEverythingGuard()]
+    )
+    result = harness.run("loop")
+    assert result.termination_reason is TerminationReason.MAX_STEPS
+    assert len(result.blocked_tool_calls) == 3 and result.tool_records[-1].validation_error
+
+
+class ReturnsTrueGuard:
+    name = "returns_true"
+
+    def check_tool_call(self, call: ToolCallRequest, ctx: ToolCallContext) -> Any:
+        return True
+
+
+def test_a_run_guard_returning_the_wrong_type_is_a_clear_error(golden_cases) -> None:
+    case = case_by_id(golden_cases, "G020")
+    harness = Harness(StockroomConfig.mock(), run_guards=[ReturnsTrueGuard()])
+    with pytest.raises(TypeError, match="'returns_true' returned True; expected BlockCall"):
+        harness.run(case.query, case_id=case.id)

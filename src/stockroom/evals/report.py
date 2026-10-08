@@ -18,7 +18,7 @@ from typing import Any
 
 from stockroom.config import StockroomConfig
 from stockroom.evals.metrics import CaseScores, aggregate
-from stockroom.evals.stats import case_bootstrap_interval, run_to_run
+from stockroom.evals.stats import answer_value, case_bootstrap_interval, run_to_run
 
 MOCK_AGENT_MODEL_ID = "fake.stockroom-planner-v1"
 RUN_TO_RUN_METRICS = (
@@ -37,9 +37,7 @@ def case_value(score: CaseScores, metric: str) -> float:
     if metric == "argument_correctness":
         return score.argument_correctness
     if metric == "answer_correctness":
-        if score.judge_passed is not None:
-            return float(score.judge_passed)
-        return float(score.answer_correctness_deterministic)
+        return answer_value(score.judge_passed, score.answer_correctness_deterministic)
     raise ValueError(f"no per-case value for {metric}")
 
 
@@ -47,6 +45,8 @@ def uncertainty(
     scored: Sequence[tuple[int, CaseScores]],
 ) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
     """``(run_to_run, confidence_intervals)`` from ``(repeat index, scores)`` pairs."""
+    if not scored:
+        return {}, {}
     repeats = sorted({r for r, _ in scored})
     per_repeat = [aggregate([s for r, s in scored if r == rep]) for rep in repeats]
     spread = {m: run_to_run([agg[m] for agg in per_repeat]) for m in RUN_TO_RUN_METRICS}

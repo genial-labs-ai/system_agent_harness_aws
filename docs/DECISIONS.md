@@ -329,9 +329,12 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     is set and the run continues) or `GuardVerdict` (halt with a typed `TerminationReason`; no new
     enum value). With no run guards the loop is unchanged and the golden metrics equal the committed
     baseline. Blocked calls count as not executed, so `invalid_call_rate` rises when a guard blocks;
-    `RunResult.blocked_tool_calls` separates them. Day 3 is now a construction lab on this seam with
+    `RunResult.blocked_tool_calls` separates them. A blocked call the model resends unchanged counts
+    towards the repeated-call guard, so a model stuck on a refused write stops after
+    `REPEAT_CALL_WINDOW` requests rather than at `MAX_STEPS`; the invalid-calls stop counts only
+    schema-invalid calls. A guard that returns anything else is a `TypeError`. Day 3 is now a construction lab on this seam with
     `injection_unguarded` left on. `TokenBudgetGuard` reserves `MAX_TOKENS` (used + estimated input
-    + max output ≤ budget), so the budget is a ceiling on `chars/4` estimates — exact in mock mode,
+    + max output ≤ budget; the config therefore requires `TOKEN_BUDGET` > `MAX_TOKENS`), so the budget is a ceiling on `chars/4` estimates — exact in mock mode,
     not a billing cap in live mode. The Day 3 notebook and `tests/test_harness_guards.py` pin the
     limits of the sanitizer (a paraphrased injection it misses, a legitimate sentence it
     quarantines) and of compaction (a fact beyond the retained prefix). No golden metric moved.

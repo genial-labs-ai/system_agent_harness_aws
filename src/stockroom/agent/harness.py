@@ -196,7 +196,9 @@ class RepeatedCallGuard:
         signature = ToolCallRecord(
             step=0, tool_use_id="", name=call.name, arguments=call.arguments
         ).signature()
-        recent = [r.signature() for r in records if r.executed][-(self.window - 1) :]
+        # Executed and guard-blocked calls both count; schema-invalid calls have their own stop.
+        requested = [r.signature() for r in records if r.validation_error is None]
+        recent = requested[-(self.window - 1) :]
         if len(recent) == self.window - 1 and all(sig == signature for sig in recent):
             return GuardVerdict(
                 self.name,
@@ -501,15 +503,16 @@ class Harness:
                     if halted is not None:
                         break
                     spec = self.specs.get(call.name)
+                    problem = None if spec is None else validate_arguments(spec, call.arguments)
                     blocked: BlockCall | None = None
-                    if self.run_guards:
-                        decision = self._consult_run_guards(call, spec, query, step, existing)
+                    if self.run_guards and spec is not None and problem is None:
+                        decision = self._consult_run_guards(call, query, step, existing)
                         if isinstance(decision, GuardVerdict):
                             halted = decision
                             break
                         blocked = decision
                     with self.tracer.tool_span(step, call, spec, usage.model_calls) as tspan:
-                        record = self._execute(step, call, spec, guarded, blocked)
+                        record = self._execute(step, call, spec, problem, guarded, blocked)
                         self.tracer.record_tool_result(tspan, record)
                     trajectory.append(record)
                     records_this_step.append(record)
@@ -537,7 +540,9 @@ class Harness:
                 if (
                     all(r.validation_error for r in records_this_step)
                     and sum(
-                        1 for s in trajectory if isinstance(s, ToolCallRecord) and not s.executed
+                        1
+                        for s in trajectory
+                        if isinstance(s, ToolCallRecord) and s.validation_error
                     )
                     >= self.config.max_steps
                 ):
@@ -577,19 +582,22 @@ class Harness:
     def _consult_run_guards(
         self,
         call: ToolCallRequest,
-        spec: ToolSpec | None,
         query: str,
         step: int,
         records: list[ToolCallRecord],
     ) -> BlockCall | GuardVerdict | None:
-        """Ask each run guard about a schema-valid call; invalid calls never reach a guard."""
-        if spec is None or validate_arguments(spec, call.arguments) is not None:
-            return None
+        """Ask each run guard about a schema-valid call (the caller skips invalid ones)."""
         ctx = ToolCallContext(query=query, step=step, records=tuple(records))
         for guard in self.run_guards:
             decision = guard.check_tool_call(call, ctx)
-            if decision is not None:
-                return decision
+            if decision is None:
+                continue
+            if not isinstance(decision, BlockCall | GuardVerdict):
+                raise TypeError(
+                    f"run guard {getattr(guard, 'name', type(guard).__name__)!r} returned "
+                    f"{decision!r}; expected BlockCall, GuardVerdict or None"
+                )
+            return decision
         return None
 
     def _execute(
@@ -597,6 +605,7 @@ class Harness:
         step: int,
         call: ToolCallRequest,
         spec: ToolSpec | None,
+        problem: str | None,
         guarded: bool,
         blocked: BlockCall | None = None,
     ) -> ToolCallRecord:
@@ -612,7 +621,6 @@ class Harness:
                 error_code=err.error_code,
                 validation_error=f"unknown tool {call.name}",
             )
-        problem = validate_arguments(spec, call.arguments)
         if problem is not None:
             content = {
                 "error": "invalid_arguments",

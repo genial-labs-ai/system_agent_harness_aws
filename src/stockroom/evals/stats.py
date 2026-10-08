@@ -30,6 +30,15 @@ BOOTSTRAP_SEED = 0
 NOISE_SDS = 2.0  # one-sided margin: noise alone exceeds it in roughly 2% of comparisons
 
 
+def answer_value(judge_passed: bool | None, deterministic: bool | float) -> float:
+    """A case's answer score: the judge's verdict when there is one, else the deterministic check.
+
+    ``stockroom.evals.report.case_value()`` scores ``CaseScores`` with it and
+    ``scripts/check_thresholds.py`` scores the per-case rows of a results file, so the two agree.
+    """
+    return float(judge_passed if judge_passed is not None else deterministic)
+
+
 def run_to_run(per_repeat: Sequence[float]) -> dict[str, Any]:
     """Spread of one suite-level metric across repeated runs of the same suite on the same code."""
     values = [float(v) for v in per_repeat]

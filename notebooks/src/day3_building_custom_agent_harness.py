@@ -423,21 +423,22 @@ METRICS = [
     "mean_input_tokens",
 ]
 FLAGS = ["ambiguous_tool_desc", "oversized_payload", "naive_retry", "injection_unguarded"]
-_suite_cache: dict[tuple[tuple[str, ...], tuple[int, ...]], dict[str, Any]] = {}
+_suite_cache: dict[tuple[tuple[str, ...], tuple[int, ...]], tuple[tuple, dict[str, Any]]] = {}
 
 
 def suite(flags: list[str] | tuple[str, ...] = (), run_guards: tuple = ()) -> dict[str, Any]:
     """Aggregate golden-set metrics for one configuration (computed once, then cached).
 
-    Guards are keyed by their class object, so re-running a cell that redefines a guard class
-    computes fresh numbers instead of returning the old ones.
+    Guards are keyed by the guard objects themselves, so a guard redefined in a later cell, or a
+    second instance with other settings, gets fresh numbers. The cache keeps each guard alive, so
+    Python cannot hand its id to a new object.
     """
-    key = (tuple(sorted(flags)), tuple(id(type(g)) for g in run_guards))
+    key = (tuple(sorted(flags)), tuple(id(g) for g in run_guards))
     if key not in _suite_cache:
         h = Harness(config.replace(weaknesses=",".join(flags)), run_guards=run_guards)
         scores = [evaluate_case(c, h.run(c.query, case_id=c.id), judge) for c in cases]
-        _suite_cache[key] = aggregate(scores)
-    return _suite_cache[key]
+        _suite_cache[key] = (tuple(run_guards), aggregate(scores))
+    return _suite_cache[key][1]
 
 
 fixed = suite()
