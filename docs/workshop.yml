@@ -150,27 +150,7 @@ banned:
   - pattern: '\bBedrock evaluations?\b'
     use: "Bedrock Evaluations (the product name)"
 
-# Known findings in files another branch is rewriting. Each entry silences one rule for one
-# text in one file; an entry that no longer matches anything is itself an error, so the list
-# can only shrink. Delete an entry when you fix the text it names.
-exemptions:
-  - file: lectures/day3_agent_harness_and_mcp_mocking.md
-    rule: banned-spelling
-    text: "OTEL"
-    reason: "Day 3 body is being rewritten on another branch (two 'OTEL spans' in prose)."
-  - file: notebooks/src/day3_building_custom_agent_harness.py
-    rule: banned-spelling
-    text: "OTEL"
-    reason: "Day 3 body is being rewritten on another branch ('the OTEL trace' in the wrap-up)."
-  - file: lectures/day4_aws_ci_cd_redteaming.md
-    rule: banned-spelling
-    text: "Red-teaming"
-    reason: "Day 4 body is being rewritten on another branch (section 4 heading)."
-  - file: lectures/day4_aws_ci_cd_redteaming.md
-    rule: banned-spelling
-    text: "Bedrock evaluations"
-    reason: "Day 4 body is being rewritten on another branch (section 6 paraphrase of the AWS page)."
-  - file: docs/DECISIONS.md
-    rule: page-title
-    text: "Decisions, deviations and version pins"
-    reason: "The decisions log is edited on another branch; retitle it to the canonical page title there."
+# Known findings that cannot be fixed yet. Each entry silences one rule for one text in one
+# file; an entry that no longer matches anything is itself an error, so the list can only
+# shrink. Delete an entry when you fix the text it names.
+exemptions: []

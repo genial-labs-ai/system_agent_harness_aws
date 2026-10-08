@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       repeats:
-        description: "Times to run each golden case (confidence intervals)"
+        description: "Times to run each golden case (run-to-run spread)"
         default: "3"
         required: false
 

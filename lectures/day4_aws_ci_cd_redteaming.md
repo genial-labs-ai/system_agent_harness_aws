@@ -3,7 +3,7 @@
 **Thesis of the day:** an eval suite that does not block a merge is a dashboard. Today we turn the
 Stockroom metrics into a gate that fails a pull request (deterministically, offline), an on-demand
 live run on Amazon Bedrock (the "nightly" tier, dispatched manually here to keep spend opt-in)
-that reports confidence intervals instead of gating, a red-team suite
+that reports run-to-run spread instead of gating, a red-team suite
 whose every case encodes "the attack must *not* succeed", and an IAM/OIDC setup with no long-lived
 keys. We then map what the repo does to what Amazon Bedrock Evaluations and AgentCore Evaluations
 can do for you — and what they cannot.
@@ -63,7 +63,7 @@ Lecture ≈ 1.5 h, lab ≈ 4 h, review ≈ 1 h.
 |---|---|---|---|
 | Stockroom artefact | `.github/workflows/agent_eval_ci.yml`, `make ci` | `.github/workflows/agent_eval_nightly.yml` | out of scope for the repo; AgentCore Observability / CloudWatch in the AWS section |
 | Model | `FakeBedrockClient` (scripted turns + `HeuristicPlanner`) | `BedrockConverseClient` on `AGENT_MODEL_ID`; `BedrockJudge` on `JUDGE_MODEL_ID` | the deployed model |
-| Variance | zero by construction | real; measured with `STOCKROOM_EVAL_REPEATS` and 95% CIs | real |
+| Variance | zero by construction | real; measured with `STOCKROOM_EVAL_REPEATS` (`run_to_run`) | real |
 | Blocks a merge? | **yes** (`make thresholds` exits 1) | **no** (`--no-gate`, report only) | no — alerts |
 | Tool transport | `mcp-http` against the mock server started in the job | local tools (or MCP if you set it) | the real services |
 | Output | `reports/summary.md` as a PR comment, artefacts | reports published to S3 + workflow artefact | traces, dashboards |
@@ -93,7 +93,7 @@ flowchart LR
 
 ---
 
-## 2. Regression thresholds from baseline variance, not arbitrary numbers
+## 2. Thresholds: product floors, measured noise, allowed regression
 
 ### 2.1 The single source of truth
 
@@ -250,7 +250,7 @@ Two further conventions worth copying:
 
 ---
 
-## 4. Red-teaming the Stockroom agent (and only the Stockroom agent)
+## 4. Red teaming the Stockroom agent (and only the Stockroom agent)
 
 ### 4.1 Categories and surface
 
@@ -379,7 +379,7 @@ before you quote them.
 
 ### 6.1 Bedrock Evaluations: job types
 
-The overview page describes Amazon Bedrock evaluations as a way to evaluate Bedrock models and
+The overview page describes Amazon Bedrock Evaluations as a way to evaluate Bedrock models and
 knowledge bases, as well as models and RAG sources outside Bedrock. Four job types are described:
 
 | Job type | What the page says |
@@ -499,7 +499,7 @@ so a live runner installs `--extra cloudwatch`.
 ```mermaid
 flowchart LR
   subgraph Repo["Stockroom (this repo)"]
-    R[RunResult + OTEL spans] --> E1[evaluate_case / aggregate<br/>trajectory + answer metrics]
+    R[RunResult + OpenTelemetry spans] --> E1[evaluate_case / aggregate<br/>trajectory + answer metrics]
     R --> J[Bedrock Evaluations JSONL<br/>prompt · referenceResponse · category · modelResponses]
   end
   subgraph AWS["AWS (live only)"]
@@ -578,7 +578,7 @@ optional extensions.
 
 1. **Growing the golden set (Exercise 1)** — a teacher proposes candidate `GoldenCase`s (a
    deterministic template generator in mock mode, a paraphrasing Bedrock model in live mode).
-   Participants write a `validate_candidate` function, which checks each label against the data (the
+   Participants write a validation function that checks each label against the data (the
    identifier is in the query, the expected facts are what the data says, the case is neither an
    exact nor a near-duplicate of a golden case by trajectory signature) **without looking at an
    agent run**. The agent runs afterwards and only classifies accepted cases: passing, failing

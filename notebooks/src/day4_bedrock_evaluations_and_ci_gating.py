@@ -13,7 +13,7 @@
 #    and check the decisions they produce with the real gate, `scripts/check_thresholds.py`.
 # 5. **Capstone:** find a seeded regression the aggregate gate lets through, change the gate so it
 #    rejects that regression while the fixed agent still passes, and write the review a PR needs.
-# 6. *Optional:* build (and, only with explicit consent, submit) an Amazon Bedrock evaluation job,
+# 6. *Optional:* build (and, only with explicit consent, submit) a Bedrock Evaluations job,
 #    call AgentCore Evaluations on a live session, and explain the GitHub OIDC flow.
 #
 # **Required path:** sections 1–6, offline, no AWS account (lab part 1: sections 1–3; lab part 2:

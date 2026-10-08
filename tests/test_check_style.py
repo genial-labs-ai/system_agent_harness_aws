@@ -185,9 +185,13 @@ def test_code_spans_and_fences_are_not_prose(style, repo_copy: Path, edit) -> No
 
 def test_an_exemption_that_matches_nothing_is_an_error(style, repo_copy: Path, edit) -> None:
     edit(
-        "lectures/day4_aws_ci_cd_redteaming.md",
-        "Red-teaming the Stockroom agent",
-        "Red teaming the Stockroom agent",
+        "docs/workshop.yml",
+        "exemptions: []",
+        "exemptions:\n"
+        "  - file: lectures/day4_aws_ci_cd_redteaming.md\n"
+        "    rule: banned-spelling\n"
+        '    text: "Red-teaming"\n'
+        '    reason: "fixed long ago"',
     )
     assert ("exemption", "docs/workshop.yml") in _rules(style, repo_copy)
 

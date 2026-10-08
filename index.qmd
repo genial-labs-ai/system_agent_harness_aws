@@ -240,8 +240,7 @@ at a time.
 ::: {.path-body}
 [Production CI/CD for Agents on AWS: Regression Gates, Red Teaming, and Bedrock Evaluations](lectures/day4_aws_ci_cd_redteaming.md){.path-title}
 
-Offline versus online evaluation, thresholds from baseline variance rather than arbitrary
-numbers, flaky-eval management, a red-team suite, the CI gate step by step, Bedrock and
+Offline versus online evaluation, product floors kept apart from measured noise, flaky-eval management, a red-team suite, the CI gate step by step, Bedrock and
 AgentCore Evaluations, and an OIDC-assumed IAM role with no long-lived keys.
 :::
 :::
@@ -366,7 +365,7 @@ participants get stuck.
 - Calibrate an LLM judge against human labels, measure agreement, and probe it for bias.
 - Emit one OpenTelemetry span tree per run and read loops and context growth off it.
 - Build a harness with schema validation, guards, context compaction and tool-output quarantine, and put the tools behind MCP.
-- Turn metrics into a PR gate with thresholds from baseline variance, a red-team suite, and GitHub OIDC to AWS with no long-lived keys.
+- Turn metrics into a PR gate that checks its own evidence, sees per-category and cost regressions, runs a red-team suite, and reaches AWS through GitHub OIDC with no long-lived keys.
 :::
 
 ## Who it is for

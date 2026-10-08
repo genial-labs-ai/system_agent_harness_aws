@@ -1,4 +1,4 @@
-# Decisions, deviations and version pins
+# Decisions, Deviations, and Version Pins
 
 This file records every place where the delivered repository deviates from the project brief, makes
 a judgement call the brief left open, or pins a version that was verified against current
@@ -155,7 +155,8 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     generated** by `scripts/build_notebooks.py`. Cell tags drive the two outputs: `exercise` cells
     go to the student notebook only, `solution` cells to `notebooks/solutions/` only (same position),
     `check` cells to both and are written to print "not solved yet" rather than fail in the student
-    variant. Generated notebooks carry no outputs, kernelspec `python3`, and content-hash cell ids
+    variant (since entry 44 they report through `stockroom.exercises`, and the solution notebooks
+    run in strict mode). Generated notebooks carry no outputs, kernelspec `python3`, and content-hash cell ids
     (`co-<sha1[:8]>`) so rebuilds are byte-identical and diffs stay clean (nbformat would otherwise
     assign random ids). The participant marker is referenced only in the builder, as `"TO" + "DO"`,
     so a repository-wide grep hits exercise cells only.
@@ -173,8 +174,9 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
 32. **`MaxToolPayloadGuard` (Day 3 exercise) is a `ToolExecutor` wrapper, not a harness guard**,
     because `Harness` exposes no guard-registration hook; it replaces any single tool result over N
     characters with a structured `payload_too_large` error, which turns G049 under
-    `oversized_payload` from `TOKEN_BUDGET` into `COMPLETED` (14,093 → 2,777 input tokens). A
-    guard-plugin seam on the harness is a candidate follow-up.
+    `oversized_payload` from `TOKEN_BUDGET` into `COMPLETED` (14,093 → 2,777 input tokens). Entry
+    45 added a seam for calls (`Harness(run_guards=...)`); payload limits stay executor wrappers
+    because a run guard does not see results.
 33. **Bedrock Evaluations payloads are validated offline against botocore's service model**
     (`botocore.validate.validate_parameters` on the `CreateEvaluationJob` input shape shipped with
     botocore 1.43.108), so the Day 4 notebook proves the request is well-formed without an AWS call.
@@ -185,7 +187,8 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     on AgentCore Runtime.
 34. **Day 4 Exercise 2 uses an explicitly illustrative variance table** (labelled made-up) as input
     for setting a threshold with the rule "mean − 2·pstdev, rounded down", presented as one
-    reasonable rule rather than a standard.
+    reasonable rule rather than a standard. *Superseded by entry 43:* the rule conflated the floor
+    with the noise; the illustrative table is kept (still labelled synthetic) for Exercise 3.
 35. **`make slides` redirects stdin from `/dev/null`.** marp-cli treats a non-TTY stdin as an
     additional markdown input; under `make ci` (and on CI runners) stdin is an open pipe, so the
     render hung indefinitely waiting for it, and with a closed pipe it fails with "Output path
@@ -228,7 +231,8 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     the same offline run `make notebooks` performs, and `make site` then regenerates the output-free
     notebooks from `notebooks/src` because Quarto writes executed outputs back into the `.ipynb`; (c) the site build is **not part of the PR
     gate**: Quarto is a binary outside `uv`/`npm`, so `make site` is opt-in locally and runs in
-    CI only on pushes to `main`. `quarto-dev/quarto-actions/setup` is pinned to the exact tag
+    CI only on pushes to `main` (entry 41: `pages.yml` now also builds, without deploying, on pull
+    requests). `quarto-dev/quarto-actions/setup` is pinned to the exact tag
     `v2.2.0` because, like `setup-uv`, it publishes no moving major tag. Pages was switched to
     the "GitHub Actions" build type on the repository the same day. The kickoff deck
     `slides/intro.qmd` is Quarto reveal.js rather than Marp so it lives inside the site; the
@@ -255,3 +259,85 @@ documentation. Entries are grouped by the phase in which they were made. Dates a
     redraws the diagrams when the navbar toggle changes the body class. The site's numbers (4 days, 8
     notebooks, 5 tools, 4 weaknesses, 50 golden cases, the 1.0 → 0.64 tool-selection drop) are
     the repo's own: `data/golden/manifest.json`, `README.md` and the committed baseline.
+
+## Review follow-up (2026-10-08)
+
+The source review in `suggestions.md` (same date) was triaged; these entries record what changed.
+Not done, and why, is in `docs/TASKS.md` under follow-ups.
+
+41. **Titles follow one style guide, kept in one file and checked in CI.** `docs/STYLE_GUIDE.md`
+    sets Title Case for the names of things — the workshop, day/lecture/lab/deck/page titles, menu
+    labels and slide titles — and sentence case for headings inside a page, with a canonical
+    vocabulary (OpenTelemetry in prose and OTel as a short label, Bedrock Evaluations, AgentCore,
+    red teaming / red-team). The review proposed Title Case for H1–H3; H2+ stay sentence case
+    because they are not names, and recasing every section heading would churn anchors for no
+    reader benefit. `docs/workshop.yml` is the single source for every canonical title and short
+    label, the banned spellings, the Node versions (22 in CI, 20+ allowed) and an exemption list
+    that can only shrink (empty at the end of this change). `scripts/check_style.py` checks every
+    copy (H1s, `_quarto.yml`, README, `index.qmd`, the instructor guide, the decks,
+    `CITATION.cff`) plus Title Case, prose spelling, Node mentions and relative links/anchors, and
+    runs in `make ci` and the PR workflow. Notebook and lecture file names are identifiers and keep
+    their spelling (`…_OTEL_Traces.ipynb`). The Days 1–2 lectures now share the Days 3–4 numbering
+    and the guide's 90-minute morning lab. `pages.yml` builds the site on pull requests (no
+    deploy; Pages permissions only on the deploy job), so a failed render fails the PR.
+42. **The gate checks its evidence and its baseline before any threshold** (`check_evidence()`,
+    `baseline_problems()` in `scripts/check_thresholds.py`). Every golden case must have run the
+    recorded number of repeats against the dataset hash in this checkout, metrics must be finite,
+    and Promptfoo results must contain every case `promptfooconfig.yaml` defines; an input passed on
+    the command line that does not exist is a failure. The baseline (`reports/baseline/main.json`)
+    now records mode, agent model, judge, transport, repeats, weaknesses and per-case outcomes; a
+    baseline whose mode, dataset hash, judge or agent model differs is an explicit "not comparable"
+    failure instead of a delta, and `--write-baseline` refuses runs with weakness flags or missing
+    cases. The summary pairs each case with its baseline outcome. Two seeded regressions passed the
+    old gate (`naive_retry`, `oversized_payload`: each breaks one two-case category and adds 15–18 %
+    input tokens, which moves no aggregate past its floor or the 0.05 drop), so
+    `eval_thresholds.yaml` (version 2) adds `category_gates.termination_match_rate: 1.0` and a
+    `cost` rule (mean input tokens +10 % vs baseline); `test_pr_gate_rejects_every_seeded_weakness()`
+    keeps the property. The live workflow compares live results with a mock baseline, which is now
+    reported as not comparable (it runs `--no-gate`). Baseline diff: metrics unchanged; provenance
+    fields and per-case outcomes added.
+43. **Uncertainty is reported as run-to-run spread plus a case bootstrap; thresholds are taught as
+    three separate numbers.** `_confidence_interval()` pooled every case×repeat score into one
+    normal interval, which treats correlated repeats as independent and answers neither "how noisy
+    is a PR run?" nor "how well do 50 cases estimate the rate?". `src/stockroom/evals/stats.py`
+    replaces it: `run_to_run()` (per-repeat suite values, sample sd), `case_bootstrap_interval()`
+    (cases averaged over repeats, 2000 resamples, seed 0, bounded to [0, 1]),
+    `required_max_drop()` (2·√2·sd, rounded up) and `floor_is_safe()` (mean − 2·sd ≥ floor).
+    `src/stockroom/evals/report.py` builds the results document once for the suite, the notebook
+    and the tests. The Day 4 lecture (2.3) and notebook (Exercise 3) use one procedure and the same
+    labelled synthetic numbers, the gate's `noise_notes()` prints the same verdicts, and the lecture
+    diagram's reversed subtraction (`metric − baseline`) now reads `baseline − metric`. Day 4 is
+    restructured around a required offline path with four exercises — label validation against the
+    data before any agent run (the agent's result only classifies accepted cases), a red-team case
+    with a paraphrase and a non-vacuous trajectory assertion, the threshold procedure, and a
+    capstone in which participants make the aggregate-only gate reject the regressions it missed and
+    write the review (artefacts in `reports/day4/`) — and optional Bedrock/AgentCore/OIDC
+    extensions. The AgentCore Logs Insights poll now has a deadline, stops on every terminal status
+    the Logs API defines (`Cancelled`, `Timeout` and `Unknown` previously looped forever; checked
+    against the botocore service model offline) and needs `STOCKROOM_CONFIRM_AWS_SPEND=1`, like the
+    Bedrock job.
+44. **Exercise completion is observable.** Check cells report through `stockroom.exercises`
+    (`exercise_pending()` / `exercise_passed()` with stable ids `dayN.exM`), and each notebook ends
+    with an `exercise_summary()` checklist. `STOCKROOM_STRICT_EXERCISES=1` turns an unsolved exercise
+    into an error; `make notebooks` runs the student notebooks permissively and the solution
+    notebooks strictly, so a broken solution can no longer pass by printing "not solved yet".
+    `scripts/build_notebooks.py` enforces one id per check cell, in order, matching the checklist.
+45. **The harness has one extension seam, `Harness(run_guards=...)`, for actions; payload limits
+    stay executor wrappers** (follow-up to entry 32). A `RunGuard` sees each schema-valid tool call
+    before execution with a `ToolCallContext` (query, step, calls so far) and returns `None`,
+    `BlockCall` (refuse the call with a structured `blocked_by_guard` error; `ToolCallRecord.blocked_by`
+    is set and the run continues) or `GuardVerdict` (halt with a typed `TerminationReason`; no new
+    enum value). With no run guards the loop is unchanged and the golden metrics equal the committed
+    baseline. Blocked calls count as not executed, so `invalid_call_rate` rises when a guard blocks;
+    `RunResult.blocked_tool_calls` separates them. Day 3 is now a construction lab on this seam with
+    `injection_unguarded` left on. `TokenBudgetGuard` reserves `MAX_TOKENS` (used + estimated input
+    + max output ≤ budget), so the budget is a ceiling on `chars/4` estimates — exact in mock mode,
+    not a billing cap in live mode. The Day 3 notebook and `tests/test_harness_guards.py` pin the
+    limits of the sanitizer (a paraphrased injection it misses, a legitimate sentence it
+    quarantines) and of compaction (a fact beyond the retained prefix). No golden metric moved.
+46. **Promptfoo and Marp run from `node_modules/.bin`, never through npx.** `npx --prefer-offline`
+    still falls back to the network when the cache misses, which the offline-first rule forbids.
+    `make promptfoo` / `make slides` now call the binaries `npm ci` installed from
+    `package-lock.json` and stop with "run make setup" when they are missing; the
+    `PROMPTFOO_VER` / `MARP_VER` Makefile variables are gone (the versions live in `package.json`).
+

@@ -321,7 +321,7 @@ fake clock).
 
 *Fix, in the right layer.* Retry transient errors **inside the tool** with a bounded attempt count
 (the fixed `get_order_status()` makes two attempts), and keep the repeated-call guard as the
-harness-level invariant. `detect_loops()` over the OTEL spans gives the same signal from a trace
+harness-level invariant. `detect_loops()` over the OpenTelemetry spans gives the same signal from a trace
 when you do not have the `RunResult` (Day 2).
 
 ### 3.6 (Bridge to Days 2 and 4) Untrusted tool output
@@ -534,7 +534,7 @@ flowchart TB
 | Guards | `MaxStepsGuard`, `TokenBudgetGuard`, `RepeatedCallGuard`, `WallClockGuard`, argument validation, output quarantine, plus your own `RunGuard`s through `Harness(run_guards=...)` — all yours to read, test and tune | the harness page lists "observability and cost controls" and Policy for deterministic tool-call rules; the specific loop guards are the service's, not yours |
 | Context management | `Harness._compact()` with thresholds you set | memory management is listed as a harness responsibility; policy details are the service's |
 | Determinism for CI | `FakeBedrockClient` + scripted turns; zero variance | a live service: evaluate with repeated sampling and confidence intervals (Day 4) |
-| Evaluation hooks | `RunResult` + OTEL spans → `evaluate_case()` | Observability traces → AgentCore Evaluations (`evaluate` on session spans) |
+| Evaluation hooks | `RunResult` + OpenTelemetry spans → `evaluate_case()` | Observability traces → AgentCore Evaluations (`evaluate` on session spans) |
 | Portability | Python, runs anywhere, no AWS account | AWS-managed; export to Strands code is documented |
 
 The question the workshop wants you to be able to answer is not "which is better" but **"which
@@ -586,8 +586,8 @@ Colab or SageMaker it clones `genial-labs-ai/system_agent_harness_aws` first (se
 | Lab 2a (60 min) | Stand up the MCP inventory server three ways (in-memory, stdio, `make mcp-server` + `scripts/mcp_smoke.py`); run the harness through `McpToolExecutor` | `STOCKROOM_TOOL_TRANSPORT=mcp-http make eval` passes with the server running |
 | Lab 2b (90 min) | Run the eval suite against each seeded weakness (`STOCKROOM_WEAKNESSES=<flag> make eval`), chart the movement, then fix one at a time; Exercises 4–5 | you can say, for every flag, which metric moved and which code path closed it |
 
-Keep `reports/eval_results.json` from each run (rename them); Day 4 uses them to set thresholds
-from observed variance.
+Keep `reports/eval_results.json` from each run (rename them); Day 4's capstone puts the same
+configurations through the gate, and yours are the evidence to compare against.
 
 ---
 

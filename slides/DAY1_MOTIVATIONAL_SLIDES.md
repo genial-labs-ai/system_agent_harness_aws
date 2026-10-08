@@ -278,14 +278,14 @@ Attribution for the practice comes on Day 2: Hamel Husain's "Your AI Product Nee
 **What you will measure (Days 1 and 4):**
 
 - Deterministic trajectory metrics with **zero variance** in mock mode → a fixed 0.85 gate.
-- Live runs with `STOCKROOM_EVAL_REPEATS=n` → mean and 95% CI per metric in `eval_results.json`.
-- Thresholds set from baseline variance, not picked; regression gate at −0.05 vs `reports/baseline/main.json`.
+- Live runs with `STOCKROOM_EVAL_REPEATS=n` → per-repeat values and spread per metric in `eval_results.json`.
+- Floors are product decisions; the allowed drop (−0.05 vs `reports/baseline/main.json`) must exceed the measured noise.
 - Hard invariants that are never allowed to flake: `must_not_call_ok_rate = 1.0`, red-team failures = 0.
 
 Non-determinism is a reason to measure variance, not a reason to skip the gate.
 
 <!--
-tests/test_trajectory_regression.py computes the confidence intervals; scripts/check_thresholds.py applies eval_thresholds.yaml. Day 4 shows how to set the live thresholds from the nightly variance.
+tests/test_trajectory_regression.py writes the run-to-run spread and case intervals; scripts/check_thresholds.py checks the evidence and applies eval_thresholds.yaml. Day 4 shows how to set the allowed regression from the nightly spread.
 -->
 
 ---
@@ -335,7 +335,7 @@ Point out the offline-first rule: no credentials needed for any of the four labs
 - **Eval suite** — 50-case golden set, deterministic trajectory metrics, DeepEval and RAGAS bridges, no OpenAI key anywhere
 - **MCP server** — the five Stockroom tools over stdio and streamable HTTP, driven by the same harness
 - **Calibrated judge** — versioned rubrics, kappa and confusion against human labels, bias probes, cross-family (Claude agent / Nova judge) by default
-- **CI gate** — thresholds in one file, baseline regression check, red-team gate, nightly live run with confidence intervals via GitHub OIDC
+- **CI gate** — thresholds in one file, baseline regression check, red-team gate, nightly live run with run-to-run spread via GitHub OIDC
 
 And the answer to the question on slide 2.
 

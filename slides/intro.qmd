@@ -102,7 +102,7 @@ The gate fails on the first row. Answers still *look* right far more often than 
 right, which is the whole point of evaluating trajectories.
 
 ::: {.small}
-Mock-mode figures, reproduced from the repository. They are an upper bound: the mock model is a deterministic simulator. Live runs report confidence intervals.
+Mock-mode figures, reproduced from the repository. They are an upper bound: the mock model is a deterministic simulator. Live runs report run-to-run spread.
 :::
 
 ## The Four Days
@@ -112,7 +112,7 @@ Mock-mode figures, reproduced from the repository. They are an upper bound: the 
 | **Day 1** | LLM Evaluation Foundations: golden sets, deterministic metrics, DeepEval, RAGAS | Deterministic and RAG Evals |
 | **Day 2** | LLM-as-a-Judge, Calibration, and OTel: error analysis first, calibration against human labels, bias probes, OpenTelemetry spans | Judge Calibration and OTel Traces |
 | **Day 3** | Agent Harness and MCP Mocking: state machine, guards, compaction, MCP as the tool boundary, AgentCore | Building a Custom Agent Harness |
-| **Day 4** | AWS CI/CD and Red Teaming: thresholds from baseline variance, flaky evals, red teaming, Bedrock Evaluations | Bedrock Evaluations and CI Gating |
+| **Day 4** | AWS CI/CD and Red Teaming: floors, noise and allowed regression, flaky evals, red teaming, Bedrock Evaluations | Bedrock Evaluations and CI Gating |
 
 ## Daily Rhythm
 
@@ -176,7 +176,7 @@ spends money without a person asking.
 - A harness with guards you wrote: max steps, token budget, repeated-call detection, quarantine of instruction-like tool output.
 - A judge you calibrated against human labels and probed for bias.
 - Trace-based evals over OpenTelemetry spans.
-- A CI gate whose thresholds come from baseline variance (`eval_thresholds.yaml`, `scripts/check_thresholds.py`), with a red-team suite that must hold.
+- A CI gate that checks its evidence and keeps floors apart from measured noise (`eval_thresholds.yaml`, `scripts/check_thresholds.py`), with a red-team suite that must hold.
 - A live workflow on Amazon Bedrock through OIDC, with budgets and a cost estimate.
 
 ## Let's Go

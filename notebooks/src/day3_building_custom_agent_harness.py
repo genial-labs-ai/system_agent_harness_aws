@@ -985,7 +985,7 @@ exercise_summary(["day3.ex1", "day3.ex2", "day3.ex3", "day3.ex4", "day3.ex5"])
 # * The harness is an explicit state machine; its transition log and `GuardEvent`s make every
 #   termination explainable.
 # * Validation, guards, compaction and quarantine are the places where production failures are
-#   prevented — and each one is observable in the OTEL trace. Each also has limits you can
+#   prevented — and each one is observable in the OpenTelemetry trace. Each also has limits you can
 #   demonstrate: the quarantine is a pattern match, compaction keeps a prefix, the budget bounds
 #   estimates.
 # * The run-guard seam is how you add a control without touching the loop: find the failing

@@ -405,8 +405,9 @@ flowchart LR
 ```
 
 Day 3 adds the harness fixes that make the trajectory metrics move; Day 4 adds synthetic case
-generation (filtered by the calibrated judge), the Promptfoo red team, thresholds from baseline
-variance, and the Bedrock Evaluations job builder.
+generation (labels validated against the data, never filtered by the agent's result), the
+Promptfoo red team, thresholds from measured run-to-run spread, a gate capstone, and the Bedrock
+Evaluations job builder.
 
 ---
 

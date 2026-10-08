@@ -77,8 +77,9 @@ build the judge. Today is about the deterministic half.
 
 A practical test of whether a team is measured rather than vibe-driven: can you answer *"did last
 week's prompt change make tool selection better or worse, and by how much?"* with a number and a
-confidence interval? In this repo the answer is the `confidence_intervals` block that
-`tests/test_trajectory_regression.py` writes into `reports/eval_results.json`.
+measure of how much it moves when nothing changed? In this repo the answer is the `run_to_run`
+and `confidence_intervals` blocks that `tests/test_trajectory_regression.py` writes into
+`reports/eval_results.json`, and the per-case comparison against the committed baseline.
 
 ---
 
@@ -388,7 +389,7 @@ are gated only after calibration.
 Per-case tests fail only on hard invariants (model error, forbidden tool on a red-team case).
 Soft metrics are written to `reports/eval_results.json` and gated by `scripts/check_thresholds.py`
 so that one regressed case produces a readable table instead of a wall of red. Set
-`STOCKROOM_EVAL_REPEATS=n` in live mode to sample repeats and get 95% confidence intervals.
+`STOCKROOM_EVAL_REPEATS=n` in live mode to sample repeats and measure the run-to-run spread.
 
 ---
 
@@ -507,7 +508,7 @@ mock mode without credentials. Its sections, in the order of the agenda:
 3. `trajectory_match_mode` is per case. Argue for making G033 `exact` instead of
    `in_order_subset`. What would you lose?
 4. Mock-mode metrics have zero variance, so the gate is a fixed 0.85. Live metrics have
-   variance. How would you set a live threshold from `confidence_intervals` without making the
+   variance. How would you set a live threshold from the `run_to_run` spread without making the
    gate either useless or flaky?
 5. `fact_present()` is a normalised substring check. Give two Stockroom answers it would grade
    wrongly, then decide whether that is a reason to move the check to the judge or to tighten the
