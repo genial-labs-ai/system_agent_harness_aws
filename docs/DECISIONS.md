@@ -388,8 +388,8 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     - *`make notebooks` uses a scratch hand-off directory* (`reports/notebooks_handoff/`, emptied
       first). `make ci` in a participant's checkout therefore never overwrites their artefacts with
       the solutions', the student pass runs Day 4 on the reference fallbacks and the solution pass
-      on what Days 1–3 just saved. The Quarto site build still executes the notebooks with the
-      default directory, which is harmless on a CI runner; `_quarto.yml` was left alone.
+      on what Days 1–3 just saved. `make site` executes the notebooks with the same scratch
+      directory, so a local site build never writes into `reports/participant/` either.
     - No exercise was added, and no metric, rubric, tool description or golden case changed, so
       the baseline is unchanged.
 50. **The rendered site is checked on every pull request, in HTML and in a browser**

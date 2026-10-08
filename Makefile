@@ -99,7 +99,10 @@ slides: node-tools ## Render the Marp deck to HTML
 	$(NODE_BIN)/marp slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html < /dev/null
 
 site: slides ## Render the Quarto website to _site (executes the notebooks in mock mode; needs quarto on PATH)
-	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
+	# The executed notebooks save their hand-off files to the scratch directory, never to a
+	# participant's reports/participant/ (see the notebooks target).
+	rm -rf $(NOTEBOOK_HANDOFF)
+	STOCKROOM_HANDOFF_DIR=$(CURDIR)/$(NOTEBOOK_HANDOFF) QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
 	# Quarto writes the executed outputs back into the .ipynb files; regenerate them output-free from notebooks/src.
 	$(PY) scripts/build_notebooks.py
 
