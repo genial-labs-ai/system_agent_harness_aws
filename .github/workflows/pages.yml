@@ -1,20 +1,23 @@
-# Builds the Quarto site (lectures, executed notebooks in mock mode, slides, docs) and deploys it to
-# GitHub Pages. Runs only on main; it is not part of the PR gate. No AWS credentials are involved.
+# Builds the Quarto site (lectures, executed notebooks in mock mode, slides, docs). On a pull
+# request it only builds, so a page that fails to render fails the PR instead of the next deploy;
+# pushes to main (and manual runs) also deploy to GitHub Pages. No AWS credentials are involved.
 name: pages
 
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
 
+# The build needs nothing beyond reading the repository; Pages rights live on the deploy job.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# One group per ref: a PR build never queues behind a deployment, a newer push to the same PR
+# cancels the older build, and a deployment on main is never interrupted.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   STOCKROOM_MODE: mock
@@ -54,19 +57,23 @@ jobs:
       - name: Render the site (Marp deck, then Quarto with notebooks executed in mock mode)
         run: make site
 
-      - uses: actions/configure-pages@v6
-
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/configure-pages@v6
+
       - id: deployment
         uses: actions/deploy-pages@v5
