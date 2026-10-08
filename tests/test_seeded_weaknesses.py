@@ -3,14 +3,19 @@ and the shipped default (all fixed) must be clean. This is the phase-3 acceptanc
 
 from __future__ import annotations
 
+import importlib.util
+import json
+
 import pytest
+import yaml
 
 from stockroom.agent.harness import Harness
 from stockroom.agent.types import TerminationReason
-from stockroom.config import WEAKNESS_FLAGS, StockroomConfig
+from stockroom.config import REPO_ROOT, WEAKNESS_FLAGS, StockroomConfig
 from stockroom.evals.golden import GoldenCase
 from stockroom.evals.judge import FakeJudge
 from stockroom.evals.metrics import ToolCallEvaluator, aggregate, evaluate_case
+from stockroom.evals.report import results_document
 from tests.conftest import case_by_id
 
 
@@ -113,3 +118,41 @@ def test_every_flag_moves_at_least_one_gate_metric(
         if flagged[key] != baseline[key]
     ]
     assert moved, f"{flag} did not change any gate metric"
+
+
+def _gate():
+    spec = importlib.util.spec_from_file_location(
+        "check_thresholds", REPO_ROOT / "scripts" / "check_thresholds.py"
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize("weaknesses", ["", *sorted(WEAKNESS_FLAGS)], ids=lambda w: w or "fixed")
+def test_pr_gate_rejects_every_seeded_weakness(
+    golden_cases: list[GoldenCase], weaknesses: str
+) -> None:
+    """The shipped gate (eval_thresholds.yaml and the committed baseline) passes the fixed agent
+    and rejects each weakness flag on its own. Before the category and cost rules, naive_retry and
+    oversized_payload passed: their damage is confined to two-case categories and to tokens."""
+    gate = _gate()
+    judge = FakeJudge("v2")
+    config = StockroomConfig.mock(weaknesses=weaknesses)
+    harness = Harness(config)
+    scored = [
+        (0, evaluate_case(c, harness.run(c.query, case_id=c.id), judge)) for c in golden_cases
+    ]
+    doc = results_document(config, scored, judge_label=f"{judge.name}:{judge.rubric_version}")
+    manifest_path = REPO_ROOT / "data" / "golden" / "manifest.json"
+    thresholds = yaml.safe_load((REPO_ROOT / "eval_thresholds.yaml").read_text())
+    baseline = json.loads((REPO_ROOT / "reports" / "baseline" / "main.json").read_text())
+    manifest = json.loads(manifest_path.read_text())
+    assert gate.check_evidence(doc, manifest, manifest_path) == []
+    _, failures = gate.evaluate(thresholds, doc, gate.promptfoo_summary(None), baseline)
+    if weaknesses:
+        assert failures, f"the PR gate let {weaknesses} through"
+        assert not any("not comparable" in f for f in failures), failures
+    else:
+        assert failures == []

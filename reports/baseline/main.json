@@ -1,7 +1,12 @@
 {
-  "generated_at": "2026-10-07T03:04:30.594588+00:00",
-  "git_sha": "18855ee",
+  "generated_at": "2026-10-08T15:50:35.071789+00:00",
+  "git_sha": "2478741",
   "mode": "mock",
+  "agent_model_id": "fake.stockroom-planner-v1",
+  "judge": "fake-judge:v2",
+  "tool_transport": "local",
+  "repeats": 1,
+  "weaknesses": [],
   "dataset": {
     "name": "stockroom_golden",
     "version": "1.0.0",
@@ -101,6 +106,258 @@
         "answer_correctness": 1.0,
         "termination_match_rate": 1.0
       }
+    }
+  },
+  "cases": {
+    "G001": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G002": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G003": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G004": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G005": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G006": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G007": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G008": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G009": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G010": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G011": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G012": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G013": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G014": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G015": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G016": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G017": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G018": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G019": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G020": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G021": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G022": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G023": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G024": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G025": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G026": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G027": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G028": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G029": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G030": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G031": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G032": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G033": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G034": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G035": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G036": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G037": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G038": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G039": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G040": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G041": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G042": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G043": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G044": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G045": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G046": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G047": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G048": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G049": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
+    },
+    "G050": {
+      "tool_selection": 1.0,
+      "answer_correct": 1.0,
+      "termination_match": 1.0
     }
   }
 }

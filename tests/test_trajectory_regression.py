@@ -9,6 +9,12 @@ Per-case tests only fail on *hard invariants* (model errors, forbidden tool call
 cases); the 0.85 thresholds are enforced by the gate script so that a single regressed case
 produces a readable metrics table instead of a wall of red.
 
+The document is built by ``stockroom.evals.report.results_document()``. Uncertainty is reported
+two ways (``stockroom.evals.stats``): ``run_to_run`` keeps the repeats apart and gives each
+metric's per-repeat value and spread (the noise a PR gate has to tolerate);
+``confidence_intervals`` is a case bootstrap of the suite mean, each case first averaged over its
+repeats (how precisely these cases estimate the agent's rate).
+
 Environment knobs (read from the shell, not scrubbed): ``STOCKROOM_MODE``,
 ``STOCKROOM_WEAKNESSES``, ``STOCKROOM_TOOL_TRANSPORT`` (``mcp-http`` needs ``make mcp-server``),
 ``STOCKROOM_EVAL_REPEATS`` (live sampling), ``STOCKROOM_RESULTS_PATH``.
@@ -16,9 +22,7 @@ Environment knobs (read from the shell, not scrubbed): ``STOCKROOM_MODE``,
 
 from __future__ import annotations
 
-import datetime as dt
 import json
-import math
 import os
 import statistics
 import subprocess
@@ -35,8 +39,9 @@ from stockroom.agent.types import TerminationReason
 from stockroom.config import REPO_ROOT, StockroomConfig, ToolTransport
 from stockroom.evals.golden import GoldenCase, load_golden
 from stockroom.evals.judge import StockroomDeepEvalLLM, load_rubric, make_judge
-from stockroom.evals.metrics import CaseScores, aggregate, context_from_run, evaluate_case
+from stockroom.evals.metrics import CaseScores, context_from_run, evaluate_case
 from stockroom.evals.otel_tracer import RunTracer, configure_tracing
+from stockroom.evals.report import INTERVAL_METRICS, RUN_TO_RUN_METRICS, results_document
 from tests.conftest import ORIGINAL_ENV
 
 RESULTS_PATH = Path(
@@ -62,19 +67,6 @@ def _git_sha() -> str | None:
         return None
 
 
-def _confidence_interval(values: list[float]) -> dict[str, float]:
-    n = len(values)
-    mean = statistics.fmean(values) if values else 0.0
-    sd = statistics.pstdev(values) if n > 1 else 0.0
-    half = 1.96 * sd / math.sqrt(n) if n > 1 else 0.0
-    return {
-        "mean": round(mean, 4),
-        "ci95_low": round(mean - half, 4),
-        "ci95_high": round(mean + half, 4),
-        "n": n,
-    }
-
-
 class Session:
     """Holds the harness, judge and collected scores for the whole pytest session."""
 
@@ -88,6 +80,7 @@ class Session:
         self.judge = make_judge(self.config)
         self.deepeval_llm = StockroomDeepEvalLLM(self.config, self.judge)
         self.scores: list[CaseScores] = []
+        self.repeat_of: list[int] = []  # repeat index of each entry in ``scores``
         self.deepeval: list[dict[str, object]] = []
 
     def close(self) -> None:
@@ -97,50 +90,24 @@ class Session:
 
     def write_results(self) -> None:
         RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        manifest_path = self.config.data_dir / "golden" / "manifest.json"
-        manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
-        metrics = aggregate(self.scores)
-        by_metric = {
-            name: _confidence_interval(
-                [
-                    getattr(s, attr) if attr != "judge_passed" else float(bool(s.judge_passed))
-                    for s in self.scores
-                ]
-            )
-            for name, attr in (
-                ("tool_selection_accuracy", "tool_selection"),
-                ("answer_correctness", "judge_passed"),
-                ("argument_correctness", "argument_correctness"),
-            )
-        }
-        payload = {
-            "generated_at": dt.datetime.now(dt.UTC).isoformat(),
-            "mode": self.config.mode.value,
-            "weaknesses": sorted(self.config.weaknesses),
-            "tool_transport": self.config.tool_transport.value,
-            "repeats": REPEATS,
-            "git_sha": _git_sha(),
-            "agent_model_id": self.config.agent_model_id
-            if self.config.is_live
-            else "fake.stockroom-planner-v1",
-            "judge": f"{self.judge.name}:{self.judge.rubric_version}",
-            "dataset": {k: manifest.get(k) for k in ("name", "version", "sha256", "cases")},
-            "metrics": metrics,
-            "confidence_intervals": by_metric,
-            "deepeval": {
-                "tool_correctness_pass_rate": round(
-                    statistics.fmean([float(d["tool_correctness_pass"]) for d in self.deepeval]), 4
-                )
-                if self.deepeval
-                else None,
-                "geval_pass_rate": round(
-                    statistics.fmean([float(d["geval_pass"]) for d in self.deepeval]), 4
-                )
-                if self.deepeval
-                else None,
+
+        def rate(key: str) -> float | None:
+            if not self.deepeval:
+                return None
+            return round(statistics.fmean(float(d[key]) for d in self.deepeval), 4)
+
+        payload = results_document(
+            self.config,
+            list(zip(self.repeat_of, self.scores, strict=True)),
+            judge_label=f"{self.judge.name}:{self.judge.rubric_version}",
+            git_sha=_git_sha(),
+            extra={
+                "deepeval": {
+                    "tool_correctness_pass_rate": rate("tool_correctness_pass"),
+                    "geval_pass_rate": rate("geval_pass"),
+                }
             },
-            "cases": [s.model_dump(mode="json") for s in self.scores],
-        }
+        )
         RESULTS_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
@@ -173,6 +140,7 @@ def test_golden_case(session: Session, case: GoldenCase, repeat: int) -> None:
     run = session.harness.run(case.query, case_id=case.id)
     scores = evaluate_case(case, run, session.judge, window=session.config.repeat_call_window)
     session.scores.append(scores)
+    session.repeat_of.append(repeat)
 
     test_case = LLMTestCase(
         input=case.query,
@@ -215,9 +183,7 @@ def test_results_file_is_written(session: Session) -> None:
     session.write_results()
     data = json.loads(RESULTS_PATH.read_text())
     assert data["metrics"]["cases"] == len(session.scores)
-    assert set(data["confidence_intervals"]) == {
-        "tool_selection_accuracy",
-        "answer_correctness",
-        "argument_correctness",
-    }
+    assert set(data["confidence_intervals"]) == set(INTERVAL_METRICS)
+    assert set(data["run_to_run"]) == set(RUN_TO_RUN_METRICS)
+    assert all(r["repeats"] == REPEATS for r in data["run_to_run"].values())
     assert os.path.getsize(RESULTS_PATH) > 0
