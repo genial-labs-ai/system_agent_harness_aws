@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Day 3 — Building a custom agent harness
+# # Day 3 — Building a Custom Agent Harness
 #
 # *Agent = Model + Harness.* Most production failures live in the harness and the environment, not
 # in the model. Today we open the Stockroom harness (`src/stockroom/agent/harness.py`) seam by seam.

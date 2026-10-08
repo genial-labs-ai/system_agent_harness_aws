@@ -1,9 +1,9 @@
-# Instructor guide — Evaluating Autonomous Agents (Stockroom workshop)
+# Instructor Guide
 
-Four days, one running example. Every lab runs offline in mock mode; live AWS is opt-in. This
-guide covers timings, setup, the failures participants actually hit, facilitation notes per
-exercise, and how to regenerate the generated artefacts. Lecture content is in `lectures/`; the
-Day 1 deck is in `slides/`.
+*Evaluating Autonomous Agents*: four days, one running example. Every lab runs offline in mock
+mode; live AWS is opt-in. This guide covers timings, setup, the failures participants actually
+hit, facilitation notes per exercise, and how to regenerate the generated artefacts. Lecture
+content is in `lectures/`; the decks are in `slides/`.
 
 ---
 
@@ -26,10 +26,10 @@ Per-day content of the three blocks:
 
 | Day | Lecture | Lab part 1 (11:00) | Lab part 2 (13:15) | Review (16:00) |
 |---|---|---|---|---|
-| 1 — LLM eval foundations | failure taxonomy on the weakness flags, golden-set design, deterministic vs judge metrics, RAG metrics | golden-set tour, DeepEval assertions on `RunResult` | RAGAS over the BM25 policy index (Knowledge Base branch live only); write 3 new golden cases | dataset card review; what the taxonomy misses |
-| 2 — judge calibration and traces | LLM-as-judge pitfalls, calibration (agreement, kappa), bias probes, OpenTelemetry GenAI spans | spans in memory and (optional) Phoenix; `ToolCallEvaluator` from spans | calibration v1 → v2 on `data/judge_calibration/calibration_v1.jsonl`; position/verbosity/self-preference probes | which rubric change moved agreement and why |
-| 3 — harness and MCP | `lectures/day3_agent_harness_and_mcp_mocking.md` | guards, validation, compaction | MCP server via client; toggle each weakness and chart metric movement; fix one at a time | metric deltas per fix; AgentCore contrast |
-| 4 — CI/CD, red team, AWS evals | `lectures/day4_aws_ci_cd_redteaming.md` | synthetic cases + judge filter; red-team cases in Promptfoo | thresholds from variance; `make ci` fail/pass; Bedrock Evaluations payload; AgentCore `evaluate` (live) | gate summaries side by side; take-home checklist |
+| 1 — LLM Evaluation Foundations | failure taxonomy on the weakness flags, golden-set design, deterministic vs judge metrics, RAG metrics | golden-set tour, DeepEval assertions on `RunResult` | RAGAS over the BM25 policy index (Knowledge Base branch live only); write 3 new golden cases | dataset card review; what the taxonomy misses |
+| 2 — LLM-as-a-Judge, Calibration, and OTel | LLM-as-a-judge pitfalls, calibration (agreement, kappa), bias probes, OpenTelemetry GenAI spans | spans in memory and (optional) Phoenix; `ToolCallEvaluator` from spans | calibration v1 → v2 on `data/judge_calibration/calibration_v1.jsonl`; position/verbosity/self-preference probes | which rubric change moved agreement and why |
+| 3 — Agent Harness and MCP Mocking | `lectures/day3_agent_harness_and_mcp_mocking.md` | guards, validation, compaction | MCP server via client; toggle each weakness and chart metric movement; fix one at a time | metric deltas per fix; AgentCore contrast |
+| 4 — AWS CI/CD and Red Teaming | `lectures/day4_aws_ci_cd_redteaming.md` | synthetic cases + judge filter; red-team cases in Promptfoo | thresholds from variance; `make ci` fail/pass; Bedrock Evaluations payload; AgentCore `evaluate` (live) | gate summaries side by side; take-home checklist |
 
 Timing notes:
 
@@ -48,7 +48,7 @@ Timing notes:
 |---|---|---|
 | Python | 3.12 (pinned in `.python-version`; `pyproject.toml` requires `>=3.12,<3.13`) | `uv python install 3.12` is run by `make setup` |
 | uv | installed and on `PATH` | `uv --version` |
-| Node | Node 22 for Promptfoo (`npx --yes promptfoo@0.124.0`) and Marp (`@marp-team/marp-cli@4.5.1`) | `node --version`; `npx --yes promptfoo@0.124.0 --version` once *with network* so the package is cached |
+| Node | Node 22 (the version CI uses; 20 or newer works) for Promptfoo (`npx --yes promptfoo@0.124.0`) and Marp (`@marp-team/marp-cli@4.5.1`) | `node --version`; `npx --yes promptfoo@0.124.0 --version` once *with network* so the package is cached |
 | Docker | optional — only for the devcontainer | — |
 | Install | `make setup` (installs the `phoenix` extra and the `dev` group, registers the `stockroom` Jupyter kernel) | `uv run stockroom config` prints `mode=mock` |
 | Tests | `make test` (unit + golden regression; writes `reports/eval_results.json`) | all green, no AWS variables set |
@@ -110,7 +110,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 
 ## 4. Facilitation notes per exercise
 
-### Day 1 — deterministic and RAG evals
+### Day 1 — Deterministic and RAG Evals
 
 - *Taxonomy demo on the weakness flags.* Show the same query under each flag using
   `uv run stockroom run "<query>" --case-id <id> --json`. Ask participants to name the failure
@@ -124,7 +124,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 - *New golden cases.* Require `expected_facts` **and** `forbidden_facts`; run
   `make validate-data` to catch unknown SKUs/orders and coverage gaps.
 
-### Day 2 — judge calibration and traces
+### Day 2 — Judge Calibration and OTel Traces
 
 - *Spans.* Start with the memory exporter so nobody is blocked on Phoenix. `span_tree()` prints the
   hierarchy; `ToolCallEvaluator.from_spans()` must give the same `loops` / `repeated_identical` as
@@ -135,7 +135,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 - *Bias probes.* `run_all_probes()` on the position/verbosity/self-preference groups. Ask what a
   *live* judge would need to pass before you trust it in the nightly run.
 
-### Day 3 — harness and MCP (see the lecture's lab plan)
+### Day 3 — Building a Custom Agent Harness (see the lecture's lab plan)
 
 - *Guards, validation, compaction.* Start every participant with `StockroomConfig.mock()` overrides
   rather than env vars, so nothing leaks into later exercises. Read `RunResult.transition_log`
@@ -150,7 +150,7 @@ Summarised here; the README (phase 7) is the authoritative list.
   failure, **not** deleting the flagged branch (`test_every_flag_moves_at_least_one_gate_metric()`
   guards against that).
 
-### Day 4 — CI gate, red team, AWS evals (see the lecture's lab plan)
+### Day 4 — Bedrock Evaluations and CI Gating (see the lecture's lab plan)
 
 - *Synthetic cases + judge filter.* Insist on the rejection list: a case the judge rejects, a case
   that duplicates an existing one, a case whose expected tools were copied from the agent's run.
@@ -181,6 +181,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 | Slides | `make slides` renders `slides/DAY1_MOTIVATIONAL_SLIDES.md` with Marp | after editing the deck |
 | Pricing table | `uv run python scripts/fetch_pricing.py` | occasionally; the only non-live network call in the repo, never in CI |
 | Lecture reference check | `uv run python scripts/check_lecture_refs.py` | after renaming anything the lectures cite |
+| Style check | `uv run python scripts/check_style.py` (titles from `docs/workshop.yml`, `docs/STYLE_GUIDE.md`) | after renaming a day, lab or deck, or editing prose |
 | Whole PR gate | `make ci` | before opening a PR |
 
 ---
@@ -192,4 +193,4 @@ Summarised here; the README (phase 7) is the authoritative list.
 3. `make promptfoo` with the network off.
 4. `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make eval && make thresholds` fails with the 0.64 row;
    `make eval && make thresholds` passes.
-5. `uv run python scripts/check_lecture_refs.py` is clean.
+5. `uv run python scripts/check_lecture_refs.py` and `uv run python scripts/check_style.py` are clean.

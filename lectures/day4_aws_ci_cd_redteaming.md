@@ -1,4 +1,4 @@
-# Day 4 — Production CI/CD for agents on AWS: regression gates, red-teaming, Bedrock Evaluations
+# Day 4 — Production CI/CD for Agents on AWS: Regression Gates, Red Teaming, and Bedrock Evaluations
 
 **Thesis of the day:** an eval suite that does not block a merge is a dashboard. Today we turn the
 Stockroom metrics into a gate that fails a pull request (deterministically, offline), an on-demand

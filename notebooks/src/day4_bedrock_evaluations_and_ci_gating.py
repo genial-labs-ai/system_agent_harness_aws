@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Day 4 — Bedrock evaluations, red teaming and CI gating
+# # Day 4 — Bedrock Evaluations, Red Teaming, and CI Gating
 #
 # **Learning objectives.** By the end of this notebook you can:
 #

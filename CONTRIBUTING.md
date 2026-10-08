@@ -42,7 +42,9 @@ for you and forwards the Phoenix (6006) and MCP (8765) ports.
 - Notebooks: edit `notebooks/src/*.py` (jupytext percent format) and run `make build-notebooks`.
   The `.ipynb` files are generated; do not edit them by hand.
 - Teaching materials: cite paths as `src/stockroom/...py` and symbols as `name()` so
-  `scripts/check_lecture_refs.py` can verify them.
+  `scripts/check_lecture_refs.py` can verify them. Titles, product names and terms follow
+  `docs/STYLE_GUIDE.md`; rename a day, lab or deck in `docs/workshop.yml` first, then run
+  `uv run python scripts/check_style.py` to find every copy.
 - Finished a session? Update `docs/TASKS.md` (and `docs/DECISIONS.md` for any deviation).
 
 ## Changing a metric, rubric, tool description, golden case or threshold

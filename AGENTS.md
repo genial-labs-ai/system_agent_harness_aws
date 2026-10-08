@@ -40,6 +40,7 @@ not only final answers.
 | show the gate failing | `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` |
 | regenerate baseline after an intentional metric change | `make baseline` |
 | check that lectures/slides cite real files and symbols | `uv run python scripts/check_lecture_refs.py` |
+| check titles, terminology, Node versions and local links (`docs/STYLE_GUIDE.md`) | `uv run python scripts/check_style.py` |
 | render the slide deck | `make slides` |
 | current build status / hand-off | `docs/TASKS.md` |
 
@@ -55,6 +56,8 @@ not only final answers.
 - `eval_thresholds.yaml` is the single place thresholds live; `reports/baseline/main.json` is the committed main baseline.
 - `package.json` / `package-lock.json` pin the Node tooling (Promptfoo, Marp); `make setup` runs `npm ci`.
 - `lectures/`, `slides/`, `docs/INSTRUCTOR_GUIDE.md` are checked by `scripts/check_lecture_refs.py`: cite paths as `src/stockroom/...py` and symbols as `name()`.
+- Titles and labels follow `docs/STYLE_GUIDE.md`; canonical day, lecture, lab, deck and page titles live in
+  `docs/workshop.yml` and `scripts/check_style.py` checks every copy (rename there first).
 
 ## Conventions
 - Python 3.12, `uv`, `ruff` (line length 100), type hints on all public functions, pydantic models for data that

@@ -27,8 +27,8 @@ and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Ama
 **Website:** everything below is also published at
 [genial-labs-ai.github.io/system_agent_harness_aws](https://genial-labs-ai.github.io/system_agent_harness_aws/):
 lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, both slide
-decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and deployed by
-`.github/workflows/pages.yml` on every push to `main`.
+decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and by
+`.github/workflows/pages.yml` on every pull request, and deployed on every push to `main`.
 
 ## Contents
 
@@ -56,14 +56,14 @@ run in Google Colab or SageMaker Studio as well as locally. Mock mode needs no A
 
 | day | student notebook | solutions |
 |---|---|---|
-| 1 · Deterministic and RAG evals | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day1_Deterministic_and_RAG_Evals.ipynb) | [solutions](notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb) |
-| 2 · Judge calibration and OTEL traces | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) | [solutions](notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) |
-| 3 · Building a custom agent harness | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day3_Building_Custom_Agent_Harness.ipynb) | [solutions](notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb) |
-| 4 · Bedrock Evaluations and CI gating | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) | [solutions](notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) |
+| 1 · Deterministic and RAG Evals | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day1_Deterministic_and_RAG_Evals.ipynb) | [solutions](notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb) |
+| 2 · Judge Calibration and OTel Traces | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) | [solutions](notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) |
+| 3 · Building a Custom Agent Harness | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day3_Building_Custom_Agent_Harness.ipynb) | [solutions](notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb) |
+| 4 · Bedrock Evaluations and CI Gating | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) | [solutions](notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) |
 
 ## Quick start (no AWS needed)
 
-Requirements: Python 3.12 (uv installs it), [uv](https://docs.astral.sh/uv/), Node ≥ 20 with npm
+Requirements: Python 3.12 (uv installs it), [uv](https://docs.astral.sh/uv/), Node 22 (the version CI uses; 20 or newer works) with npm
 (Promptfoo and Marp are pinned in `package.json`/`package-lock.json` and installed by `make setup`),
 GNU make. Docker is optional (devcontainer). The first `make setup` needs network to download
 packages; everything afterwards runs offline.

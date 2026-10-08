@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Day 2 — Judge calibration and OpenTelemetry traces
+# # Day 2 — Judge Calibration and OpenTelemetry Traces
 #
 # **Learning objectives.** By the end of this notebook you can:
 #
