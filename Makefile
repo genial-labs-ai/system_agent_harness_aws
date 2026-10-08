@@ -76,8 +76,10 @@ baseline: eval ## Regenerate the committed main-branch baseline from a clean moc
 build-notebooks: ## Generate student + solution .ipynb files from notebooks/src
 	$(PY) scripts/build_notebooks.py
 
-notebooks: build-notebooks ## Build and execute every notebook in mock mode
-	$(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb notebooks/solutions/*.ipynb -p no:cacheprovider
+notebooks: build-notebooks ## Build and execute every notebook in mock mode (solutions in strict mode)
+	$(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb -p no:cacheprovider
+	# Strict mode: an exercise that does not report passing fails its solution notebook.
+	STOCKROOM_STRICT_EXERCISES=1 $(PYTEST) --nbmake --nbmake-timeout=900 notebooks/solutions/*.ipynb -p no:cacheprovider
 
 slides: ## Render the Marp deck to HTML
 	# stdin is redirected: marp-cli otherwise treats a non-TTY stdin as an extra markdown input and hangs under CI/make.

@@ -13,8 +13,10 @@
 #    probe it for position, verbosity and self-preference bias.
 # 5. Change a rubric and measure whether the judge got better, not just different.
 #
-# Three graded exercises; each check cell prints `not solved yet` until your code passes. Everything
-# runs offline in mock mode with a deterministic fake model and fake judge.
+# Three graded exercises; each check cell prints `not solved yet` until your code passes, and the
+# *Exercise checklist* cell near the end lists their status (`STOCKROOM_STRICT_EXERCISES=1` makes
+# an unsolved exercise an error). Everything runs offline in mock mode with a deterministic fake
+# model and fake judge.
 
 # %% [markdown]
 # ## Setup
@@ -54,6 +56,7 @@ from stockroom.evals.golden import golden_by_id, load_calibration
 from stockroom.evals.judge import FakeJudge, JudgeInput, make_judge
 from stockroom.evals.metrics import ToolCallEvaluator, evaluate_case
 from stockroom.evals.otel_tracer import RunTracer, configure_tracing, span_tree
+from stockroom.exercises import exercise_passed, exercise_pending, exercise_summary
 
 pd.set_option("display.max_colwidth", 90)
 pd.set_option("display.width", 160)
@@ -359,16 +362,17 @@ class JudgeV3(FakeJudge):
 report_v3 = calibrate(JudgeV3(), items)
 v3_probes = run_all_probes(JudgeV3(), items)
 if report_v3.agreement == report_v2.agreement and report_v3.kappa == report_v2.kappa:
-    print("Exercise 1: not solved yet (v3 behaves exactly like v2)")
+    exercise_pending("day2.ex1", "v3 behaves exactly like v2")
 else:
     print(report_v3.summary())
     assert report_v3.agreement > report_v2.agreement, "agreement did not improve over v2"
     assert report_v3.kappa > report_v2.kappa, "kappa did not improve over v2"
     assert not any(p.biased for p in v3_probes), "v3 introduced a bias"
-    print(
-        f"Exercise 1 passed: agreement {report_v2.agreement:.2%} -> {report_v3.agreement:.2%}, "
+    exercise_passed(
+        "day2.ex1",
+        f"agreement {report_v2.agreement:.2%} -> {report_v3.agreement:.2%}, "
         f"kappa {report_v2.kappa:.3f} -> {report_v3.kappa:.3f}, disagreements "
-        f"{[d[0] for d in report_v3.disagreements]}"
+        f"{[d[0] for d in report_v3.disagreements]}",
     )
 
 # %% [markdown]
@@ -420,7 +424,7 @@ def new_calibration_item() -> CalibrationItem | None:
 # %% tags=["check"]
 new_item = new_calibration_item()
 if new_item is None:
-    print("Exercise 2: not solved yet")
+    exercise_pending("day2.ex2")
 else:
     assert isinstance(new_item, CalibrationItem)
     assert new_item.id not in {i.id for i in items}, "pick an unused id"
@@ -428,9 +432,9 @@ else:
     assert v2_verdict.passed != new_item.human_pass, (
         f"v2 agrees with you (judge pass={v2_verdict.passed}); make the item harder"
     )
-    print(
-        f"Exercise 2 passed: human={new_item.human_label} judge v2 pass={v2_verdict.passed} "
-        f"({v2_verdict.rationale})"
+    exercise_passed(
+        "day2.ex2",
+        f"human={new_item.human_label} judge v2 pass={v2_verdict.passed} ({v2_verdict.rationale})",
     )
 
 # %% [markdown]
@@ -481,12 +485,21 @@ def most_repeated_tool_call(tool_spans) -> tuple[str, int] | None:
 # %% tags=["check"]
 answer = most_repeated_tool_call(retry_spans)
 if answer is None:
-    print("Exercise 3: not solved yet")
+    exercise_pending("day2.ex3")
 else:
     loop = next(f for f in retry_report.findings if f.kind == "loop")
     expected = (loop.signature.split(":", 1)[0], loop.count)
     assert answer == expected, f"got {answer}, ToolCallEvaluator says {expected}"
-    print(f"Exercise 3 passed: {answer[0]} was called {answer[1]} times with identical arguments")
+    exercise_passed("day2.ex3", f"{answer[0]} was called {answer[1]} times with identical arguments")
+
+# %% [markdown]
+# ## Exercise checklist
+#
+# One line per graded exercise. With `STOCKROOM_STRICT_EXERCISES=1` this cell fails unless every
+# exercise passed; `make notebooks` runs the solution notebooks that way.
+
+# %%
+exercise_summary(["day2.ex1", "day2.ex2", "day2.ex3"])
 
 # %% [markdown]
 # ## Wrap-up

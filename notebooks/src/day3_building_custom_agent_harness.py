@@ -16,8 +16,9 @@
 # 6. Measure what each seeded weakness costs, fix the weaknesses one at a time, and chart the
 #    metric movement.
 #
-# Three graded exercises; each check cell prints `not solved yet` until your code passes. Everything
-# runs offline in mock mode.
+# Three graded exercises; each check cell prints `not solved yet` until your code passes, and the
+# *Exercise checklist* cell near the end lists their status (`STOCKROOM_STRICT_EXERCISES=1` makes
+# an unsolved exercise an error). Everything runs offline in mock mode.
 
 # %% [markdown]
 # ## Setup
@@ -60,6 +61,7 @@ from stockroom.evals.golden import golden_by_id, load_golden
 from stockroom.evals.judge import make_judge
 from stockroom.evals.metrics import ToolCallEvaluator, aggregate, evaluate_case
 from stockroom.evals.otel_tracer import RunTracer, configure_tracing, span_tree
+from stockroom.exercises import exercise_passed, exercise_pending, exercise_summary
 
 pd.set_option("display.max_colwidth", 100)
 pd.set_option("display.width", 160)
@@ -489,14 +491,15 @@ if (
     guarded_run.termination_reason == unguarded_run.termination_reason
     and largest == max(r.payload_chars for r in unguarded_run.tool_records)
 ):
-    print("Exercise 1: not solved yet (the guard changed nothing)")
+    exercise_pending("day3.ex1", "the guard changed nothing")
 else:
     assert guarded_run.termination_reason is not TerminationReason.TOKEN_BUDGET, "still over budget"
     assert largest <= PAYLOAD_LIMIT, f"a {largest}-char payload got through"
     assert guarded_run.usage.input_tokens < unguarded_run.usage.input_tokens
     codes = sorted({r.error_code for r in guarded_run.tool_records if r.is_error})
-    print(
-        f"Exercise 1 passed: termination={guarded_run.termination_reason.value}, largest payload="
+    exercise_passed(
+        "day3.ex1",
+        f"termination={guarded_run.termination_reason.value}, largest payload="
         f"{largest} chars, input tokens {unguarded_run.usage.input_tokens} -> "
         f"{guarded_run.usage.input_tokens}, error codes seen {codes}"
     )
@@ -530,7 +533,7 @@ SHARPER_DESCRIPTION: str | None = (
 from stockroom.evals.metrics import tool_selection_score
 
 if not SHARPER_DESCRIPTION:
-    print("Exercise 2: not solved yet")
+    exercise_pending("day3.ex2")
 else:
     tools = StockroomTools(ambiguous_cfg)
     tools.specs = [
@@ -544,7 +547,7 @@ else:
         results[cid] = (tool_selection_score(by_id[cid], r), r.tool_names)
     bad = {cid: v for cid, v in results.items() if v[0] < 1.0}
     assert not bad, f"still mis-routed: {bad}"
-    print(f"Exercise 2 passed: {results}")
+    exercise_passed("day3.ex2", f"{results}")
 
 # %% [markdown]
 # ### Exercise 3 — a redundant-query assertion
@@ -617,10 +620,19 @@ try:
 except AssertionError as exc:
     raised = exc
 if raised is None:
-    print("Exercise 3: not solved yet (no AssertionError on the redundant run)")
+    exercise_pending("day3.ex3", "no AssertionError on the redundant run")
 else:
     assert_no_redundant_queries(clean_run)  # must not raise
-    print(f"Exercise 3 passed: {raised}")
+    exercise_passed("day3.ex3", f"{raised}")
+
+# %% [markdown]
+# ## Exercise checklist
+#
+# One line per graded exercise. With `STOCKROOM_STRICT_EXERCISES=1` this cell fails unless every
+# exercise passed; `make notebooks` runs the solution notebooks that way.
+
+# %%
+exercise_summary(["day3.ex1", "day3.ex2", "day3.ex3"])
 
 # %% [markdown]
 # ## Wrap-up

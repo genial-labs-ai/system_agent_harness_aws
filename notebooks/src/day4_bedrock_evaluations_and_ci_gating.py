@@ -65,6 +65,7 @@ from stockroom.config import REPO_ROOT, StockroomConfig
 from stockroom.evals.golden import ExpectedTool, GoldenCase, golden_by_id, load_golden
 from stockroom.evals.judge import make_judge
 from stockroom.evals.metrics import CaseScores, aggregate, evaluate_case
+from stockroom.exercises import exercise_passed, exercise_pending, exercise_summary
 
 pd.set_option("display.max_colwidth", 90)
 pd.set_option("display.width", 160)
@@ -343,7 +344,7 @@ NEW_RED_TEAM_CASE: dict[str, Any] | None = {
 # %% tags=["check"]
 existing_queries = {t["vars"]["query"] for t in promptfoo_cfg["tests"]}
 if NEW_RED_TEAM_CASE is None:
-    print("Exercise 1: not solved yet")
+    exercise_pending("day4.ex1")
 else:
     assert NEW_RED_TEAM_CASE["query"] not in existing_queries, "that query is already in the suite"
     assert NEW_RED_TEAM_CASE["asserts"], "add at least one assertion"
@@ -353,7 +354,7 @@ else:
     }
     failed = {k: v["reason"] for k, v in verdicts.items() if not v["pass"]}
     assert not failed, f"the attack succeeded or the assertion is wrong: {failed}"
-    print(f"Exercise 1 passed: {NEW_RED_TEAM_CASE['case_id']} -> {json.loads(out)['answer'][:90]}")
+    exercise_passed("day4.ex1", f"{NEW_RED_TEAM_CASE['case_id']} -> {json.loads(out)['answer'][:90]}")
     print("   assertions:", {k: v["reason"] for k, v in verdicts.items()})
 
 # %% [markdown]
@@ -433,13 +434,13 @@ import statistics as _statistics
 
 proposals = {m: propose_min(v) for m, v in ILLUSTRATIVE_NIGHTLY.items()}
 if any(p is None for p in proposals.values()):
-    print("Exercise 2: not solved yet")
+    exercise_pending("day4.ex2")
 else:
     for metric, values in ILLUSTRATIVE_NIGHTLY.items():
         expected = _math.floor((_statistics.fmean(values) - 2 * _statistics.pstdev(values)) * 100 + 1e-9) / 100
         assert abs(proposals[metric] - expected) < 1e-9, f"{metric}: got {proposals[metric]}, expected {expected}"
         assert proposals[metric] < min(values), "a gate above the worst observed run would flap"
-    print(f"Exercise 2 passed: {proposals}")
+    exercise_passed("day4.ex2", f"{proposals}")
 
 # %% [markdown]
 # ## 5. The gate: `scripts/check_thresholds.py` on a clean and on a regressed run
@@ -756,11 +757,20 @@ def accept_candidate(case: GoldenCase, scores: CaseScores) -> bool:
 # %% tags=["check"]
 decisions = {c.id: accept_candidate(c, s) for c, _r, s in candidate_scores}
 if all(decisions.values()):
-    print("Exercise 3: not solved yet (every candidate is accepted)")
+    exercise_pending("day4.ex3", "every candidate is accepted")
 else:
     rejected = sorted(cid for cid, ok in decisions.items() if not ok)
     assert rejected == ["S011", "S012"], f"rejected {rejected}, expected ['S011', 'S012']"
-    print(f"Exercise 3 passed: accepted {len(decisions) - len(rejected)}, rejected {rejected}")
+    exercise_passed("day4.ex3", f"accepted {len(decisions) - len(rejected)}, rejected {rejected}")
+
+# %% [markdown]
+# ## Exercise checklist
+#
+# One line per graded exercise. With `STOCKROOM_STRICT_EXERCISES=1` this cell fails unless every
+# exercise passed; `make notebooks` runs the solution notebooks that way.
+
+# %%
+exercise_summary(["day4.ex1", "day4.ex2", "day4.ex3"])
 
 # %% [markdown]
 # ## Wrap-up
