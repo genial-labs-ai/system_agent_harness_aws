@@ -140,7 +140,8 @@ Summarised here; the README (phase 7) is the authoritative list.
 - *Construction lab (section 8, Exercises 1–2).* `injection_unguarded` stays on while participants
   assert on the G041 trajectory and build a run guard through `Harness(run_guards=...)`. Make sure
   they can explain why `answer_correctness` stays at 0.94 (the prompt leak is in the text, not an
-  action) and why `invalid_call_rate` rises (blocked calls count as not executed). Contrast it with
+  action) and why `blocked_call_rate` rises while `invalid_call_rate` does not (a refused call is
+  not a malformed one). Contrast it with
   the payload wrapper (Exercise 3): a run guard sees calls, a wrapper sees results.
 - *What the mechanisms do not guarantee.* Sections 3–5 end with demos of the limits (the token
   budget is a ceiling on `chars/4` estimates, compaction keeps a prefix, quarantine is a regex);

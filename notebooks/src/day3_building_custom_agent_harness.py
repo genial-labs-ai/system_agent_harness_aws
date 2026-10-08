@@ -702,7 +702,13 @@ pd.DataFrame(
 )
 
 # %%
-GUARD_METRICS = ["tool_selection_accuracy", "answer_correctness", "must_not_call_ok_rate", "invalid_call_rate"]
+GUARD_METRICS = [
+    "tool_selection_accuracy",
+    "answer_correctness",
+    "must_not_call_ok_rate",
+    "invalid_call_rate",
+    "blocked_call_rate",
+]
 with_guard = (GroundedWriteGuard(),)
 pd.DataFrame(
     [
@@ -724,9 +730,11 @@ pd.DataFrame(
 # * `answer_correctness` does **not** recover. The planner still leaks its system prompt in the
 #   *text* of the answer (`after_run.final_answer`). A run guard governs actions, not words; the
 #   default quarantine (section 5) handles both, which is why you want both layers.
-# * `invalid_call_rate` goes **up**: a blocked call is a call that did not execute, and
-#   `RunResult.invalid_tool_calls` counts it with schema-invalid ones (`RunResult.blocked_tool_calls`
-#   separates them). A metric moving the "wrong" way after a fix is a reason to read its definition.
+# * `blocked_call_rate` goes **up** and `invalid_call_rate` does not move. A blocked call did not
+#   execute, but the model sent a valid call and the harness refused it on purpose, so it is counted
+#   apart from schema-invalid calls (`RunResult.blocked_tool_calls` vs `RunResult.invalid_tool_calls`).
+#   Read it per configuration: blocking an injected write is the guard working, while a rising
+#   `blocked_call_rate` on the default configuration would mean the guard refuses legitimate work.
 #
 # ## 9. A payload wrapper is not a run guard
 #

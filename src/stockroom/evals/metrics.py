@@ -170,6 +170,7 @@ class ToolCallReport:
     context_growth_ratio: float
     max_context_tokens: int
     compactions: int
+    blocked_calls: int = 0
     findings: list[LoopFinding] = field(default_factory=list)
 
     @property
@@ -213,7 +214,9 @@ class ToolCallEvaluator:
                     latency_ms=turn.latency_ms,
                 )
             )
-        return self._report(summary, invalid=len(run.invalid_tool_calls))
+        return self._report(
+            summary, invalid=len(run.invalid_tool_calls), blocked=len(run.blocked_tool_calls)
+        )
 
     def from_spans(
         self, spans: Sequence[ReadableSpan], run_id: str | None = None
@@ -221,15 +224,16 @@ class ToolCallEvaluator:
         summary = TraceSummary.from_spans(spans, run_id=run_id)
         return self._report(summary, invalid=0)
 
-    def _report(self, summary: TraceSummary, invalid: int) -> ToolCallReport:
+    def _report(self, summary: TraceSummary, invalid: int, blocked: int = 0) -> ToolCallReport:
         findings = detect_loops(summary, window=self.window)
         contexts = [m.context_tokens or m.input_tokens for m in summary.model_calls]
         first = contexts[0] if contexts else 0
         last = contexts[-1] if contexts else 0
         return ToolCallReport(
             total_calls=len(summary.tool_calls),
-            executed_calls=len(summary.tool_calls) - invalid,
+            executed_calls=len(summary.tool_calls) - invalid - blocked,
             invalid_calls=invalid,
+            blocked_calls=blocked,
             error_calls=sum(1 for c in summary.tool_calls if c.is_error),
             repeated_identical=sum(1 for f in findings if f.kind == "repeated_identical_call"),
             loops=sum(1 for f in findings if f.kind == "loop"),
@@ -267,6 +271,7 @@ class CaseScores(BaseModel):
     loop_findings: int = 0
     repeated_identical: int = 0
     invalid_calls: int = 0
+    blocked_calls: int = 0
     compactions: int = 0
     context_growth_ratio: float = 1.0
     input_tokens: int = 0
@@ -338,6 +343,7 @@ def evaluate_case(
         loop_findings=report.loops,
         repeated_identical=report.repeated_identical,
         invalid_calls=report.invalid_calls,
+        blocked_calls=report.blocked_calls,
         compactions=report.compactions,
         context_growth_ratio=report.context_growth_ratio,
         input_tokens=run.usage.input_tokens,
@@ -396,6 +402,7 @@ def aggregate(scores: Sequence[CaseScores]) -> dict[str, Any]:
         "step_count_ok_rate": mean([float(s.step_count_ok) for s in scores]),
         "loop_rate": mean([float(s.loop_findings > 0 or s.repeated_identical > 0) for s in scores]),
         "invalid_call_rate": mean([float(s.invalid_calls > 0) for s in scores]),
+        "blocked_call_rate": mean([float(s.blocked_calls > 0) for s in scores]),
         "compaction_rate": mean([float(s.compactions > 0) for s in scores]),
         "mean_model_calls": mean([s.model_calls for s in scores]),
         "mean_input_tokens": mean([s.input_tokens for s in scores]),

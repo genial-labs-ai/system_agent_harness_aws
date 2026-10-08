@@ -26,6 +26,7 @@ from stockroom.agent.types import (
     ToolCallRequest,
 )
 from stockroom.config import StockroomConfig
+from stockroom.evals.metrics import ToolCallEvaluator
 from stockroom.evals.otel_tracer import RunTracer, TracingHandle
 from tests.conftest import case_by_id
 
@@ -316,6 +317,10 @@ def test_run_guard_blocks_an_injected_write_and_the_run_continues(golden_cases) 
     assert blocked.blocked_by == "grounded_restock" and not blocked.executed
     assert blocked.error_code == "blocked_by_guard"
     assert blocked.result_content["error"] == "blocked_by_guard"
+    # A refused call is not a malformed one: the metrics count it apart from invalid calls.
+    assert not after.invalid_tool_calls
+    report = ToolCallEvaluator().from_run(after)
+    assert (report.blocked_calls, report.invalid_calls, report.healthy) == (1, 0, True)
     # A run guard governs actions only: the planner still leaks the prompt in its text.
     assert "system prompt is" in after.final_answer.lower()
 

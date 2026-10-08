@@ -346,3 +346,13 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     `package-lock.json` and stop with "run make setup" when they are missing; the
     `PROMPTFOO_VER` / `MARP_VER` Makefile variables are gone (the versions live in `package.json`).
 
+## Follow-ups (2026-10-08, after PR #2)
+
+47. **A call a run guard blocks is counted apart from an invalid call** (supersedes the metric
+    part of entry 45). `RunResult.invalid_tool_calls` now lists schema-invalid calls and unknown
+    tools only; `ToolCallReport.blocked_calls`, `CaseScores.blocked_calls` and the aggregate
+    `blocked_call_rate` count guard refusals, and `ToolCallReport.healthy` no longer turns False
+    when a guard does its job. Both code reviews of PR #2 flagged the old reading, and the Day 3
+    table had to explain why a working defence raised `invalid_call_rate`. Baseline diff: one new
+    metric, `blocked_call_rate: 0.0` (no run guards in the golden suite); every other value
+    unchanged.
