@@ -220,8 +220,10 @@ class StockroomConfig:
             raise ConfigError("MAX_STEPS must be >= 1")
         if self.max_tokens < 1:
             raise ConfigError("MAX_TOKENS must be >= 1")
-        if self.token_budget < self.max_tokens:
-            raise ConfigError("TOKEN_BUDGET must be >= MAX_TOKENS")
+        if self.token_budget <= self.max_tokens:
+            # Each model call reserves MAX_TOKENS of output, so an equal budget stops every run
+            # before its first call.
+            raise ConfigError("TOKEN_BUDGET must be greater than MAX_TOKENS")
         if self.repeat_call_window < 2:
             raise ConfigError("REPEAT_CALL_WINDOW must be >= 2")
         if self.compaction_keep_turns < 1:

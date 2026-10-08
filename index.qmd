@@ -12,7 +12,7 @@ body-classes: landing
 
 # Evaluating Autonomous Agents {.unnumbered .unlisted}
 
-[Systems, harnesses and AWS production CI/CD]{.hero-subtitle}
+[Systems, Harnesses & AWS Production CI/CD]{.hero-subtitle}
 
 ::: {.hero-lead}
 An agent that works in a demo is not evidence that it works. Agents break in the harness and in
@@ -99,7 +99,7 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 ::: {.day-card}
 [Day 1]{.eyebrow}
 
-[LLM evaluation foundations](lectures/day1_llm_eval_foundations.md){.day-card-title}
+[LLM Evaluation Foundations](lectures/day1_llm_eval_foundations.md){.day-card-title}
 
 [What does "the agent works" mean, and how would you know?]{.day-card-question}
 
@@ -110,7 +110,7 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 ::: {.day-card}
 [Day 2]{.eyebrow}
 
-[LLM-as-a-judge, calibration and traces](lectures/day2_llm_as_a_judge_and_otel.md){.day-card-title}
+[LLM-as-a-Judge, Calibration, and OTel](lectures/day2_llm_as_a_judge_and_otel.md){.day-card-title}
 
 [When can a model grade a model, and what did the agent actually do?]{.day-card-question}
 
@@ -121,7 +121,7 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 ::: {.day-card}
 [Day 3]{.eyebrow}
 
-[The agent harness and MCP mocking](lectures/day3_agent_harness_and_mcp_mocking.md){.day-card-title}
+[Agent Harness and MCP Mocking](lectures/day3_agent_harness_and_mcp_mocking.md){.day-card-title}
 
 [Which failures live in the harness, and how do you build one that refuses them?]{.day-card-question}
 
@@ -132,7 +132,7 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 ::: {.day-card}
 [Day 4]{.eyebrow}
 
-[Production CI/CD on AWS and red-teaming](lectures/day4_aws_ci_cd_redteaming.md){.day-card-title}
+[AWS CI/CD and Red Teaming](lectures/day4_aws_ci_cd_redteaming.md){.day-card-title}
 
 [How does an eval become a gate that blocks a merge?]{.day-card-question}
 
@@ -161,7 +161,7 @@ flags and the same agent come back every day, so each fix is measured, not asser
 [L1]{.path-num}
 
 ::: {.path-body}
-[LLM evaluation foundations](lectures/day1_llm_eval_foundations.md){.path-title}
+[LLM Evaluation Foundations: From Vibes to Measured Agents](lectures/day1_llm_eval_foundations.md){.path-title}
 
 Vibe-driven versus measured development, a failure taxonomy mapped to the repository, building
 and versioning a golden dataset, deterministic trajectory metrics with the DeepEval bridge, and
@@ -172,7 +172,7 @@ RAG evaluation over the policy corpus.
 [Lab]{.path-num}
 
 ::: {.path-body}
-[Deterministic and RAG evals](notebooks/Day1_Deterministic_and_RAG_Evals.ipynb){.path-title}
+[Deterministic and RAG Evaluations for the Stockroom Agent](notebooks/Day1_Deterministic_and_RAG_Evals.ipynb){.path-title}
 
 Tour the golden set, switch the weakness flags on and watch the taxonomy light up, write DeepEval
 assertions over a run, score the BM25 policy retriever with RAGAS, then add three golden cases of
@@ -181,13 +181,13 @@ your own.
 :::
 :::
 ::: {.path-day}
-[Day 2 · Judges and traces](lectures/day2_llm_as_a_judge_and_otel.md){.path-day-label}
+[Day 2 · Judges and Traces](lectures/day2_llm_as_a_judge_and_otel.md){.path-day-label}
 
 ::: {.path-step}
 [L2]{.path-num}
 
 ::: {.path-body}
-[LLM-as-a-judge, calibration and OpenTelemetry](lectures/day2_llm_as_a_judge_and_otel.md){.path-title}
+[LLM-as-a-Judge, Calibration, and OpenTelemetry Traces](lectures/day2_llm_as_a_judge_and_otel.md){.path-title}
 
 Grading free-form multi-turn output, error analysis before metrics, calibrating a judge against
 human labels, probing it for position, verbosity and self-preference bias, and one span tree per
@@ -198,7 +198,7 @@ run.
 [Lab]{.path-num}
 
 ::: {.path-body}
-[Judge calibration and OTel traces](notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb){.path-title}
+[Judge Calibration and OpenTelemetry Traces](notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb){.path-title}
 
 Instrument runs with OpenTelemetry (in memory, or Arize Phoenix locally), read loops and context
 growth off the spans, then take a judge rubric from v1 to v2 against 32 human-labelled items.
@@ -206,13 +206,13 @@ growth off the spans, then take a judge rubric from v1 to v2 against 32 human-la
 :::
 :::
 ::: {.path-day}
-[Day 3 · The harness](lectures/day3_agent_harness_and_mcp_mocking.md){.path-day-label}
+[Day 3 · The Harness](lectures/day3_agent_harness_and_mcp_mocking.md){.path-day-label}
 
 ::: {.path-step}
 [L3]{.path-num}
 
 ::: {.path-body}
-[A custom agent harness, MCP mocking, and the managed alternative](lectures/day3_agent_harness_and_mcp_mocking.md){.path-title}
+[Building a Custom Agent Harness, Mocking Tools over MCP, and the Managed Alternative](lectures/day3_agent_harness_and_mcp_mocking.md){.path-title}
 
 The state machine, five runtime failure classes each with evidence, MCP as the tool boundary,
 deterministic environments for evals, and Amazon Bedrock AgentCore's managed harness compared
@@ -223,7 +223,7 @@ with the hand-built one.
 [Lab]{.path-num}
 
 ::: {.path-body}
-[Building a custom agent harness](notebooks/Day3_Building_Custom_Agent_Harness.ipynb){.path-title}
+[Building a Custom Agent Harness](notebooks/Day3_Building_Custom_Agent_Harness.ipynb){.path-title}
 
 Argument validation against schema drift, guards, context compaction and tool-output quarantine;
 serve the tools over MCP; then switch each seeded weakness on, chart what moves, and fix them one
@@ -232,16 +232,15 @@ at a time.
 :::
 :::
 ::: {.path-day}
-[Day 4 · The gate](lectures/day4_aws_ci_cd_redteaming.md){.path-day-label}
+[Day 4 · The Gate](lectures/day4_aws_ci_cd_redteaming.md){.path-day-label}
 
 ::: {.path-step}
 [L4]{.path-num}
 
 ::: {.path-body}
-[Production CI/CD on AWS: regression gates, red-teaming, Bedrock Evaluations](lectures/day4_aws_ci_cd_redteaming.md){.path-title}
+[Production CI/CD for Agents on AWS: Regression Gates, Red Teaming, and Bedrock Evaluations](lectures/day4_aws_ci_cd_redteaming.md){.path-title}
 
-Offline versus online evaluation, thresholds from baseline variance rather than arbitrary
-numbers, flaky-eval management, a red-team suite, the CI gate step by step, Bedrock and
+Offline versus online evaluation, product floors kept apart from measured noise, flaky-eval management, a red-team suite, the CI gate step by step, Bedrock and
 AgentCore Evaluations, and an OIDC-assumed IAM role with no long-lived keys.
 :::
 :::
@@ -249,7 +248,7 @@ AgentCore Evaluations, and an OIDC-assumed IAM role with no long-lived keys.
 [Lab]{.path-num}
 
 ::: {.path-body}
-[Bedrock Evaluations and CI gating](notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb){.path-title}
+[Bedrock Evaluations, Red Teaming, and CI Gating](notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb){.path-title}
 
 Generate synthetic cases and filter them with the judge, run the Promptfoo red-team suite
 in-process, derive thresholds from variance, run the gate on a clean and on a regressed run, and
@@ -366,7 +365,7 @@ participants get stuck.
 - Calibrate an LLM judge against human labels, measure agreement, and probe it for bias.
 - Emit one OpenTelemetry span tree per run and read loops and context growth off it.
 - Build a harness with schema validation, guards, context compaction and tool-output quarantine, and put the tools behind MCP.
-- Turn metrics into a PR gate with thresholds from baseline variance, a red-team suite, and GitHub OIDC to AWS with no long-lived keys.
+- Turn metrics into a PR gate that checks its own evidence, sees per-category and cost regressions, runs a red-team suite, and reaches AWS through GitHub OIDC with no long-lived keys.
 :::
 
 ## Who it is for
@@ -380,7 +379,7 @@ Nothing here explains what a token or a tool call is. You should be comfortable 
 - **CI:** you have edited a GitHub Actions workflow.
 - **AWS:** optional. Every lab runs without an account; the live sections show what changes with one.
 
-Bring a laptop with Python 3.12, `uv`, Node 20 or newer with npm, and `make`. Or open the repository in
+Bring a laptop with Python 3.12, `uv`, Node 22 (the version CI uses; 20 or newer works) with npm, and `make`. Or open the repository in
 [GitHub Codespaces](https://codespaces.new/genial-labs-ai/system_agent_harness_aws?quickstart=1)
 and skip the setup.
 :::

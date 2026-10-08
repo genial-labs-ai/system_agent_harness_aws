@@ -83,10 +83,11 @@ jobs:
       - name: Build and execute notebooks (mock mode)
         run: make notebooks
 
-      - name: Render the slide deck and check lecture references
+      - name: Render the slide deck, check lecture references, titles, terminology and links
         run: |
           make slides
           uv run python scripts/check_lecture_refs.py
+          uv run python scripts/check_style.py
 
       - name: Stop MCP server
         if: always()

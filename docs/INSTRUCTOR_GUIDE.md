@@ -1,9 +1,9 @@
-# Instructor guide — Evaluating Autonomous Agents (Stockroom workshop)
+# Instructor Guide
 
-Four days, one running example. Every lab runs offline in mock mode; live AWS is opt-in. This
-guide covers timings, setup, the failures participants actually hit, facilitation notes per
-exercise, and how to regenerate the generated artefacts. Lecture content is in `lectures/`; the
-Day 1 deck is in `slides/`.
+*Evaluating Autonomous Agents*: four days, one running example. Every lab runs offline in mock
+mode; live AWS is opt-in. This guide covers timings, setup, the failures participants actually
+hit, facilitation notes per exercise, and how to regenerate the generated artefacts. Lecture
+content is in `lectures/`; the decks are in `slides/`.
 
 ---
 
@@ -26,10 +26,10 @@ Per-day content of the three blocks:
 
 | Day | Lecture | Lab part 1 (11:00) | Lab part 2 (13:15) | Review (16:00) |
 |---|---|---|---|---|
-| 1 — LLM eval foundations | failure taxonomy on the weakness flags, golden-set design, deterministic vs judge metrics, RAG metrics | golden-set tour, DeepEval assertions on `RunResult` | RAGAS over the BM25 policy index (Knowledge Base branch live only); write 3 new golden cases | dataset card review; what the taxonomy misses |
-| 2 — judge calibration and traces | LLM-as-judge pitfalls, calibration (agreement, kappa), bias probes, OpenTelemetry GenAI spans | spans in memory and (optional) Phoenix; `ToolCallEvaluator` from spans | calibration v1 → v2 on `data/judge_calibration/calibration_v1.jsonl`; position/verbosity/self-preference probes | which rubric change moved agreement and why |
-| 3 — harness and MCP | `lectures/day3_agent_harness_and_mcp_mocking.md` | guards, validation, compaction | MCP server via client; toggle each weakness and chart metric movement; fix one at a time | metric deltas per fix; AgentCore contrast |
-| 4 — CI/CD, red team, AWS evals | `lectures/day4_aws_ci_cd_redteaming.md` | synthetic cases + judge filter; red-team cases in Promptfoo | thresholds from variance; `make ci` fail/pass; Bedrock Evaluations payload; AgentCore `evaluate` (live) | gate summaries side by side; take-home checklist |
+| 1 — LLM Evaluation Foundations | failure taxonomy on the weakness flags, golden-set design, deterministic vs judge metrics, RAG metrics | golden-set tour, DeepEval assertions on `RunResult` | RAGAS over the BM25 policy index (Knowledge Base branch live only); write 3 new golden cases | dataset card review; what the taxonomy misses |
+| 2 — LLM-as-a-Judge, Calibration, and OTel | LLM-as-a-judge pitfalls, calibration (agreement, kappa), bias probes, OpenTelemetry GenAI spans | spans in memory and (optional) Phoenix; `ToolCallEvaluator` from spans | calibration v1 → v2 on `data/judge_calibration/calibration_v1.jsonl`; position/verbosity/self-preference probes | which rubric change moved agreement and why |
+| 3 — Agent Harness and MCP Mocking | `lectures/day3_agent_harness_and_mcp_mocking.md` | construction lab: a run guard through `Harness(run_guards=...)` with `injection_unguarded` on; payload wrapper; what validation, compaction and quarantine do not guarantee | MCP server via client; toggle each weakness and chart metric movement; fix one at a time | metric deltas per fix; AgentCore contrast |
+| 4 — AWS CI/CD and Red Teaming | `lectures/day4_aws_ci_cd_redteaming.md` | synthetic cases validated against the data; a red-team case that holds across paraphrases | floor, noise and allowed regression; capstone: make the gate reject the regressions it misses; optional Bedrock Evaluations payload and AgentCore `evaluate` (live) | capstone reviews and before/after summaries side by side; take-home checklist |
 
 Timing notes:
 
@@ -48,7 +48,7 @@ Timing notes:
 |---|---|---|
 | Python | 3.12 (pinned in `.python-version`; `pyproject.toml` requires `>=3.12,<3.13`) | `uv python install 3.12` is run by `make setup` |
 | uv | installed and on `PATH` | `uv --version` |
-| Node | Node 22 for Promptfoo (`npx --yes promptfoo@0.124.0`) and Marp (`@marp-team/marp-cli@4.5.1`) | `node --version`; `npx --yes promptfoo@0.124.0 --version` once *with network* so the package is cached |
+| Node | Node 22 (the version CI uses; 20 or newer works) for Promptfoo 0.124.0 and Marp CLI 4.5.1, pinned in `package.json` / `package-lock.json` and installed by `make setup` (`npm ci`) | `node --version`; `node_modules/.bin/promptfoo --version` |
 | Docker | optional — only for the devcontainer | — |
 | Install | `make setup` (installs the `phoenix` extra and the `dev` group, registers the `stockroom` Jupyter kernel) | `uv run stockroom config` prints `mode=mock` |
 | Tests | `make test` (unit + golden regression; writes `reports/eval_results.json`) | all green, no AWS variables set |
@@ -56,7 +56,7 @@ Timing notes:
 | Devcontainer | `.devcontainer/devcontainer.json`: Python 3.12 image, Node 22, AWS CLI, forwards ports 6006 (Phoenix) and 8765 (MCP); `postCreateCommand` installs uv and runs `make setup` | open in VS Code / Codespaces |
 | Colab / SageMaker | the notebooks' setup cell checks `find_spec("stockroom")` and otherwise clones `genial-labs-ai/system_agent_harness_aws` and `%pip install`s it (DECISIONS entry 2) | run the first cell; the banner from `detect_mode()` should say `MOCK` |
 | Phoenix (Day 2, optional) | `make phoenix` serves on port 6006; set `STOCKROOM_TRACE_EXPORTER=phoenix` | open `http://localhost:6006` |
-| Promptfoo offline | after one online `npx` run the package is cached; `PROMPTFOO_DISABLE_UPDATE=1` and `PROMPTFOO_DISABLE_TELEMETRY=1` are exported by the Makefile | `make promptfoo` works with the network off |
+| Promptfoo offline | `make promptfoo` and `make slides` run the local binaries in `node_modules/.bin` (never an npx download); `PROMPTFOO_DISABLE_UPDATE=1` and `PROMPTFOO_DISABLE_TELEMETRY=1` are exported by the Makefile | `make promptfoo` works with the network off |
 
 Pinned versions are printed by `make pins` and recorded in `docs/DECISIONS.md` (phase-1 entry).
 
@@ -93,7 +93,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 |---|---|---|
 | `uv sync` resolves a different Python, or `ModuleNotFoundError: stockroom` | wrong interpreter (system 3.11/3.13 or a global venv) | `uv python install 3.12 && make setup`; in notebooks pick the kernel **Python (stockroom)**; check `uv run python --version` |
 | Notebook kernel missing / cells import the wrong `stockroom` | kernel not registered, or a stale one from another checkout | `uv run python -m ipykernel install --user --name stockroom --display-name "Python (stockroom)"` (what `make setup` does); restart Jupyter |
-| `make promptfoo` hangs or fails with a network error | `npx` cannot fetch `promptfoo@0.124.0` offline | run it once online beforehand; or vendor the npm cache; `PROMPTFOO_PYTHON` must point at `.venv/bin/python` (the Makefile exports it) |
+| `make promptfoo` says Promptfoo/Marp are not installed | `npm ci` has not run | run `make setup` once with network access; afterwards everything runs offline. `PROMPTFOO_PYTHON` must point at `.venv/bin/python` (the Makefile exports it) |
 | `make eval` / `make ci` fails with `tool_selection_accuracy = 0.64` and nobody changed anything | `STOCKROOM_WEAKNESSES` left exported from the Day 3 lab | `unset STOCKROOM_WEAKNESSES`; confirm with `uv run stockroom config` (`weaknesses=none`) |
 | Notebook cells fail with `NameError` or an empty `RunResult` | cells run out of order (the setup cell and the config cell must run first) | *Kernel → Restart & Run All* up to the failing exercise; the `check` cells after each exercise are meant to be run after the exercise cell |
 | `make mcp-server` says the address is in use | a server from an earlier `make ci` or a stray terminal still bound to 8765 | `kill $(cat reports/.mcp.pid)` or `lsof -i :8765`; or run with `MCP_PORT=8766 make mcp-server` and `STOCKROOM_MCP_URL=http://127.0.0.1:8766/mcp` |
@@ -110,7 +110,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 
 ## 4. Facilitation notes per exercise
 
-### Day 1 — deterministic and RAG evals
+### Day 1 — Deterministic and RAG Evals
 
 - *Taxonomy demo on the weakness flags.* Show the same query under each flag using
   `uv run stockroom run "<query>" --case-id <id> --json`. Ask participants to name the failure
@@ -124,7 +124,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 - *New golden cases.* Require `expected_facts` **and** `forbidden_facts`; run
   `make validate-data` to catch unknown SKUs/orders and coverage gaps.
 
-### Day 2 — judge calibration and traces
+### Day 2 — Judge Calibration and OTel Traces
 
 - *Spans.* Start with the memory exporter so nobody is blocked on Phoenix. `span_tree()` prints the
   hierarchy; `ToolCallEvaluator.from_spans()` must give the same `loops` / `repeated_identical` as
@@ -135,8 +135,16 @@ Summarised here; the README (phase 7) is the authoritative list.
 - *Bias probes.* `run_all_probes()` on the position/verbosity/self-preference groups. Ask what a
   *live* judge would need to pass before you trust it in the nightly run.
 
-### Day 3 — harness and MCP (see the lecture's lab plan)
+### Day 3 — Building a Custom Agent Harness (see the lecture's lab plan)
 
+- *Construction lab (section 8, Exercises 1–2).* `injection_unguarded` stays on while participants
+  assert on the G041 trajectory and build a run guard through `Harness(run_guards=...)`. Make sure
+  they can explain why `answer_correctness` stays at 0.94 (the prompt leak is in the text, not an
+  action) and why `invalid_call_rate` rises (blocked calls count as not executed). Contrast it with
+  the payload wrapper (Exercise 3): a run guard sees calls, a wrapper sees results.
+- *What the mechanisms do not guarantee.* Sections 3–5 end with demos of the limits (the token
+  budget is a ceiling on `chars/4` estimates, compaction keeps a prefix, quarantine is a regex);
+  use them in the review discussion.
 - *Guards, validation, compaction.* Start every participant with `StockroomConfig.mock()` overrides
   rather than env vars, so nothing leaks into later exercises. Read `RunResult.transition_log`
   aloud for one run.
@@ -150,17 +158,26 @@ Summarised here; the README (phase 7) is the authoritative list.
   failure, **not** deleting the flagged branch (`test_every_flag_moves_at_least_one_gate_metric()`
   guards against that).
 
-### Day 4 — CI gate, red team, AWS evals (see the lecture's lab plan)
+### Day 4 — Bedrock Evaluations and CI Gating (see the lecture's lab plan)
 
-- *Synthetic cases + judge filter.* Insist on the rejection list: a case the judge rejects, a case
-  that duplicates an existing one, a case whose expected tools were copied from the agent's run.
-- *Red-team cases.* Every case needs a trajectory assertion (`no_tool_called` or `expect_tools`),
-  not only text. Show `quarantined` in the provider output.
-- *Thresholds from variance.* If the group has no live run, hand out a results file from a nightly
-  run (or construct repeats by running the suite with `STOCKROOM_EVAL_REPEATS=3` — in mock mode the
-  CI collapses to the mean, which is itself the teaching point).
+- *Label validation (Exercise 1).* The point is the order: validate against the data first, run
+  the agent second. Ask who would have kept S012 (the agent passes it; the label is the reorder
+  point) and dropped S013 (the agent fails it; the label is right). S007 is a near-duplicate the
+  template teacher produced by accident; it is a good prompt for "what is a duplicate?".
+- *Red-team cases (Exercise 2).* Every case needs a trajectory assertion (`no_tool_called` or
+  `expect_tools`), a paraphrase, and an assertion that fails on a successful attack. Show
+  `quarantined` in the provider output.
+- *Floor, noise, allowed regression (Exercise 3).* The illustrative runs are synthetic and labelled
+  so. In mock mode `run_to_run` has sd 0, which is the teaching point: reproducibility, not
+  reliability. If the group has a live nightly artefact, read its `run_to_run` block and the
+  summary's noise warnings instead.
+- *Capstone (Exercise 4).* The aggregate-only gate passes `naive_retry` and `oversized_payload`;
+  participants change the gate, keep `main` green and write the review. Accept any rule the evidence
+  supports (per-category termination, a token-cost limit, a new golden case); insist that the review
+  says what happens to the baseline. Their before/after summaries land in `reports/day4/`.
 - *`make ci` fail then pass.* Run the failing one with the flag exported in **that** shell only:
-  `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci`. Keep both `reports/summary.md` files.
+  `STOCKROOM_WEAKNESSES=naive_retry make ci` (or `ambiguous_tool_desc`). Keep both
+  `reports/summary.md` files.
 - *Bedrock Evaluations payload.* Build the JSONL; validate ≤1000 lines and a single
   `modelIdentifier`. Do not submit in class unless the account owner has agreed to the spend and
   `STOCKROOM_CONFIRM_AWS_SPEND=1` is set deliberately.
@@ -181,6 +198,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 | Slides | `make slides` renders `slides/DAY1_MOTIVATIONAL_SLIDES.md` with Marp | after editing the deck |
 | Pricing table | `uv run python scripts/fetch_pricing.py` | occasionally; the only non-live network call in the repo, never in CI |
 | Lecture reference check | `uv run python scripts/check_lecture_refs.py` | after renaming anything the lectures cite |
+| Style check | `uv run python scripts/check_style.py` (titles from `docs/workshop.yml`, `docs/STYLE_GUIDE.md`) | after renaming a day, lab or deck, or editing prose |
 | Whole PR gate | `make ci` | before opening a PR |
 
 ---
@@ -192,4 +210,4 @@ Summarised here; the README (phase 7) is the authoritative list.
 3. `make promptfoo` with the network off.
 4. `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make eval && make thresholds` fails with the 0.64 row;
    `make eval && make thresholds` passes.
-5. `uv run python scripts/check_lecture_refs.py` is clean.
+5. `uv run python scripts/check_lecture_refs.py` and `uv run python scripts/check_style.py` are clean.

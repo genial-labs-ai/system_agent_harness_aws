@@ -150,11 +150,12 @@ class ToolCallRecord(BaseModel):
     latency_ms: float = 0.0
     sanitized: bool = False
     quarantined_lines: int = 0
+    blocked_by: str | None = None
 
     @property
     def executed(self) -> bool:
-        """True when the call passed validation and reached the tool."""
-        return self.validation_error is None
+        """True when the call passed validation, was not blocked by a run guard and ran."""
+        return self.validation_error is None and self.blocked_by is None
 
     def signature(self) -> str:
         return f"{self.name}:{json.dumps(self.arguments, sort_keys=True, default=str)}"
@@ -225,7 +226,13 @@ class RunResult(BaseModel):
 
     @property
     def invalid_tool_calls(self) -> list[ToolCallRecord]:
+        """Calls that never reached the tool: schema-invalid ones and any a run guard blocked."""
         return [r for r in self.tool_records if not r.executed]
+
+    @property
+    def blocked_tool_calls(self) -> list[ToolCallRecord]:
+        """Calls a run guard refused (see ``Harness(run_guards=...)``)."""
+        return [r for r in self.tool_records if r.blocked_by is not None]
 
     @property
     def tool_names(self) -> list[str]:

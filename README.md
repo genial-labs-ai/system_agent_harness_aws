@@ -27,8 +27,8 @@ and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Ama
 **Website:** everything below is also published at
 [genial-labs-ai.github.io/system_agent_harness_aws](https://genial-labs-ai.github.io/system_agent_harness_aws/):
 lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, both slide
-decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and deployed by
-`.github/workflows/pages.yml` on every push to `main`.
+decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and by
+`.github/workflows/pages.yml` on every pull request, and deployed on every push to `main`.
 
 ## Contents
 
@@ -56,14 +56,14 @@ run in Google Colab or SageMaker Studio as well as locally. Mock mode needs no A
 
 | day | student notebook | solutions |
 |---|---|---|
-| 1 · Deterministic and RAG evals | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day1_Deterministic_and_RAG_Evals.ipynb) | [solutions](notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb) |
-| 2 · Judge calibration and OTEL traces | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) | [solutions](notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) |
-| 3 · Building a custom agent harness | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day3_Building_Custom_Agent_Harness.ipynb) | [solutions](notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb) |
-| 4 · Bedrock Evaluations and CI gating | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) | [solutions](notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) |
+| 1 · Deterministic and RAG Evals | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day1_Deterministic_and_RAG_Evals.ipynb) | [solutions](notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb) |
+| 2 · Judge Calibration and OTel Traces | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) | [solutions](notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb) |
+| 3 · Building a Custom Agent Harness | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day3_Building_Custom_Agent_Harness.ipynb) | [solutions](notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb) |
+| 4 · Bedrock Evaluations and CI Gating | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/genial-labs-ai/system_agent_harness_aws/blob/main/notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) | [solutions](notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb) |
 
 ## Quick start (no AWS needed)
 
-Requirements: Python 3.12 (uv installs it), [uv](https://docs.astral.sh/uv/), Node ≥ 20 with npm
+Requirements: Python 3.12 (uv installs it), [uv](https://docs.astral.sh/uv/), Node 22 (the version CI uses; 20 or newer works) with npm
 (Promptfoo and Marp are pinned in `package.json`/`package-lock.json` and installed by `make setup`),
 GNU make. Docker is optional (devcontainer). The first `make setup` needs network to download
 packages; everything afterwards runs offline.
@@ -153,7 +153,7 @@ which mode it is in.
 | `S3_BUCKET` / `S3_PREFIX` | — / `stockroom-workshop` | versioned golden sets and reports (live) |
 | `KNOWLEDGE_BASE_ID` | — | optional Bedrock Knowledge Base for the Day 1 live RAG branch |
 | `AGENT_PRICE_INPUT_PER_1K`, `AGENT_PRICE_OUTPUT_PER_1K`, `JUDGE_PRICE_*` | — | per-1K-token prices when a model is not in `pricing.yaml` |
-| `STOCKROOM_EVAL_REPEATS` | 1 | run each golden case N times (nightly: 3) for confidence intervals |
+| `STOCKROOM_EVAL_REPEATS` | 1 | run each golden case N times (nightly: 3) to measure run-to-run spread |
 | `STOCKROOM_CONFIRM_AWS_SPEND` | unset | must be `1` before the Day 4 notebook submits a Bedrock Evaluations job |
 
 ## Live mode on Amazon Bedrock
@@ -300,7 +300,7 @@ baseline as a sticky PR comment and as the job summary. Regenerate the baseline 
 `make baseline` and explain the diff in the PR.
 
 `agent_eval_nightly.yml` runs the same suite in live mode with `STOCKROOM_EVAL_REPEATS=3`,
-reports 95% confidence intervals, uploads reports to S3 and as an artifact, and never blocks PRs.
+reports run-to-run spread and case-bootstrap intervals, uploads reports to S3 and as an artifact, and never blocks PRs.
 It has **no schedule**: start it by hand from the Actions tab or with
 `gh workflow run agent-eval-nightly -f repeats=3`, so Bedrock spend happens only on request.
 
@@ -327,7 +327,7 @@ The repository lives at `genial-labs-ai/system_agent_harness_aws` (already fille
 | `ValidationException … on-demand throughput isn't supported` | use the `us.`/`global.` inference-profile ID, not the bare model ID |
 | `make ci` fails at `mcp-smoke` | port 8765 in use: `MCP_PORT=8777 make ci` or stop the other process |
 | notebooks fail with `ModuleNotFoundError: stockroom` | run `make setup` (kernel + editable install); in Colab the setup cell clones and installs the repo |
-| `npx promptfoo` cannot download | the first run needs network to fetch the package; afterwards it is cached by npm |
+| `make promptfoo` says Promptfoo/Marp are not installed | run `make setup` once with network access (`npm ci` installs the pinned versions); afterwards they run offline from `node_modules/.bin` |
 | `make lint` complains in `notebooks/` | notebooks are excluded; edit `notebooks/src/*.py` and rebuild |
 | metrics changed but you expected them to | you probably have `STOCKROOM_WEAKNESSES` set in your shell |
 

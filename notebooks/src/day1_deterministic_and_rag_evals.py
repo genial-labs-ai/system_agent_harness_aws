@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Day 1 — Deterministic and RAG evaluations for the Stockroom agent
+# # Day 1 — Deterministic and RAG Evaluations for the Stockroom Agent
 #
 # **Learning objectives.** By the end of this notebook you can:
 #
@@ -15,7 +15,9 @@
 #
 # **How this notebook is graded.** Four exercises are marked `Exercise N`. Each has a *check* cell
 # with explicit success criteria; it prints `not solved yet` until your code passes. The notebook
-# runs top to bottom even before you solve anything, so you can always re-run everything.
+# runs top to bottom even before you solve anything, so you can always re-run everything. The
+# *Exercise checklist* cell near the end lists each exercise's status; run the notebook with
+# `STOCKROOM_STRICT_EXERCISES=1` to turn any unsolved exercise into an error (self-assessment).
 #
 # Everything runs offline in **mock mode** (a deterministic fake model and judge). With AWS
 # credentials, `AGENT_MODEL_ID` and `JUDGE_MODEL_ID` set, the same cells run against Amazon Bedrock.
@@ -67,6 +69,7 @@ from stockroom.config import StockroomConfig
 from stockroom.evals.golden import GoldenCase, golden_by_id, load_golden
 from stockroom.evals.judge import make_judge
 from stockroom.evals.metrics import OutputEvaluator, evaluate_case
+from stockroom.exercises import exercise_passed, exercise_pending, exercise_summary
 
 pd.set_option("display.max_colwidth", 80)
 pd.set_option("display.width", 160)
@@ -249,7 +252,7 @@ from stockroom.evals.metrics import tool_selection_score
 KNOWN_CATEGORIES = set(golden_df["category"])
 candidate = new_golden_case()
 if candidate is None:
-    print("Exercise 1: not solved yet")
+    exercise_pending("day1.ex1")
 else:
     assert isinstance(candidate, GoldenCase), "return a GoldenCase instance"
     assert candidate.id not in by_id, f"{candidate.id} already exists; pick a new id"
@@ -260,7 +263,7 @@ else:
     check = OutputEvaluator.evaluate(candidate, run)
     assert tool_selection_score(candidate, run) == 1.0, f"tools called: {run.tool_names}"
     assert check.passed, f"facts missing {check.facts_missing}, forbidden {check.forbidden_found}"
-    print(f"Exercise 1 passed: {candidate.id} -> {run.final_answer}")
+    exercise_passed("day1.ex1", f"{candidate.id} -> {run.final_answer}")
 
 # %% [markdown]
 # ## 4. Assertion-based tests
@@ -409,7 +412,7 @@ def extra_facts_for_g013() -> list[str]:
 # %% tags=["check"]
 extra = extra_facts_for_g013()
 if not extra:
-    print("Exercise 2: not solved yet")
+    exercise_pending("day1.ex2")
 else:
     base = by_id["G013"]
     assert not set(extra) & set(base.expected_facts), "those facts are already asserted"
@@ -419,7 +422,7 @@ else:
     assert result.passed, f"facts missing from the answer: {result.facts_missing}"
     wrong_bin = base.model_copy(update={"expected_facts": [*base.expected_facts, "bin 99"]})
     assert not OutputEvaluator.evaluate(wrong_bin, run).passed, "a wrong bin should fail"
-    print(f"Exercise 2 passed: facts {extended.expected_facts} all present in -> {run.final_answer}")
+    exercise_passed("day1.ex2", f"facts {extended.expected_facts} all present in -> {run.final_answer}")
 
 # %% [markdown]
 # ## 5. RAG evaluation of the policy retriever
@@ -544,7 +547,7 @@ NEW_REFERENCE: str | None = (
 
 # %% tags=["check"]
 if not (NEW_POLICY_QUERY and NEW_REFERENCE_CHUNK and NEW_REFERENCE):
-    print("Exercise 3: not solved yet")
+    exercise_pending("day1.ex3")
 else:
     assert NEW_POLICY_QUERY not in set(golden_df["query"]), "pick a query that is not in the set"
     assert NEW_REFERENCE_CHUNK in {c.chunk_id for c in index.chunks}, "unknown chunk id"
@@ -556,7 +559,7 @@ else:
         retrieved_contexts=[text for _, text in hits],
     )
     assert precision.value >= 0.5, f"context precision {precision.value:.2f} < 0.5"
-    print(f"Exercise 3 passed: context precision {precision.value:.2f}, chunks {[c for c, _ in hits]}")
+    exercise_passed("day1.ex3", f"context precision {precision.value:.2f}, chunks {[c for c, _ in hits]}")
 
 # %% [markdown]
 # ### Exercise 4 — classify three failures into the taxonomy
@@ -597,14 +600,23 @@ ALLOWED_LABELS = {
     "hallucination",
 }
 if not FAILURE_LABELS:
-    print("Exercise 4: not solved yet")
+    exercise_pending("day1.ex4")
 else:
     unknown = set(FAILURE_LABELS.values()) - ALLOWED_LABELS
     assert not unknown, f"unknown labels {unknown}"
     assert set(FAILURE_LABELS) == set(EXPECTED_LABELS), f"label exactly {sorted(EXPECTED_LABELS)}"
     wrong = {k: v for k, v in FAILURE_LABELS.items() if EXPECTED_LABELS[k] != v}
     assert not wrong, f"re-read the metric columns for {sorted(wrong)}"
-    print("Exercise 4 passed: all three failures classified correctly")
+    exercise_passed("day1.ex4", "all three failures classified correctly")
+
+# %% [markdown]
+# ## Exercise checklist
+#
+# One line per graded exercise. With `STOCKROOM_STRICT_EXERCISES=1` this cell fails unless every
+# exercise passed; `make notebooks` runs the solution notebooks that way.
+
+# %%
+exercise_summary(["day1.ex1", "day1.ex2", "day1.ex3", "day1.ex4"])
 
 # %% [markdown]
 # ## Wrap-up

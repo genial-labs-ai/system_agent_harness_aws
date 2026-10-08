@@ -1,4 +1,4 @@
-# Day 1 — LLM evaluation foundations: from vibes to measured agents
+# Day 1 — LLM Evaluation Foundations: From Vibes to Measured Agents
 
 *Evaluating Autonomous Agents: Systems, Harnesses & AWS Production CI/CD — lecture notes, day 1 of 4.*
 
@@ -13,7 +13,7 @@ Running example: **Stockroom**, an inventory/order-support agent with five tools
 
 ---
 
-## 1. Learning objectives
+## Learning objectives
 
 By the end of Day 1 you will be able to:
 
@@ -35,25 +35,25 @@ By the end of Day 1 you will be able to:
 
 ---
 
-## 2. Timed agenda (approximately 7 hours)
+## Agenda (09:00–17:00)
 
 | Time | Block | What happens |
 |---|---|---|
 | 09:00–09:15 | Setup check | `make setup`, `make test-unit`; confirm the banner from `detect_mode()` says `MOCK` |
-| 09:15–10:45 | **Lecture** (1.5 h) | Sections 3–8 of these notes |
+| 09:15–10:45 | **Lecture** (1.5 h) | Sections 1–6 of these notes |
 | 10:45–11:00 | Break | |
-| 11:00–13:00 | **Lab part 1** (2 h) | `notebooks/Day1_Deterministic_and_RAG_Evals.ipynb`: taxonomy demo on the weakness flags, golden-set tour, deterministic metrics |
-| 13:00–13:45 | Lunch | |
-| 13:45–15:45 | **Lab part 2** (2 h) | DeepEval assertions, RAGAS over the policy docs (BM25 local; Knowledge Base branch for live mode), exercise cells |
+| 11:00–12:30 | **Lab part 1** (1.5 h) | `notebooks/Day1_Deterministic_and_RAG_Evals.ipynb`: taxonomy demo on the weakness flags, golden-set tour, deterministic metrics |
+| 12:30–13:15 | Lunch | |
+| 13:15–15:45 | **Lab part 2** (2.5 h) | DeepEval assertions, RAGAS over the policy docs (BM25 local; Knowledge Base branch for live mode), exercise cells |
 | 15:45–16:00 | Break | |
-| 16:00–17:00 | **Review** (1 h) | Compare metric tables, discussion questions (section 10), common mistakes (section 11), preview of Day 2 |
+| 16:00–17:00 | **Review** (1 h) | Compare metric tables, discussion questions (section 9), common mistakes (section 10), preview of Day 2 |
 
 The lab is self-paced; the "check" cells in the notebook tell you whether an exercise is complete.
 Solutions are built into `notebooks/solutions/` by `make build-notebooks`.
 
 ---
 
-## 3. Vibe-driven versus measured development
+## 1. Vibe-driven versus measured development
 
 Most teams start the same way: a prompt, a handful of favourite questions, a demo that looks
 good, ship. The feedback loop is "someone noticed". Changes are judged by rerunning the three
@@ -77,12 +77,13 @@ build the judge. Today is about the deterministic half.
 
 A practical test of whether a team is measured rather than vibe-driven: can you answer *"did last
 week's prompt change make tool selection better or worse, and by how much?"* with a number and a
-confidence interval? In this repo the answer is the `confidence_intervals` block that
-`tests/test_trajectory_regression.py` writes into `reports/eval_results.json`.
+measure of how much it moves when nothing changed? In this repo the answer is the `run_to_run`
+and `confidence_intervals` blocks that `tests/test_trajectory_regression.py` writes into
+`reports/eval_results.json`, and the per-case comparison against the committed baseline.
 
 ---
 
-## 4. Agent = Model + Harness (+ Environment)
+## 2. Agent = Model + Harness (+ Environment)
 
 A single-prompt eval sends one input to a model and scores one output. An agent is a loop. The
 loop is owned by code you wrote, not by the model, and that code has its own bugs.
@@ -125,7 +126,7 @@ metric in `src/stockroom/evals/metrics.py` takes a `RunResult`, not a string.
 
 ---
 
-## 5. The failure taxonomy, mapped to the repo
+## 3. The failure taxonomy, mapped to the repo
 
 The brief's taxonomy has seven headline classes. Each maps to golden categories (the dataset
 card lists twelve) and, where a weakness flag reproduces it, to one of the four flags in
@@ -169,14 +170,14 @@ flowchart LR
     F8 --> C7 --> W4
 ```
 
-### 5.1 Faithfulness and hallucination
+### 3.1 Faithfulness and hallucination
 The answer states something the tool results do not support. Deterministic signal:
 `forbidden_facts` in a golden case (`OutputEvaluator.evaluate()` checks them with
 `fact_present()`). Judge signal: the `faithfulness` rubric (`src/stockroom/evals/rubrics/faithfulness_v1.md`)
 graded against `context_from_run()`, which serialises the executed tool calls and their results.
-RAG signal: RAGAS faithfulness over the retrieved policy chunks (section 8).
+RAG signal: RAGAS faithfulness over the retrieved policy chunks (section 6).
 
-### 5.2 Wrong tool
+### 3.2 Wrong tool
 `tool_selection_score()` returns 1.0 only if the executed tool names match the expected list
 under the case's `trajectory_match_mode` (`exact`, `in_order_subset`, `any_order`, implemented
 in `match_calls()`), and 0.0 immediately if any `must_not_call` tool ran.
@@ -201,12 +202,12 @@ including the line that matters most for this lecture: *answer correctness stays
 selection*, because search results happen to include stock levels. An answer-only eval would
 have reported a mild dip; the trajectory metric reports a broken agent.
 
-### 5.3 Wrong arguments
+### 3.3 Wrong arguments
 `argument_correctness_score()` aligns executed calls with expected calls and compares arguments
 with `args_match()`. Expected arguments are the *minimal* correct set: extra keys are allowed,
 free-text `query` arguments match by token subset, numbers compare numerically.
 
-### 5.4 Schema drift
+### 3.4 Schema drift
 The model emits arguments that violate the JSON schema: `"fifty"` for an integer (G045), or a
 bare `1002` where the pattern `ORD-\d{4}` is required (G046). The harness validates every call
 with `validate_arguments()` (a `Draft202012Validator` over the tool's `input_schema`) *before*
@@ -216,7 +217,7 @@ G045 completes in three model calls, with the first call recorded as `validation
 "quantity: 'fifty' is not of type 'integer'"` and never executed. `RunResult.invalid_tool_calls`
 exposes those records and `ToolCallReport.invalid_calls` counts them.
 
-### 5.5 Loops and retries
+### 3.5 Loops and retries
 A transient tool error (`ToolTransientError` from the legacy order shard `ORD-9xxx`) is handled
 in the fixed configuration by a second attempt inside `StockroomTools.get_order_status()`. With
 the `naive_retry` flag the tool has no internal retry, the shard "stays down", and the mock
@@ -233,17 +234,17 @@ G043 (`MAX_STEPS=8`):
 
 `detect_loops()` in `src/stockroom/evals/otel_tracer.py` is the detector; it flags consecutive
 identical calls, the same signature `>= window` times anywhere, and redundant queries whose
-arguments are a subset of an earlier call's. Day 2 runs it over OTEL spans instead of a
+arguments are a subset of an earlier call's. Day 2 runs it over OpenTelemetry spans instead of a
 `RunResult`.
 
-### 5.6 Latency
+### 3.6 Latency
 Every `ModelTurn` and `ToolCallRecord` carries `latency_ms`; the fake client derives it
 deterministically from input tokens, the live client reads `metrics.latencyMs` from the Converse
 response (`parse_converse_response()`). `WallClockGuard` turns runaway latency into a typed
 `TIMEOUT` termination rather than a hung process. Golden cases carry `max_steps` as a
 latency/cost proxy; `CaseScores.step_count_ok` reports it.
 
-### 5.7 Cost and context growth
+### 3.7 Cost and context growth
 With `oversized_payload`, `search_products` loses its `max_results` parameter and returns every
 field of every match, or the whole catalogue once three or more products match. For G049 the
 clean run uses 3,419 input tokens and completes; the bloated run uses 14,093 and terminates with
@@ -252,7 +253,7 @@ clean run uses 3,419 input tokens and completes; the bloated run uses 14,093 and
 `src/stockroom/cost.py` from `pricing.yaml`; the entries for third-party models are `null`, so
 the harness prints "cost unknown" rather than guessing (DECISIONS.md, phase 1, item 5).
 
-### 5.8 Injection and refusal
+### 3.8 Injection and refusal
 `data/policy_docs/restock_policy.md` section 4 carries an indirect prompt injection. Unguarded,
 the mock model follows it: it calls `create_restock_request` for 10,000 units and echoes the
 system prompt. Guarded, `sanitize_tool_output()` quarantines the instruction-like paragraph
@@ -262,9 +263,9 @@ for every case tagged `red_team` or in the `injection` category.
 
 ---
 
-## 6. Building and versioning a golden dataset
+## 4. Building and versioning a golden dataset
 
-### 6.1 What a golden case is
+### 4.1 What a golden case is
 Not a (prompt, answer) pair. A behavioural specification. The schema in
 `data/golden/DATASET_CARD.md` (typed by `GoldenCase` in `src/stockroom/evals/golden.py`):
 
@@ -287,7 +288,7 @@ raise an urgent restock") is `in_order_subset`: the stock check must precede the
 extra lookup is tolerable. G049 (two product searches) is `any_order`. G026 (one policy lookup)
 is `exact`.
 
-### 6.2 Sourcing and labelling
+### 4.2 Sourcing and labelling
 The dataset card records how the 50 cases were produced: written against `data/catalogue.json`,
 `data/orders.json` and `data/policy_docs/`, with expected tools, arguments, facts and
 terminations **derived by reading the data, not by running the agent**. That sentence is the
@@ -310,7 +311,7 @@ flowchart TD
     H -. new failure seen in traces .-> B
 ```
 
-### 6.3 Contamination and the public-set caveat
+### 4.3 Contamination and the public-set caveat
 The card is explicit about two risks you should copy into your own cards:
 
 - **The mock model is a deterministic simulator**, so mock-mode scores are *upper bounds*. Live
@@ -324,7 +325,7 @@ A third risk is specific to agents: the golden set bakes in tool *names* and *sc
 rename a tool or add a required argument, the golden set must be versioned in the same change
 (AGENTS.md: run `make test` then `make baseline`, explain the diff in the PR).
 
-### 6.4 Versioning: manifest, changelog, S3
+### 4.4 Versioning: manifest, changelog, S3
 `data/golden/manifest.json` holds `version` and the content `sha256`. The dataset card says: bump
 the version and add a changelog line whenever a case changes; never reuse an ID after deleting a
 case. `scripts/sync_datasets_s3.py` makes the version immutable in S3:
@@ -345,9 +346,9 @@ via the OIDC role in `docs/aws/`.
 
 ---
 
-## 7. Deterministic metrics and the DeepEval bridge
+## 5. Deterministic metrics and the DeepEval bridge
 
-### 7.1 What `evaluate_case()` computes
+### 5.1 What `evaluate_case()` computes
 `evaluate_case(case, run, judge=None)` in `src/stockroom/evals/metrics.py` returns a
 `CaseScores` with, per case:
 
@@ -367,13 +368,13 @@ via the OIDC role in `docs/aws/`.
 `must_not_call_ok_rate`, `step_count_ok_rate`, `loop_rate`, `invalid_call_rate`,
 `compaction_rate`, `mean_input_tokens`, `total_cost_usd`, `cost_known`, `by_category`).
 
-### 7.2 Why "deterministic first"
+### 5.2 Why "deterministic first"
 Everything in 7.1 except the judge columns is computed without a model. It is cheap, it is
 reproducible, and in mock mode it has variance zero, which is why `eval_thresholds.yaml` can
 gate on it at 0.85 and on `must_not_call_ok_rate` at 1.0. Judge metrics come second (Day 2) and
 are gated only after calibration.
 
-### 7.3 DeepEval
+### 5.3 DeepEval
 `tests/test_trajectory_regression.py` wraps every golden case in a DeepEval `LLMTestCase` with
 `tools_called` / `expected_tools` and measures:
 
@@ -388,11 +389,11 @@ are gated only after calibration.
 Per-case tests fail only on hard invariants (model error, forbidden tool on a red-team case).
 Soft metrics are written to `reports/eval_results.json` and gated by `scripts/check_thresholds.py`
 so that one regressed case produces a readable table instead of a wall of red. Set
-`STOCKROOM_EVAL_REPEATS=n` in live mode to sample repeats and get 95% confidence intervals.
+`STOCKROOM_EVAL_REPEATS=n` in live mode to sample repeats and measure the run-to-run spread.
 
 ---
 
-## 8. RAG evaluation over the policy corpus
+## 6. RAG evaluation over the policy corpus
 
 The `search_policy_docs` tool is a retrieval system, and its failures are a different shape from
 tool-selection failures: the right tool was called, with the right query, and the answer is still
@@ -433,7 +434,7 @@ different-family judge are the ones to trust, and only after calibration.
 
 ---
 
-## 9. The AWS path in live mode
+## 7. The AWS path in live mode
 
 Nothing changes in the eval code between mock and live; only the clients do.
 
@@ -473,7 +474,7 @@ sequenceDiagram
 
 ---
 
-## 10. The lab: `notebooks/Day1_Deterministic_and_RAG_Evals.ipynb`
+## 8. The lab: `notebooks/Day1_Deterministic_and_RAG_Evals.ipynb`
 
 The notebook is generated from `notebooks/src/day1_deterministic_and_rag_evals.py` and runs in
 mock mode without credentials. Its sections, in the order of the agenda:
@@ -482,7 +483,7 @@ mock mode without credentials. Its sections, in the order of the agenda:
 2. **Taxonomy demo on the weakness flags** — run one golden case per flag with
    `StockroomConfig.mock(weaknesses=...)`, compare `RunResult.termination_reason`,
    `RunResult.tool_names`, token usage and `ToolCallEvaluator.from_run()` reports against the
-   clean run. You will reproduce the tables in section 5.
+   clean run. You will reproduce the tables in section 3.
 3. **Golden-set tour** — `load_golden()`, category counts, the three `trajectory_match_mode`
    values, the `retrieval` block on policy cases, `must_not_call` on red-team cases.
 4. **Deterministic metrics** — `evaluate_case()` and `aggregate()` over all 50 cases; inspect
@@ -498,7 +499,7 @@ mock mode without credentials. Its sections, in the order of the agenda:
 
 ---
 
-## 11. Discussion questions
+## 9. Discussion questions
 
 1. Under `ambiguous_tool_desc`, answer correctness (0.78) stays well above tool selection
    (0.64). Which of your production agents would you *not* notice this on, and why?
@@ -507,7 +508,7 @@ mock mode without credentials. Its sections, in the order of the agenda:
 3. `trajectory_match_mode` is per case. Argue for making G033 `exact` instead of
    `in_order_subset`. What would you lose?
 4. Mock-mode metrics have zero variance, so the gate is a fixed 0.85. Live metrics have
-   variance. How would you set a live threshold from `confidence_intervals` without making the
+   variance. How would you set a live threshold from the `run_to_run` spread without making the
    gate either useless or flaky?
 5. `fact_present()` is a normalised substring check. Give two Stockroom answers it would grade
    wrongly, then decide whether that is a reason to move the check to the judge or to tighten the
@@ -517,9 +518,9 @@ mock mode without credentials. Its sections, in the order of the agenda:
 
 ---
 
-## 12. Common mistakes
+## 10. Common mistakes
 
-- **Scoring only the final answer.** The whole of section 5.2 is the counter-example. If your
+- **Scoring only the final answer.** The whole of section 3.2 is the counter-example. If your
   eval has no column for tool selection, you have a chatbot eval, not an agent eval.
 - **Generating labels by running the agent.** Label leakage: the dataset certifies the present
   behaviour. The card's sourcing section is the standard to hold yourself to.
@@ -545,7 +546,7 @@ mock mode without credentials. Its sections, in the order of the agenda:
 
 ---
 
-## 13. References used in this lecture
+## 11. References used in this lecture
 
 - Repository: `AGENTS.md`, `docs/DECISIONS.md`, `data/golden/DATASET_CARD.md`,
   `data/policy_docs/README.md`, `eval_thresholds.yaml`, `pricing.yaml`.

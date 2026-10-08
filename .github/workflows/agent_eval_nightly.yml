@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       repeats:
-        description: "Times to run each golden case (confidence intervals)"
+        description: "Times to run each golden case (run-to-run spread)"
         default: "3"
         required: false
 
@@ -89,7 +89,6 @@ jobs:
           uv run python scripts/check_thresholds.py \
             --results reports/eval_results.json \
             --promptfoo reports/promptfoo_results.json \
-            --baseline reports/baseline/main.json \
             --summary reports/summary.md --no-gate
 
       - name: Publish reports to S3

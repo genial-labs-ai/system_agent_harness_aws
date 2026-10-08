@@ -31,7 +31,7 @@ Ask the room: who has an agent in production? Who has an eval suite that would c
 
 ---
 
-## The question you cannot answer today
+## The Question You Cannot Answer Today
 
 > "Did last week's prompt change make tool selection better or worse, and by how much?"
 
@@ -51,7 +51,7 @@ It is not a criticism; it is where everyone starts. The point of the workshop is
 
 ---
 
-## From vibe-driven to engineering rigor
+## From Vibe-Driven to Engineering Rigor
 
 | Vibe-driven | Measured |
 |---|---|
@@ -93,7 +93,7 @@ Make the point that "the model was fine" is a common and often true post-mortem 
 
 <!-- _class: lead -->
 
-# Anatomy of a runaway agent
+# Anatomy of a Runaway Agent
 
 <div class="hypo"><b>Composite, hypothetical post-mortem.</b> Built from the repository's own <code>naive_retry</code> weakness flag and golden case G043. Not a real incident, not a real company. Every number is produced by <code>tests/test_seeded_weaknesses.py</code> in mock mode.</div>
 
@@ -103,7 +103,7 @@ Say the label out loud. This is a teaching construct. The reason to do it as a p
 
 ---
 
-## Timeline (hypothetical)
+## Timeline (Hypothetical)
 
 | Step | What happened |
 |---|---|
@@ -124,7 +124,7 @@ In the repo: StockroomTools.get_order_status() has an internal second attempt wh
 
 ---
 
-## The numbers the repo produces (mock mode, G043, `MAX_STEPS=8`)
+## The Numbers the Repo Produces (Mock Mode, G043, `MAX_STEPS=8`)
 
 | | `naive_retry` on | fixed harness |
 |---|---|---|
@@ -144,7 +144,7 @@ The token numbers are the fake client's chars/4 estimate, not a tokenizer; the r
 
 ---
 
-## What it costs: the formula, not a number
+## What It Costs: The Formula, Not a Number
 
 ```text
 cost = input_tokens / 1000 × price_in_per_1k  +  output_tokens / 1000 × price_out_per_1k
@@ -169,7 +169,7 @@ The Nova Pro numbers are the ones scripts/fetch_pricing.py pulled from the publi
 
 ---
 
-## What would have caught it
+## What Would Have Caught It
 
 | Layer | Fix in the repo | Eval that proves it |
 |---|---|---|
@@ -186,7 +186,7 @@ This slide is the argument for evaluating the harness. The model-side fix (a bet
 
 ---
 
-## Where failures live: model, harness, environment
+## Where Failures Live: Model, Harness, Environment
 
 | Layer | Stockroom example | Where to see it |
 |---|---|---|
@@ -202,7 +202,7 @@ Three layers, one flag or case each. Day 3 is where participants switch each fla
 
 ---
 
-## Model failure: schema drift (G045)
+## Model Failure: Schema Drift (G045)
 
 Query: *"Raise a restock request for fifty units of SKU-1020."*
 
@@ -219,7 +219,7 @@ This is the model being wrong and the harness making it recoverable. The metric 
 
 ---
 
-## Environment failure: the ambiguous tool description
+## Environment Failure: The Ambiguous Tool Description
 
 `search_products` description with the flag on: *"Look up products, inventory, stock level, units in stock for a SKU, orders, order status and tracking by order id, and anything else about the warehouse."*
 
@@ -278,19 +278,19 @@ Attribution for the practice comes on Day 2: Hamel Husain's "Your AI Product Nee
 **What you will measure (Days 1 and 4):**
 
 - Deterministic trajectory metrics with **zero variance** in mock mode → a fixed 0.85 gate.
-- Live runs with `STOCKROOM_EVAL_REPEATS=n` → mean and 95% CI per metric in `eval_results.json`.
-- Thresholds set from baseline variance, not picked; regression gate at −0.05 vs `reports/baseline/main.json`.
+- Live runs with `STOCKROOM_EVAL_REPEATS=n` → per-repeat values and spread per metric in `eval_results.json`.
+- Floors are product decisions; the allowed drop (−0.05 vs `reports/baseline/main.json`) must exceed the measured noise.
 - Hard invariants that are never allowed to flake: `must_not_call_ok_rate = 1.0`, red-team failures = 0.
 
 Non-determinism is a reason to measure variance, not a reason to skip the gate.
 
 <!--
-tests/test_trajectory_regression.py computes the confidence intervals; scripts/check_thresholds.py applies eval_thresholds.yaml. Day 4 shows how to set the live thresholds from the nightly variance.
+tests/test_trajectory_regression.py writes the run-to-run spread and case intervals; scripts/check_thresholds.py checks the evidence and applies eval_thresholds.yaml. Day 4 shows how to set the allowed regression from the nightly spread.
 -->
 
 ---
 
-## The eval flywheel
+## The Eval Flywheel
 
 ```text
    traces ──► error analysis ──► golden dataset ──► CI gate ──► deploy
@@ -312,14 +312,14 @@ The flywheel is the course structure. Each day adds one stage and connects it to
 
 ---
 
-## The four days
+## The Four Days
 
 | Day | Theme | You build |
 |---|---|---|
 | **1** | Foundations: taxonomy, golden sets, deterministic metrics, DeepEval, RAGAS | A versioned golden set and a metric table you trust |
-| **2** | LLM-as-a-judge, calibration and bias probes; OpenTelemetry traces, Phoenix, CloudWatch | A calibrated judge and a span tree per run |
-| **3** | Building the harness: guards, schema interception, compaction, injection quarantine; MCP server and client | A hardened harness and an MCP tool server |
-| **4** | AWS CI/CD: synthetic cases, Promptfoo red team, thresholds from variance, Bedrock Evaluations, GitHub OIDC | A PR gate that fails on a regressed weakness |
+| **2** | Judges and Traces: LLM-as-a-judge, calibration and bias probes; OpenTelemetry traces, Phoenix, CloudWatch | A calibrated judge and a span tree per run |
+| **3** | The Harness: guards, schema interception, compaction, injection quarantine; MCP server and client | A hardened harness and an MCP tool server |
+| **4** | The Gate: AWS CI/CD, synthetic cases, Promptfoo red team, thresholds from variance, Bedrock Evaluations, GitHub OIDC | A PR gate that fails on a regressed weakness |
 
 Everything runs offline in mock mode; live AWS is opt-in (`STOCKROOM_MODE=live`).
 
@@ -329,13 +329,13 @@ Point out the offline-first rule: no credentials needed for any of the four labs
 
 ---
 
-## What you will have built by Friday
+## What You Will Have Built by Friday
 
 - **Harness** — explicit state machine, four guards, schema interception, compaction, tool-output quarantine
 - **Eval suite** — 50-case golden set, deterministic trajectory metrics, DeepEval and RAGAS bridges, no OpenAI key anywhere
 - **MCP server** — the five Stockroom tools over stdio and streamable HTTP, driven by the same harness
 - **Calibrated judge** — versioned rubrics, kappa and confusion against human labels, bias probes, cross-family (Claude agent / Nova judge) by default
-- **CI gate** — thresholds in one file, baseline regression check, red-team gate, nightly live run with confidence intervals via GitHub OIDC
+- **CI gate** — thresholds in one file, baseline regression check, red-team gate, nightly live run with run-to-run spread via GitHub OIDC
 
 And the answer to the question on slide 2.
 
@@ -347,7 +347,7 @@ Return to the hands-up count from the first slide. The commitment: every partici
 
 <!-- _class: lead -->
 
-# Let's measure something
+# Let's Measure Something
 
 Open `notebooks/Day1_Deterministic_and_RAG_Evals.ipynb`
 and run the first cell: it should say **MOCK mode**.

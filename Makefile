@@ -5,8 +5,9 @@ SHELL := /bin/bash
 UV            ?= uv
 PY            := $(UV) run python
 PYTEST        := $(UV) run pytest
-PROMPTFOO_VER ?= 0.124.0
-MARP_VER      ?= 4.5.1
+# Promptfoo and Marp run from the pinned local install (package.json / package-lock.json, `npm ci`),
+# never via an npx download, so `make promptfoo` and `make slides` cannot reach the network.
+NODE_BIN      := $(CURDIR)/node_modules/.bin
 MCP_PORT      ?= 8765
 QUARTO        ?= quarto
 REPORTS       := reports
@@ -18,7 +19,7 @@ export PROMPTFOO_DISABLE_UPDATE := 1
 export PROMPTFOO_PYTHON := $(CURDIR)/.venv/bin/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: help setup lint format test test-unit eval promptfoo thresholds baseline ci \
+.PHONY: help setup lint format test test-unit eval node-tools promptfoo thresholds baseline ci \
         build-notebooks notebooks mcp-server mcp-smoke slides validate-data phoenix pins clean
 
 help: ## List targets
@@ -58,11 +59,15 @@ mcp-server: ## Start the MCP inventory server over streamable HTTP (foreground)
 mcp-smoke: ## List tools from a running MCP HTTP server
 	$(PY) scripts/mcp_smoke.py --url http://127.0.0.1:$(MCP_PORT)/mcp
 
-promptfoo: ## Run the Promptfoo suite (golden slice + red team) via the Python provider
+node-tools:
+	@test -x $(NODE_BIN)/promptfoo -a -x $(NODE_BIN)/marp || \
+	  { echo "Promptfoo/Marp are not installed: run 'make setup' (npm ci) once with network access" >&2; exit 1; }
+
+promptfoo: node-tools ## Run the Promptfoo suite (golden slice + red team) via the Python provider
 	mkdir -p $(REPORTS)
 	rm -f $(REPORTS)/promptfoo_results.json
 	# promptfoo exits non-zero when any case fails; the gate script decides, so only a missing results file is fatal here.
-	npx --yes --prefer-offline promptfoo@$(PROMPTFOO_VER) eval -c promptfooconfig.yaml --no-cache --no-progress-bar \
+	$(NODE_BIN)/promptfoo eval -c promptfooconfig.yaml --no-cache --no-progress-bar \
 	  --output $(REPORTS)/promptfoo_results.json < /dev/null || test -s $(REPORTS)/promptfoo_results.json
 
 thresholds: ## Enforce eval_thresholds.yaml against the latest results and write reports/summary.md
@@ -76,12 +81,14 @@ baseline: eval ## Regenerate the committed main-branch baseline from a clean moc
 build-notebooks: ## Generate student + solution .ipynb files from notebooks/src
 	$(PY) scripts/build_notebooks.py
 
-notebooks: build-notebooks ## Build and execute every notebook in mock mode
-	$(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb notebooks/solutions/*.ipynb -p no:cacheprovider
+notebooks: build-notebooks ## Build and execute every notebook in mock mode (solutions in strict mode)
+	$(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb -p no:cacheprovider
+	# Strict mode: an exercise that does not report passing fails its solution notebook.
+	STOCKROOM_STRICT_EXERCISES=1 $(PYTEST) --nbmake --nbmake-timeout=900 notebooks/solutions/*.ipynb -p no:cacheprovider
 
-slides: ## Render the Marp deck to HTML
+slides: node-tools ## Render the Marp deck to HTML
 	# stdin is redirected: marp-cli otherwise treats a non-TTY stdin as an extra markdown input and hangs under CI/make.
-	npx --yes --prefer-offline @marp-team/marp-cli@$(MARP_VER) slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html < /dev/null
+	$(NODE_BIN)/marp slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html < /dev/null
 
 site: slides ## Render the Quarto website to _site (executes the notebooks in mock mode; needs quarto on PATH)
 	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
@@ -112,6 +119,7 @@ ci: ## The PR gate, step by step (mirrors .github/workflows/agent_eval_ci.yml)
 	$(MAKE) notebooks
 	$(MAKE) slides
 	$(PY) scripts/check_lecture_refs.py
+	$(PY) scripts/check_style.py
 
 clean: ## Remove caches, build artefacts and generated reports
 	rm -rf .pytest_cache .ruff_cache _site .quarto reports/eval_results.json reports/promptfoo_results.json reports/summary.md

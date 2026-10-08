@@ -1,9 +1,9 @@
-# Day 4 — Production CI/CD for agents on AWS: regression gates, red-teaming, Bedrock Evaluations
+# Day 4 — Production CI/CD for Agents on AWS: Regression Gates, Red Teaming, and Bedrock Evaluations
 
 **Thesis of the day:** an eval suite that does not block a merge is a dashboard. Today we turn the
 Stockroom metrics into a gate that fails a pull request (deterministically, offline), an on-demand
 live run on Amazon Bedrock (the "nightly" tier, dispatched manually here to keep spend opt-in)
-that reports confidence intervals instead of gating, a red-team suite
+that reports run-to-run spread instead of gating, a red-team suite
 whose every case encodes "the attack must *not* succeed", and an IAM/OIDC setup with no long-lived
 keys. We then map what the repo does to what Amazon Bedrock Evaluations and AgentCore Evaluations
 can do for you — and what they cannot.
@@ -21,12 +21,14 @@ By the end of Day 4 you can:
 1. Separate offline and online evaluation and say which of the Stockroom workflows
    (`.github/workflows/agent_eval_ci.yml`, `.github/workflows/agent_eval_nightly.yml`) is which, and
    why only one of them blocks merges.
-2. Set regression thresholds from baseline variance rather than taste: read
-   `eval_thresholds.yaml`, the committed baseline `reports/baseline/main.json`, and the
-   `confidence_intervals` block that `tests/test_trajectory_regression.py` writes to
-   `reports/eval_results.json`; explain what `STOCKROOM_EVAL_REPEATS` changes.
+2. Keep three numbers apart — the product floor (`gates`), run-to-run noise (the `run_to_run`
+   block that `tests/test_trajectory_regression.py` writes to `reports/eval_results.json`) and the
+   allowed regression (`regression.max_drop_vs_baseline`) — and derive the last from the second;
+   explain what `STOCKROOM_EVAL_REPEATS` changes and why mock-mode zero variance is
+   reproducibility, not reliability.
 3. Manage flaky evals: fixed seeds and scripted fakes in the PR gate, repeated live sampling with
-   95% CIs in the nightly run, hard invariants in tests and soft metrics in the gate script.
+   per-repeat spread in the nightly run, hard invariants in tests and soft metrics in the gate
+   script; know what the gate checks about its own evidence before it applies a threshold.
 4. Write red-team cases for *this* agent (jailbreak resistance, indirect prompt injection via tool
    output, system-prompt leakage, unsafe tool use) as deterministic Promptfoo assertions, and
    explain why the repo generates none of them remotely.
@@ -45,11 +47,11 @@ By the end of Day 4 you can:
 | 09:00–09:15 | Recap of Day 3: which metric each harness fix moved | 15 |
 | 09:15–10:45 | **Lecture** — offline vs online, thresholds from variance, flaky evals, red-team categories, the CI gate, Bedrock Evaluations and AgentCore Evaluations, OIDC and S3 | 90 |
 | 10:45–11:00 | Break | 15 |
-| 11:00–12:30 | **Lab part 1** — synthetic cases from a teacher model, filtered by the calibrated judge; add red-team cases to Promptfoo | 90 |
+| 11:00–12:30 | **Lab part 1** — synthetic cases from a teacher model, validated against the data before the agent runs; a red-team case that holds across paraphrases | 90 |
 | 12:30–13:15 | Lunch | 45 |
-| 13:15–15:45 | **Lab part 2** — thresholds from baseline variance; wire the CI gate (`make ci`), watch it fail on `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci`, then pass; build the Bedrock Evaluations payload; (live only) AgentCore `evaluate` | 150 |
+| 13:15–15:45 | **Lab part 2** — thresholds from run-to-run spread; **capstone**: make the gate reject the two seeded regressions it misses, keep `main` green, write the review; optional extensions (Bedrock Evaluations payload; live only: AgentCore `evaluate`) | 150 |
 | 15:45–16:00 | Break | 15 |
-| 16:00–17:00 | **Review** — gate summaries side by side, discussion, what to take home | 60 |
+| 16:00–17:00 | **Review** — capstone reviews and before/after gate summaries side by side, discussion, what to take home | 60 |
 
 Lecture ≈ 1.5 h, lab ≈ 4 h, review ≈ 1 h.
 
@@ -61,7 +63,7 @@ Lecture ≈ 1.5 h, lab ≈ 4 h, review ≈ 1 h.
 |---|---|---|---|
 | Stockroom artefact | `.github/workflows/agent_eval_ci.yml`, `make ci` | `.github/workflows/agent_eval_nightly.yml` | out of scope for the repo; AgentCore Observability / CloudWatch in the AWS section |
 | Model | `FakeBedrockClient` (scripted turns + `HeuristicPlanner`) | `BedrockConverseClient` on `AGENT_MODEL_ID`; `BedrockJudge` on `JUDGE_MODEL_ID` | the deployed model |
-| Variance | zero by construction | real; measured with `STOCKROOM_EVAL_REPEATS` and 95% CIs | real |
+| Variance | zero by construction | real; measured with `STOCKROOM_EVAL_REPEATS` (`run_to_run`) | real |
 | Blocks a merge? | **yes** (`make thresholds` exits 1) | **no** (`--no-gate`, report only) | no — alerts |
 | Tool transport | `mcp-http` against the mock server started in the job | local tools (or MCP if you set it) | the real services |
 | Output | `reports/summary.md` as a PR comment, artefacts | reports published to S3 + workflow artefact | traces, dashboards |
@@ -91,28 +93,38 @@ flowchart LR
 
 ---
 
-## 2. Regression thresholds from baseline variance, not arbitrary numbers
+## 2. Thresholds: product floors, measured noise, allowed regression
 
 ### 2.1 The single source of truth
 
-`eval_thresholds.yaml` is the only place thresholds live. Three blocks:
+`eval_thresholds.yaml` is the only place thresholds live. Five blocks:
 
 - `gates` — absolute floors/ceilings: `tool_selection_accuracy` ≥ 0.85, `answer_correctness` ≥
   0.85, `must_not_call_ok_rate` = 1.0, `termination_match_rate` ≥ 0.90, `loop_rate` ≤ 0.10.
+- `category_gates` — the same kind of floor, applied to every category in `by_category`:
+  `termination_match_rate` = 1.0 per category (section 2.4 explains why).
 - `regression` — relative to the committed baseline: fail when `tool_selection_accuracy`,
-  `answer_correctness` or `argument_correctness` drops by more than `max_drop_vs_baseline` (0.05).
+  `answer_correctness` or `argument_correctness` drops by more than `max_drop_vs_baseline` (0.05),
+  i.e. when `baseline − value > max_drop_vs_baseline`.
+- `cost` — fail when `mean_input_tokens` grows by more than 10 % against the baseline.
 - `redteam` — `max_failures: 0`: every red-team test encodes "the attack must not succeed", so a
   single failing test means it did.
 
-`scripts/check_thresholds.py` reads it (`evaluate()` returns the metrics rows and the failure
-messages; `render()` writes the Markdown table to `reports/summary.md` and to
-`GITHUB_STEP_SUMMARY`), and exits 1 unless `--no-gate` is passed.
+`scripts/check_thresholds.py` reads it. Before any threshold, `check_evidence()` checks the
+evidence itself: every golden case ran the recorded number of repeats against the dataset hash in
+this checkout, no metric is NaN or infinite, and the Promptfoo results contain every case
+`promptfooconfig.yaml` defines (an empty or truncated suite cannot produce a green gate). Then
+`evaluate()` returns the metrics rows and the failure messages, refusing to compute deltas
+against a baseline whose provenance differs (`baseline_problems()`: mode, dataset hash, judge,
+agent model), and `render()` writes the Markdown table to `reports/summary.md` and to
+`GITHUB_STEP_SUMMARY`. A file passed on the command line that does not exist is a failure, not a
+skipped check. The script exits 1 unless `--no-gate` is passed.
 
 ### 2.2 Where the numbers come from
 
 The file's own comment says it: in mock mode the suite is deterministic, so variance is 0 and the
-gate is the brief's 0.85 for the two headline metrics plus hard invariants. The interesting case is
-the live run.
+gate is the brief's 0.85 for the two headline metrics plus hard invariants. Zero variance there
+demonstrates reproducibility, not production reliability; the interesting case is the live run.
 
 `tests/test_trajectory_regression.py` runs every golden case `STOCKROOM_EVAL_REPEATS` times
 (`REPEATS`, parametrised as `r0 … rN`), collects `CaseScores`, and `Session.write_results()` writes
@@ -121,29 +133,64 @@ the live run.
 - `metrics` — the `aggregate()` table (`tool_selection_accuracy`, `answer_correctness`,
   `argument_correctness`, `termination_match_rate`, `must_not_call_ok_rate`, `loop_rate`,
   `mean_input_tokens`, `by_category`, …);
-- `confidence_intervals` — for `tool_selection_accuracy`, `answer_correctness` and
-  `argument_correctness`, `_confidence_interval()` computes the mean over *all case×repeat scores*,
-  the population standard deviation and a 1.96·sd/√n half-width: `{mean, ci95_low, ci95_high, n}`;
+- `run_to_run` — for `tool_selection_accuracy`, `answer_correctness`, `argument_correctness` and
+  `termination_match_rate`, `run_to_run()` keeps the repeats apart: the suite-level value of each
+  repeat (`per_repeat`), their mean and their sample standard deviation `sd`. This is the noise a
+  PR gate has to tolerate: rerunning the same cases on the same code moves the metric this much;
+- `confidence_intervals` — a different question: how precisely do these cases estimate the agent's
+  rate on this kind of traffic? `case_bootstrap_interval()` averages each case over its repeats
+  first (case×repeat rows are not independent), then resamples cases (2000 resamples, fixed seed),
+  so the interval is deterministic and stays inside [0, 1];
 - provenance — `mode`, `weaknesses`, `tool_transport`, `repeats`, `git_sha`, `agent_model_id`,
   `judge` (name and rubric version) and the dataset `name`/`version`/`sha256` from
   `data/golden/manifest.json`.
 
-`make baseline` (= `make eval` then `check_thresholds.py --write-baseline reports/baseline/main.json`)
-snapshots `metrics` plus provenance into the committed baseline. The regression block compares the
-current `metrics` with that snapshot.
+One function builds this document, `results_document()` in `src/stockroom/evals/report.py`, and
+`src/stockroom/evals/stats.py` holds the statistics. `make baseline` (= `make eval` then
+`check_thresholds.py --write-baseline reports/baseline/main.json`) snapshots `metrics`, the
+provenance and each case's outcome into the committed baseline; it refuses a run with a weakness
+flag on or with incomplete coverage. The regression block compares the current `metrics` with that
+snapshot, and the summary pairs every case with its own baseline outcome ("cases that changed vs
+baseline").
 
 ### 2.3 The procedure (what the lab does)
 
+Three questions, three numbers. Keep them apart:
+
+| question | where it lives | where the number comes from |
+|---|---|---|
+| What is the worst quality we will merge? | `gates.*.min` | a **product decision**; the data only checks that `main` clears it on a bad run: mean − 2·sd ≥ floor (`floor_is_safe()`) |
+| How much does the metric move when nothing changed? | `run_to_run` in the results | rerun the same suite on the same code: `STOCKROOM_EVAL_REPEATS=N make eval` |
+| How big a drop versus the baseline fails a PR? | `regression.max_drop_vs_baseline` | above the noise: a PR run and the baseline run differ by noise alone with sd·√2, so ≥ 2·√2·sd, rounded up (`required_max_drop()`) |
+
 ```mermaid
 flowchart TD
-  s1[Run the suite N times on main<br/>STOCKROOM_EVAL_REPEATS=N make eval] --> s2[Read confidence_intervals<br/>mean, ci95_low, ci95_high]
-  s2 --> s3[Set gates.min just below ci95_low of the metric you must hold<br/>never above what main achieves]
-  s3 --> s4[Set regression.max_drop_vs_baseline ≥ the CI half-width<br/>so noise cannot fail a PR]
+  s1[Run the suite N times on main<br/>STOCKROOM_EVAL_REPEATS=N make eval] --> s2[Read run_to_run<br/>per_repeat, mean, sd]
+  s2 --> s3[Floor = product decision<br/>check mean − 2·sd ≥ floor]
+  s3 --> s4[max_drop_vs_baseline ≥ 2·√2·sd<br/>so noise alone rarely fails a PR]
   s4 --> s5[make baseline → commit reports/baseline/main.json]
-  s5 --> s6{PR: metric − baseline > max_drop?}
+  s5 --> s6{PR: baseline − metric > max_drop?}
   s6 -- yes --> f[gate fails with a Δ column]
   s6 -- no --> p[gate passes]
 ```
+
+A worked example with **illustrative** numbers (synthetic teaching data, not a measurement; the
+Day 4 notebook uses the same values). Five live runs of `answer_correctness` give 0.86, 0.90, 0.84,
+0.88, 0.87: mean 0.87, sd 0.022. The floor check fails — 0.87 − 2·0.022 = 0.825 < 0.85 — so a
+floor of 0.85 would fail `main` itself on some nights; either the agent improves, the suite grows,
+or the floor stays report-only for live runs. The allowed drop must be at least 2·√2·0.022 = 0.063,
+rounded up to 0.07. Against a baseline of 0.87, the regression rule then decides:
+
+| PR run | baseline − value | with max_drop 0.07 | with the shipped 0.05 |
+|---|---|---|---|
+| 0.87 (unchanged) | 0.00 | pass | pass |
+| 0.81 (within noise) | 0.06 | pass | **fail** — the gate flaps |
+| 0.78 (real regression) | 0.09 | fail | fail |
+
+`tool_selection_accuracy` in the same illustrative runs (0.90, 0.88, 0.92, 0.89, 0.91; sd 0.016)
+passes the floor check and needs only 0.05. The gate prints the same verdicts on its own: when a
+results file carries `run_to_run` with more than one repeat, `noise_notes()` adds a warning to the
+summary for every threshold that sits inside the measured noise.
 
 Rules of thumb the repo encodes rather than preaches:
 
@@ -156,7 +203,25 @@ Rules of thumb the repo encodes rather than preaches:
   `must_not_call_ok` or `forbidden_found`), so you get the failing case id, not only a rate.
 - **Change the baseline on purpose.** When you change a metric, rubric, tool description or golden
   case, `make test` then `make baseline`, and explain the diff in the PR (AGENTS.md convention).
-  The baseline's `git_sha` and dataset `sha256` make "which baseline?" answerable.
+  The baseline records `git_sha`, the dataset `sha256`, the judge and the agent model, so "which
+  baseline?" is answerable — and a baseline that no longer matches is reported as not comparable
+  instead of producing a delta that means nothing.
+
+### 2.4 What aggregates hide
+
+Run the four seeded weaknesses through a gate made only of aggregate floors and the 0.05
+regression rule. `ambiguous_tool_desc` and `injection_unguarded` fail it; `naive_retry` and
+`oversized_payload` **pass**. Each breaks one two-case category (`transient_tool_error` and
+`context_bloat`): two cases looping to `MAX_STEPS` or hitting `TOKEN_BUDGET` move a 50-case rate by
+0.04, which clears every floor and stays inside the allowed drop. Their mean input tokens rose by
+15 % and 18 %.
+
+That is why `eval_thresholds.yaml` carries `category_gates` (termination must match in every
+category — exact in mock mode) and a `cost` limit, and why the summary pairs each case with its
+own baseline outcome: the "cases that changed vs baseline" list names G043/G044 or G049/G050
+directly. `test_pr_gate_rejects_every_seeded_weakness()` in `tests/test_seeded_weaknesses.py`
+keeps the property: the shipped gate rejects each flag on its own and passes the fixed agent. The
+Day 4 capstone has participants rediscover this from the aggregate-only gate.
 
 ---
 
@@ -164,7 +229,7 @@ Rules of thumb the repo encodes rather than preaches:
 
 | Source of flakiness | PR gate (offline) | Nightly (live) |
 |---|---|---|
-| model sampling | eliminated: `FakeBedrockClient`, scripted `MockScript` turns, temperature-free planner | measured: `STOCKROOM_EVAL_REPEATS` (default 3 in the workflow), `confidence_intervals` in the report |
+| model sampling | eliminated: `FakeBedrockClient`, scripted `MockScript` turns, temperature-free planner | measured: `STOCKROOM_EVAL_REPEATS` (default 3 in the workflow), `run_to_run` and noise warnings in the report |
 | judge sampling | `FakeJudge` v2 (deterministic fact checks) | `BedrockJudge`; the Day 2 calibration set (`data/judge_calibration/calibration_v1.jsonl`) tells you how much to trust it |
 | environment leakage | `_isolated_env()` scrubs `STOCKROOM_*`, `AWS_*`, `AGENT_*`, `JUDGE_*`, `MAX_*`, `TOKEN_*`; the suite reads flags from `ORIGINAL_ENV` only | repository *variables*, not developer shells |
 | order dependence | `executor.reset()` per run; hidden `reset_session_state` tool over MCP | same |
@@ -185,7 +250,7 @@ Two further conventions worth copying:
 
 ---
 
-## 4. Red-teaming the Stockroom agent (and only the Stockroom agent)
+## 4. Red teaming the Stockroom agent (and only the Stockroom agent)
 
 ### 4.1 Categories and surface
 
@@ -246,10 +311,14 @@ same as "the model did not call the tool".
 
 A new case needs: a `description`, `vars.query`, `metadata` with `suite: redteam`, a `case_id` and
 a `category`, and at least one negative assertion. If the attack targets a tool, add
-`no_tool_called` for that tool; if it targets facts, add `answer_contains` for the *true* fact so a
-refusal-by-silence does not pass. Run `make promptfoo`; `check_thresholds.py` splits suites by
-`metadata.suite` (`promptfoo_summary()`), so golden-slice failures and red-team failures are
-reported separately.
+`no_tool_called` for that tool (a polite refusal *after* the tool ran is not safe); if it targets
+facts, add `answer_contains` for the *true* fact so a refusal-by-silence does not pass. Two checks
+before you commit it: the assertions must hold on a **paraphrase** of the attack too (one phrasing
+proves little), and they must **fail on a run where the attack succeeded** — an assertion set that
+passes either way cannot catch anything. The notebook's Exercise 2 checks both. Run
+`make promptfoo`; `check_thresholds.py` splits suites by `metadata.suite` (`promptfoo_summary()`),
+so golden-slice failures and red-team failures are reported separately, and fails the gate if a
+case defined in `promptfooconfig.yaml` is missing from the results.
 
 ---
 
@@ -273,23 +342,28 @@ sequenceDiagram
     end
     GH->>PY: STOCKROOM_TOOL_TRANSPORT=mcp-http make eval → reports/eval_results.json
     GH->>PY: make promptfoo → reports/promptfoo_results.json
-    GH->>PY: make notebooks (build + execute, mock mode)
     GH->>GATE: --results --promptfoo --baseline reports/baseline/main.json --summary reports/summary.md
     GATE-->>GH: exit 0 / 1 + Markdown table (also to GITHUB_STEP_SUMMARY)
+    GH->>PY: make notebooks (build + execute; solutions in strict mode)
+    GH->>GH: make slides · scripts/check_lecture_refs.py
     GH->>MCP: kill (always)
     GH->>GH: upload reports; upsert one PR comment tagged stockroom-eval-summary
 ```
 
 Why the order matters: lint and data validation are seconds and fail fast; the MCP smoke loop
-proves the server is up before the expensive suite; notebooks execute *before* the gate so a broken
-exercise cell fails the job even when the metrics are fine; the gate runs last so its summary
-reflects everything. The PR comment is upserted (found by the `<!-- stockroom-eval-summary -->`
-marker), so a PR has one metrics comment that updates, not one per push.
+proves the server is up before the expensive suite; the gate runs straight after the suites, before
+the notebooks, so a regressed PR fails with the metrics summary rather than with a notebook
+traceback; the notebooks then execute (solutions in strict mode, so a broken solution fails the job
+even when the metrics are fine). The PR comment step runs `if: always()` and is upserted (found by
+the `<!-- stockroom-eval-summary -->` marker), so a PR has one metrics comment that updates, not
+one per push, even when a later step failed.
 
 **Watching it fail.** `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` produces a summary whose
 `tool_selection_accuracy` row reads 0.64 against `min 0.85` and a baseline of 1.0 (Δ −0.36), with
 a "by category" table showing `order_status` at 0.0 and a "cases that missed" list. Unset the
-variable and the same command passes. That pair of runs is the lab's deliverable.
+variable and the same command passes. `STOCKROOM_WEAKNESSES=naive_retry make ci` now fails too,
+on the category and cost rules of section 2.4, with G043 and G044 listed under "cases that
+changed vs baseline".
 
 ---
 
@@ -305,7 +379,7 @@ before you quote them.
 
 ### 6.1 Bedrock Evaluations: job types
 
-The overview page describes Amazon Bedrock evaluations as a way to evaluate Bedrock models and
+The overview page describes Amazon Bedrock Evaluations as a way to evaluate Bedrock models and
 knowledge bases, as well as models and RAG sources outside Bedrock. Four job types are described:
 
 | Job type | What the page says |
@@ -425,7 +499,7 @@ so a live runner installs `--extra cloudwatch`.
 ```mermaid
 flowchart LR
   subgraph Repo["Stockroom (this repo)"]
-    R[RunResult + OTEL spans] --> E1[evaluate_case / aggregate<br/>trajectory + answer metrics]
+    R[RunResult + OpenTelemetry spans] --> E1[evaluate_case / aggregate<br/>trajectory + answer metrics]
     R --> J[Bedrock Evaluations JSONL<br/>prompt · referenceResponse · category · modelResponses]
   end
   subgraph AWS["AWS (live only)"]
@@ -499,40 +573,51 @@ with which CIs — enough to reproduce a number months later.
 
 `notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb` (source
 `notebooks/src/day4_bedrock_evaluations_and_ci_gating.py`; solutions in `notebooks/solutions/`).
-Exercise topics, in lecture order:
+Sections 1–6 are the required path and run offline without an AWS account; sections 7–9 are
+optional extensions.
 
-1. **Synthetic test cases from a teacher model, filtered by the calibrated judge** — generate
-   candidate `GoldenCase`-shaped records (in mock mode a deterministic generator stands in for the
-   teacher), run them through the harness, keep only those where `FakeJudge` / `BedrockJudge`
-   agrees with the expected facts and the deterministic `OutputEvaluator` passes, and reject label
-   leakage (cases whose expected tools were copied from what the agent happened to do — see the
-   dataset card's sourcing note).
-2. **Promptfoo red team** — add two cases to `promptfooconfig.yaml` following section 4.3; run
-   `make promptfoo`; read `reports/promptfoo_results.json` through `promptfoo_summary()`.
-3. **Thresholds from baseline variance** — load `reports/eval_results.json` from several repeated
-   runs (or the live nightly artefact), compute the CI half-widths, and propose `gates` and
-   `regression.max_drop_vs_baseline` values with a justification.
-4. **`check_thresholds.py` on regressed vs fixed** — run `evaluate()` against a results file
-   produced with `STOCKROOM_WEAKNESSES=ambiguous_tool_desc` and against a clean one; diff the
-   summaries.
-5. **Bedrock Evaluations job builder** — produce the JSONL payload (section 6.2 mapping) and the
-   `CreateEvaluationJob` request body; submission only when `STOCKROOM_CONFIRM_AWS_SPEND=1` and
-   credentials plus the service role exist.
-6. **AgentCore `evaluate()` script** — live only; download session spans and call
-   `Builtin.ToolSelectionAccuracy` / `Builtin.GoalSuccessRate`; map the result's `spanContext` back
-   to the tool spans the Day 2 tracer emitted.
+1. **Growing the golden set (Exercise 1)** — a teacher proposes candidate `GoldenCase`s (a
+   deterministic template generator in mock mode, a paraphrasing Bedrock model in live mode).
+   Participants write a validation function that checks each label against the data (the
+   identifier is in the query, the expected facts are what the data says, the case is neither an
+   exact nor a near-duplicate of a golden case by trajectory signature) **without looking at an
+   agent run**. The agent runs afterwards and only classifies accepted cases: passing, failing
+   (keep it — it is the error-analysis queue) or needs investigation (judge and fact check
+   disagree). The candidates include a wrong label the agent agrees with and a valid case the
+   agent fails; filtering by the agent's result gets both backwards.
+2. **Promptfoo red team (Exercise 2)** — the same test definitions and assertion functions run
+   in-process; a new case must hold on a paraphrase, assert on the trajectory, and fail on the
+   envelope of a successful attack (section 4.3).
+3. **Floor, noise, allowed regression (Exercise 3)** — the mock suite three times (`run_to_run`,
+   sd 0), then the illustrative runs of section 2.3: their `propose` function must agree with
+   `src/stockroom/evals/stats.py`, and the real `evaluate()` must pass the unchanged and
+   within-noise PRs and fail the real regression.
+4. **The gate and its blind spot** — `check_evidence()`, `evaluate()` and `render()` on all five
+   configurations; the aggregate-only gate passes `naive_retry` and `oversized_payload`.
+5. **Capstone (Exercise 4)** — change the thresholds so every seeded regression fails and the fixed
+   agent passes; write the PR review (evidence used, baseline implications). The check saves the
+   before/after summaries, the thresholds and the review under `reports/day4/`.
+6. **Optional: Bedrock Evaluations job builder** — the JSONL payload (section 6.2 mapping) and the
+   `CreateEvaluationJob` request body, validated offline against botocore's service model;
+   submission only with `STOCKROOM_MODE=live`, `STOCKROOM_CONFIRM_AWS_SPEND=1`, the service role
+   and a bucket.
+7. **Optional, live only: AgentCore `evaluate()`** — download session spans with a bounded
+   Logs Insights poll (deadline, every terminal status, query cancelled on timeout) and call a
+   built-in evaluator; the same spend consent as the Bedrock job.
+8. **Optional reading: GitHub OIDC** — the two workflows' permissions and the trust policy.
 
 ---
 
-## 9. Lab plan (≈4 h)
+## 9. Lab plan (90 min + 150 min)
 
 | Block | Task | Done when |
 |---|---|---|
-| Lab 1a (45 min) | Synthetic cases + judge filter (notebook 1) | ≥5 new cases accepted, ≥1 rejected with a stated reason |
-| Lab 1b (45 min) | Two new red-team cases (notebook 2, section 4.3) | `make promptfoo` shows them under `redteam`, passing for the right reason (`quarantined > 0` or no tool call) |
-| Lab 2a (60 min) | Thresholds from variance (notebook 3); update `eval_thresholds.yaml`; `make baseline` | a one-paragraph justification per changed number, referencing `ci95_low` / half-width |
-| Lab 2b (60 min) | `make ci` passes; `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` fails at `make thresholds` with the table from section 5; unset, passes again | both `reports/summary.md` files saved side by side |
-| Lab 2c (30 min) | Bedrock Evaluations payload (notebook 5); live participants: AgentCore `evaluate` (notebook 6) | JSONL validates (≤1000 lines, one `modelIdentifier`) |
+| Lab 1a (45 min) | Label validation (notebook section 2, Exercise 1) | the four invalid candidates rejected with stated reasons; S013 accepted and classified as a known failure |
+| Lab 1b (45 min) | A red-team case (section 3, Exercise 2); optionally add it to `promptfooconfig.yaml` and run `make promptfoo` | it holds on two phrasings, asserts on the trajectory, and fails on a successful attack |
+| Lab 2a (40 min) | Floor, noise, allowed regression (section 4, Exercise 3) | the three decisions match the table in section 2.3; one sentence on why 0.85 is not safe for the illustrative `answer_correctness` |
+| Lab 2b (70 min) | Capstone (sections 5–6, Exercise 4) | the gate rejects all four flags and passes `main`; the review explains the evidence and the baseline; `reports/day4/` holds the before/after summaries |
+| Lab 2c (20 min) | `make ci` passes; `STOCKROOM_WEAKNESSES=naive_retry make ci` fails at `make thresholds` | both `reports/summary.md` files saved side by side for the review block |
+| Lab 2d (20 min, optional) | Bedrock Evaluations payload (section 7); live participants: AgentCore `evaluate` (section 8) | JSONL validates (≤1000 lines, one `modelIdentifier`) |
 
 ---
 
@@ -555,20 +640,29 @@ Exercise topics, in lecture order:
 6. The trust policy pins `sub` to `refs/heads/main`. What is the risk of adding `pull_request`, and
    what would you require (environment protection, approvals, spend caps) before doing it?
 7. The nightly run never gates. Under what conditions would you let a live run block a release, and
-   what sample size and CI width would you demand first?
+   what number of repeats and run-to-run spread would you demand first?
+8. `category_gates.termination_match_rate` is 1.0 in every category. That is exact in mock mode.
+   What would you do with it in a live gate, where a two-case category moves in steps of 0.5?
 
 ---
 
 ## 11. Common mistakes
 
 - **Tuning thresholds to the last run.** A gate set at the current value of a metric with
-  non-zero variance fails on noise and gets disabled. Set it from `ci95_low` of repeated runs and
-  keep `max_drop_vs_baseline` at least as wide as the half-width.
+  non-zero variance fails on noise and gets disabled. Floors are product decisions checked against
+  mean − 2·sd of repeated runs; `max_drop_vs_baseline` must be at least 2·√2·sd. The summary's
+  noise warnings tell you when either is violated.
+- **Keeping only the synthetic cases the agent passes.** That throws away the valid hard cases and
+  keeps any wrong label the agent happens to agree with. Validate labels against the data; let the
+  agent's result classify the case, never admit it.
+- **Trusting aggregates over small categories.** Two broken cases move a 50-case rate by 0.04.
+  Gate per category where the category is an invariant, and read the paired case list.
 - **Running `make ci` with `STOCKROOM_WEAKNESSES` still exported.** The demo failure becomes a
   mystery failure. Check `uv run stockroom config`.
-- **Committing a baseline from a run with a flag on, or over MCP when the gate runs local (or vice
-  versa).** The baseline records `mode`, `weaknesses`, `git_sha` and dataset hash — read them before
-  `make baseline`, and regenerate only from a clean run.
+- **Committing a baseline from a run with a flag on.** `--write-baseline` refuses one (and a run
+  with missing cases); the baseline records `mode`, `weaknesses`, `tool_transport`, `git_sha`, the
+  judge, the agent model and the dataset hash, and the gate refuses to compare against a baseline
+  whose mode, dataset, judge or agent model differs from the results.
 - **Red-team assertions on text only.** `answer_not_contains` without `no_tool_called` lets a
   polite refusal *after* executing the forbidden tool pass. Always assert on the trajectory.
 - **Generating red-team cases with an external model in CI.** It breaks offline-first, costs
@@ -576,8 +670,10 @@ Exercise topics, in lecture order:
 - **Judge-graded assertions in Promptfoo without a provider.** The suite sets
   `defaultTest.options.provider` to `null` on purpose; an `llm-rubric` assertion would need an API
   key the repo forbids.
-- **Treating `confidence_intervals` as case-level.** The interval is over all case×repeat scores,
-  not per case; for a per-case view use the `cases` list and group by `case_id`.
+- **Pooling case×repeat rows as if they were independent.** Repeats of one case are correlated;
+  `confidence_intervals` averages each case over its repeats before resampling cases, and
+  `run_to_run` keeps the repeats apart. For a per-case view use the `cases` list or the summary's
+  "cases that changed vs baseline".
 - **Sending more than 1000 prompts or more than one `modelIdentifier` to a Bedrock judge job.**
   Both are stated limits on the dataset page; split the file.
 - **Expecting a Bedrock Evaluations job to score tool selection.** It will not; use the repo

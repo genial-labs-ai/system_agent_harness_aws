@@ -15,6 +15,12 @@ for it only match exercise cells) may only appear in ``exercise`` cells, every `
 needs a ``solution`` cell, and generated notebooks are written without outputs with the default
 ``python3`` kernelspec so ``nbmake`` can execute them in any environment.
 
+Exercise ids (``stockroom.exercises``): every ``check`` cell reports through
+``exercise_pending("dayN.exM")`` and ``exercise_passed("dayN.exM", ...)`` with one id per exercise,
+numbered 1..M in order, and the notebook's ``exercise_summary([...])`` cell lists exactly those ids.
+That is what lets ``make notebooks`` run the solutions in strict mode and fail on any exercise that
+does not report passing.
+
 Usage: ``uv run python scripts/build_notebooks.py [--src notebooks/src] [--out notebooks]``.
 """
 
@@ -22,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,6 +46,10 @@ TAG_EXERCISE = "exercise"
 TAG_SOLUTION = "solution"
 TAG_CHECK = "check"
 KNOWN_TAGS = {TAG_EXERCISE, TAG_SOLUTION, TAG_CHECK}
+
+PASSED_CALL = re.compile(r'exercise_passed\(\s*"(day\d+\.ex\d+)"')
+PENDING_CALL = re.compile(r'exercise_pending\(\s*"(day\d+\.ex\d+)"')
+SUMMARY_CALL = re.compile(r"exercise_summary\(\s*\[([^\]]*)\]")
 
 NOTEBOOK_NAMES: dict[str, str] = {
     "day1_deterministic_and_rag_evals": "Day1_Deterministic_and_RAG_Evals",
@@ -103,7 +114,40 @@ def validate_source(nb: nbformat.NotebookNode, source: Path) -> int:
             pending_solution = False
     if pending_solution:
         raise BuildError(f"{source.name}: the last exercise has no solution cell")
+    validate_exercise_ids(nb, source, exercises)
     return exercises
+
+
+def validate_exercise_ids(nb: nbformat.NotebookNode, source: Path, exercises: int) -> None:
+    """Check cells report under stable ids ``dayN.ex1..exM``; the summary cell lists them all."""
+    day = re.match(r"day(\d+)_", source.name)
+    if day is None:
+        raise BuildError(f"{source.name}: source names must start with 'day<N>_'")
+    expected = [f"day{day[1]}.ex{i}" for i in range(1, exercises + 1)]
+    reported: list[str] = []
+    summaries: list[list[str]] = []
+    for idx, cell in enumerate(nb.cells):
+        if cell.cell_type != "code":
+            continue
+        if TAG_CHECK in cell_tags(cell):
+            passed = PASSED_CALL.findall(cell.source)
+            pending = PENDING_CALL.findall(cell.source)
+            if len(set(passed)) != 1 or set(pending) != set(passed):
+                raise BuildError(
+                    f"{source.name} cell {idx}: a check cell must call exercise_pending() and "
+                    "exercise_passed() with the same single exercise id"
+                )
+            reported.append(passed[0])
+        summaries += [re.findall(r'"([^"]+)"', m) for m in SUMMARY_CALL.findall(cell.source)]
+    if reported != expected:
+        raise BuildError(
+            f"{source.name}: check cells report {reported}, expected {expected} "
+            "(one check cell per exercise, in order)"
+        )
+    if summaries != [expected]:
+        raise BuildError(
+            f"{source.name}: expected one exercise_summary({expected}) cell, found {summaries}"
+        )
 
 
 def strip_cell(cell: nbformat.NotebookNode) -> nbformat.NotebookNode:
