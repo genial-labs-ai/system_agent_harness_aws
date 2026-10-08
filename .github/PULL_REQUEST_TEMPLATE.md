@@ -11,7 +11,7 @@
 - [ ] `make ci` passes locally with no AWS credentials and `STOCKROOM_WEAKNESSES` unset
 - [ ] No new model IDs, regions or credentials in code (config comes from the environment)
 - [ ] No `pass`, `...` or `TODO` outside tagged `exercise` cells in `notebooks/src/*.py`
-- [ ] Teaching materials (`lectures/`, `slides/`, `docs/INSTRUCTOR_GUIDE.md`) still pass `uv run python scripts/check_lecture_refs.py`
+- [ ] Teaching materials (`lectures/`, `slides/`, `docs/INSTRUCTOR_GUIDE.md`) still pass `uv run python scripts/check_lecture_refs.py` and `uv run python scripts/check_style.py`
 - [ ] Any figure quoted in teaching materials was reproduced from this branch in mock mode
 - [ ] `docs/DECISIONS.md` has an entry for each deviation from the brief or each new version pin
 

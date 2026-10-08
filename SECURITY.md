@@ -1,4 +1,4 @@
-# Security policy
+# Security Policy
 
 This repository is teaching material. It ships a **deliberately vulnerable** agent configuration
 behind feature flags (`STOCKROOM_WEAKNESSES=injection_unguarded`, `naive_retry`, ...) and a policy

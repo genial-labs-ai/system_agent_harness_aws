@@ -1,4 +1,4 @@
-# AWS policies for the nightly live-mode workflow
+# AWS Policies for the Nightly Live-Mode Workflow
 
 Two JSON documents, both with placeholders to replace (`<ACCOUNT_ID>`, `<AWS_REGION>`,
 `<S3_BUCKET>`, `<S3_PREFIX>`; the repository `genial-labs-ai/system_agent_harness_aws` is already filled in):

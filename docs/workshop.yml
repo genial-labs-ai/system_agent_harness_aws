@@ -1,0 +1,176 @@
+# Canonical names for the workshop, its days, lectures, labs, decks and site pages, plus the
+# terminology rules of docs/STYLE_GUIDE.md. This is the one place a title is written down:
+# scripts/check_style.py checks every copy (lecture and notebook H1s, _quarto.yml menus, README,
+# index.qmd, the instructor guide, the slide decks, CITATION.cff) against it. Rename here first,
+# then fix whatever the checker reports.
+
+workshop:
+  title: "Evaluating Autonomous Agents: Systems, Harnesses & AWS Production CI/CD"
+  short: "Evaluating Autonomous Agents"
+  subtitle: "Systems, Harnesses & AWS Production CI/CD"
+
+# Node for Promptfoo and Marp: CI and the devcontainer use `ci`; package.json `engines` allows
+# `minimum` and newer. Prose may only name these two versions.
+node:
+  ci: 22
+  minimum: 20
+  # The one sentence the setup instructions use, word for word.
+  statement: "Node 22 (the version CI uses; 20 or newer works)"
+  stated_in: [README.md, index.qmd, docs/INSTRUCTOR_GUIDE.md]
+
+# `title` is the H1 after "Day N — "; `short` is the label in menus, cards and tables;
+# `theme` is the one- or two-word name of the day (landing-page path, Day 1 deck).
+days:
+  - day: 1
+    theme: "Foundations"
+    lecture:
+      file: lectures/day1_llm_eval_foundations.md
+      title: "LLM Evaluation Foundations: From Vibes to Measured Agents"
+      short: "LLM Evaluation Foundations"
+    lab:
+      source: notebooks/src/day1_deterministic_and_rag_evals.py
+      notebook: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
+      title: "Deterministic and RAG Evaluations for the Stockroom Agent"
+      short: "Deterministic and RAG Evals"
+  - day: 2
+    theme: "Judges and Traces"
+    lecture:
+      file: lectures/day2_llm_as_a_judge_and_otel.md
+      title: "LLM-as-a-Judge, Calibration, and OpenTelemetry Traces"
+      short: "LLM-as-a-Judge, Calibration, and OTel"
+    lab:
+      source: notebooks/src/day2_judge_calibration_and_otel_traces.py
+      notebook: notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
+      title: "Judge Calibration and OpenTelemetry Traces"
+      short: "Judge Calibration and OTel Traces"
+  - day: 3
+    theme: "The Harness"
+    lecture:
+      file: lectures/day3_agent_harness_and_mcp_mocking.md
+      title: "Building a Custom Agent Harness, Mocking Tools over MCP, and the Managed Alternative"
+      short: "Agent Harness and MCP Mocking"
+    lab:
+      source: notebooks/src/day3_building_custom_agent_harness.py
+      notebook: notebooks/Day3_Building_Custom_Agent_Harness.ipynb
+      title: "Building a Custom Agent Harness"
+      short: "Building a Custom Agent Harness"
+  - day: 4
+    theme: "The Gate"
+    lecture:
+      file: lectures/day4_aws_ci_cd_redteaming.md
+      title: "Production CI/CD for Agents on AWS: Regression Gates, Red Teaming, and Bedrock Evaluations"
+      short: "AWS CI/CD and Red Teaming"
+    lab:
+      source: notebooks/src/day4_bedrock_evaluations_and_ci_gating.py
+      notebook: notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
+      title: "Bedrock Evaluations, Red Teaming, and CI Gating"
+      short: "Bedrock Evaluations and CI Gating"
+
+# `day` (optional) prefixes the menu label with "Day N · ".
+decks:
+  - file: slides/intro.qmd
+    title: "Workshop Kickoff"
+    short: "Workshop Kickoff"
+  - file: slides/DAY1_MOTIVATIONAL_SLIDES.md
+    rendered: slides/DAY1_MOTIVATIONAL_SLIDES.html
+    day: 1
+    title: "Why Your AI Agent Fails in Production (and How Evals Fix It)"
+    short: "Why Your AI Agent Fails in Production"
+
+# Site pages other than lectures and notebooks: `title` is the page's H1, `short` its menu label;
+# `aliases` are other labels a menu may use for the same page (the navbar's one-word "Teach").
+pages:
+  - file: docs/INSTRUCTOR_GUIDE.md
+    title: "Instructor Guide — Evaluating Autonomous Agents"
+    short: "Instructor Guide"
+    aliases: ["Teach"]
+  - file: docs/aws/README.md
+    title: "AWS Policies for the Nightly Live-Mode Workflow"
+    short: "AWS Policies (OIDC, IAM)"
+  - file: docs/DECISIONS.md
+    title: "Decisions, Deviations, and Version Pins"
+    short: "Decisions and Version Pins"
+  - file: docs/STYLE_GUIDE.md
+    title: "Style Guide"
+    short: "Style Guide"
+  - file: CONTRIBUTING.md
+    title: "Contributing"
+    short: "Contributing"
+  - file: SECURITY.md
+    title: "Security Policy"
+    short: "Security Policy"
+
+# Prose files the terminology and link checks read (code fences, code spans, URLs and link
+# targets are skipped; notebook sources contribute their Markdown cells only). The decisions log
+# and the task list are records of what was written at the time and are not rewritten.
+prose:
+  - README.md
+  - AGENTS.md
+  - CONTRIBUTING.md
+  - SECURITY.md
+  - CODE_OF_CONDUCT.md
+  - index.qmd
+  - lectures/*.md
+  - slides/*.md
+  - slides/*.qmd
+  - docs/INSTRUCTOR_GUIDE.md
+  - docs/STYLE_GUIDE.md
+  - docs/aws/README.md
+  - data/golden/DATASET_CARD.md
+  - data/judge_calibration/README.md
+  - notebooks/src/*.py
+
+# Spellings that are always wrong in prose, with the canonical form. Patterns are Python regular
+# expressions matched case-sensitively.
+banned:
+  - pattern: '\bGithub\b'
+    use: "GitHub"
+  - pattern: '\bOpen ?[Tt]elemetry\b(?<!OpenTelemetry)'
+    use: "OpenTelemetry"
+  - pattern: '\bOTEL\b(?!_)'
+    use: "OpenTelemetry (prose) or OTel (short label); `OTEL_*` only for environment variables"
+  - pattern: '\bOtel\b'
+    use: "OTel"
+  - pattern: '\bDeep ?[Ee]val\b(?<!DeepEval)'
+    use: "DeepEval"
+  - pattern: '\bRagas\b'
+    use: "RAGAS"
+  - pattern: '\bPromptFoo\b'
+    use: "Promptfoo"
+  - pattern: '\bAgent ?[Cc]ore\b(?<!AgentCore)'
+    use: "AgentCore"
+  - pattern: '\bArize phoenix\b'
+    use: "Arize Phoenix"
+  - pattern: '\bCI-CD\b|\bCICD\b'
+    use: "CI/CD"
+  - pattern: '\bLLM-as-judge\b|\bLLM as a judge\b'
+    use: "LLM-as-a-judge"
+  - pattern: '\b[Rr]ed-teaming\b'
+    use: "red teaming (noun); red-team only before a noun"
+  - pattern: '\bBedrock evaluations?\b'
+    use: "Bedrock Evaluations (the product name)"
+
+# Known findings in files another branch is rewriting. Each entry silences one rule for one
+# text in one file; an entry that no longer matches anything is itself an error, so the list
+# can only shrink. Delete an entry when you fix the text it names.
+exemptions:
+  - file: lectures/day3_agent_harness_and_mcp_mocking.md
+    rule: banned-spelling
+    text: "OTEL"
+    reason: "Day 3 body is being rewritten on another branch (two 'OTEL spans' in prose)."
+  - file: notebooks/src/day3_building_custom_agent_harness.py
+    rule: banned-spelling
+    text: "OTEL"
+    reason: "Day 3 body is being rewritten on another branch ('the OTEL trace' in the wrap-up)."
+  - file: lectures/day4_aws_ci_cd_redteaming.md
+    rule: banned-spelling
+    text: "Red-teaming"
+    reason: "Day 4 body is being rewritten on another branch (section 4 heading)."
+  - file: lectures/day4_aws_ci_cd_redteaming.md
+    rule: banned-spelling
+    text: "Bedrock evaluations"
+    reason: "Day 4 body is being rewritten on another branch (section 6 paraphrase of the AWS page)."
+  - file: docs/DECISIONS.md
+    rule: page-title
+    text: "Decisions, deviations and version pins"
+    reason: "The decisions log is edited on another branch; retitle it to the canonical page title there."

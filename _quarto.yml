@@ -12,12 +12,14 @@ project:
     - slides/intro.qmd
     - docs/INSTRUCTOR_GUIDE.md
     - docs/DECISIONS.md
+    - docs/STYLE_GUIDE.md
     - docs/aws/README.md
     - CONTRIBUTING.md
     - SECURITY.md
   resources:
     - slides/DAY1_MOTIVATIONAL_SLIDES.html
     - docs/social-preview.png
+    - docs/workshop.yml
     - site/fonts/*.woff2
     - site/logo.svg
   preview:
@@ -47,38 +49,38 @@ website:
         href: index.qmd
       - text: Lectures
         menu:
-          - text: "Day 1 · LLM evaluation foundations"
+          - text: "Day 1 · LLM Evaluation Foundations"
             href: lectures/day1_llm_eval_foundations.md
-          - text: "Day 2 · LLM-as-a-judge, calibration, OTel"
+          - text: "Day 2 · LLM-as-a-Judge, Calibration, and OTel"
             href: lectures/day2_llm_as_a_judge_and_otel.md
-          - text: "Day 3 · Agent harness and MCP mocking"
+          - text: "Day 3 · Agent Harness and MCP Mocking"
             href: lectures/day3_agent_harness_and_mcp_mocking.md
-          - text: "Day 4 · AWS CI/CD and red-teaming"
+          - text: "Day 4 · AWS CI/CD and Red Teaming"
             href: lectures/day4_aws_ci_cd_redteaming.md
       - text: Notebooks
         menu:
-          - text: "Day 1 · Deterministic and RAG evals"
+          - text: "Day 1 · Deterministic and RAG Evals"
             href: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
-          - text: "Day 2 · Judge calibration and OTel traces"
+          - text: "Day 2 · Judge Calibration and OTel Traces"
             href: notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
-          - text: "Day 3 · Building a custom agent harness"
+          - text: "Day 3 · Building a Custom Agent Harness"
             href: notebooks/Day3_Building_Custom_Agent_Harness.ipynb
-          - text: "Day 4 · Bedrock Evaluations and CI gating"
+          - text: "Day 4 · Bedrock Evaluations and CI Gating"
             href: notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
           - text: "---"
-          - text: "Solutions · Day 1"
+          - text: "Day 1 · Solutions"
             href: notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb
-          - text: "Solutions · Day 2"
+          - text: "Day 2 · Solutions"
             href: notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
-          - text: "Solutions · Day 3"
+          - text: "Day 3 · Solutions"
             href: notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb
-          - text: "Solutions · Day 4"
+          - text: "Day 4 · Solutions"
             href: notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
       - text: Slides
         menu:
-          - text: "Workshop kickoff (intro deck)"
+          - text: "Workshop Kickoff"
             href: slides/intro.qmd
-          - text: "Day 1 · Why Your AI Agent Fails in Production (Marp)"
+          - text: "Day 1 · Why Your AI Agent Fails in Production"
             href: slides/DAY1_MOTIVATIONAL_SLIDES.html
       - text: Teach
         href: docs/INSTRUCTOR_GUIDE.md
@@ -95,56 +97,58 @@ website:
       contents:
         - section: Lectures
           contents:
-            - text: "Day 1 · LLM evaluation foundations"
+            - text: "Day 1 · LLM Evaluation Foundations"
               href: lectures/day1_llm_eval_foundations.md
-            - text: "Day 2 · LLM-as-a-judge, calibration, OTel"
+            - text: "Day 2 · LLM-as-a-Judge, Calibration, and OTel"
               href: lectures/day2_llm_as_a_judge_and_otel.md
-            - text: "Day 3 · Agent harness and MCP mocking"
+            - text: "Day 3 · Agent Harness and MCP Mocking"
               href: lectures/day3_agent_harness_and_mcp_mocking.md
-            - text: "Day 4 · AWS CI/CD and red-teaming"
+            - text: "Day 4 · AWS CI/CD and Red Teaming"
               href: lectures/day4_aws_ci_cd_redteaming.md
-        - section: Notebooks (student)
+        - section: Notebooks (Student)
           contents:
-            - text: "Day 1 · Deterministic and RAG evals"
+            - text: "Day 1 · Deterministic and RAG Evals"
               href: notebooks/Day1_Deterministic_and_RAG_Evals.ipynb
-            - text: "Day 2 · Judge calibration and OTel traces"
+            - text: "Day 2 · Judge Calibration and OTel Traces"
               href: notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
-            - text: "Day 3 · Building a custom agent harness"
+            - text: "Day 3 · Building a Custom Agent Harness"
               href: notebooks/Day3_Building_Custom_Agent_Harness.ipynb
-            - text: "Day 4 · Bedrock Evaluations and CI gating"
+            - text: "Day 4 · Bedrock Evaluations and CI Gating"
               href: notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
-        - section: Notebooks (solutions)
+        - section: Notebooks (Solutions)
           contents:
-            - text: "Day 1 · solutions"
+            - text: "Day 1 · Solutions"
               href: notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb
-            - text: "Day 2 · solutions"
+            - text: "Day 2 · Solutions"
               href: notebooks/solutions/Day2_Judge_Calibration_and_OTEL_Traces.ipynb
-            - text: "Day 3 · solutions"
+            - text: "Day 3 · Solutions"
               href: notebooks/solutions/Day3_Building_Custom_Agent_Harness.ipynb
-            - text: "Day 4 · solutions"
+            - text: "Day 4 · Solutions"
               href: notebooks/solutions/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb
         - section: Slides
           contents:
-            - text: Workshop kickoff
+            - text: Workshop Kickoff
               href: slides/intro.qmd
             - text: "Day 1 · Why Your AI Agent Fails in Production"
               href: slides/DAY1_MOTIVATIONAL_SLIDES.html
-        - section: Running the workshop
+        - section: Running the Workshop
           contents:
-            - text: Instructor guide
+            - text: Instructor Guide
               href: docs/INSTRUCTOR_GUIDE.md
-            - text: AWS policies (OIDC, IAM)
+            - text: AWS Policies (OIDC, IAM)
               href: docs/aws/README.md
-            - text: Decisions and version pins
+            - text: Decisions and Version Pins
               href: docs/DECISIONS.md
+            - text: Style Guide
+              href: docs/STYLE_GUIDE.md
             - text: Contributing
               href: CONTRIBUTING.md
-            - text: Security policy
+            - text: Security Policy
               href: SECURITY.md
   page-footer:
     left: "Evaluating Autonomous Agents · © 2026 Genial Labs · MIT licence · Built with [Quarto](https://quarto.org)"
     center:
-      - text: AWS policies
+      - text: AWS Policies
         href: docs/aws/README.md
       - text: Decisions
         href: docs/DECISIONS.md

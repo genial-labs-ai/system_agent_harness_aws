@@ -114,6 +114,7 @@ ci: ## The PR gate, step by step (mirrors .github/workflows/agent_eval_ci.yml)
 	$(MAKE) notebooks
 	$(MAKE) slides
 	$(PY) scripts/check_lecture_refs.py
+	$(PY) scripts/check_style.py
 
 clean: ## Remove caches, build artefacts and generated reports
 	rm -rf .pytest_cache .ruff_cache _site .quarto reports/eval_results.json reports/promptfoo_results.json reports/summary.md

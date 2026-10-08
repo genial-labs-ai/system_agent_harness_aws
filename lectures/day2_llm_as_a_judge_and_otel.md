@@ -1,4 +1,4 @@
-# Day 2 — LLM-as-a-judge, calibration and OpenTelemetry traces
+# Day 2 — LLM-as-a-Judge, Calibration, and OpenTelemetry Traces
 
 *Evaluating Autonomous Agents: Systems, Harnesses & AWS Production CI/CD — lecture notes, day 2 of 4.*
 
@@ -15,7 +15,7 @@ nothing more.
 
 ---
 
-## 1. Learning objectives
+## Learning objectives
 
 By the end of Day 2 you will be able to:
 
@@ -39,22 +39,22 @@ By the end of Day 2 you will be able to:
 
 ---
 
-## 2. Timed agenda (approximately 7 hours)
+## Agenda (09:00–17:00)
 
 | Time | Block | What happens |
 |---|---|---|
 | 09:00–09:15 | Recap | Day 1 metric tables; what `answer_correctness_judge` was `None` for and why |
-| 09:15–10:45 | **Lecture** (1.5 h) | Sections 3–9 of these notes |
+| 09:15–10:45 | **Lecture** (1.5 h) | Sections 1–7 of these notes |
 | 10:45–11:00 | Break | |
-| 11:00–13:00 | **Lab part 1** (2 h) | `notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb`: spans per model/tool call (memory exporter, optional Phoenix), `ToolCallEvaluator` over traces |
-| 13:00–13:45 | Lunch | |
-| 13:45–15:45 | **Lab part 2** (2 h) | Error analysis on the calibration set, calibrate the judge before/after the rubric change, bias probes, exercise cells |
+| 11:00–12:30 | **Lab part 1** (1.5 h) | `notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb`: spans per model/tool call (memory exporter, optional Phoenix), `ToolCallEvaluator` over traces |
+| 12:30–13:15 | Lunch | |
+| 13:15–15:45 | **Lab part 2** (2.5 h) | Error analysis on the calibration set, calibrate the judge before/after the rubric change, bias probes, exercise cells |
 | 15:45–16:00 | Break | |
-| 16:00–17:00 | **Review** (1 h) | Compare kappa tables and probe results, discussion questions (section 11), common mistakes (section 12), preview of Day 3 |
+| 16:00–17:00 | **Review** (1 h) | Compare kappa tables and probe results, discussion questions (section 9), common mistakes (section 10), preview of Day 3 |
 
 ---
 
-## 3. Grading non-deterministic, multi-turn output
+## 1. Grading non-deterministic, multi-turn output
 
 Three properties of agent output make string comparison insufficient:
 
@@ -73,7 +73,7 @@ Three properties of agent output make string comparison insufficient:
 
 The practical consequence: a judge verdict is a **prediction of the human label**. It has a
 precision and a recall, it can be biased, and it has to be validated like any other classifier
-before its output is allowed to gate a deployment. That is the whole of section 5.
+before its output is allowed to gate a deployment. That is the whole of section 3.
 
 ```mermaid
 flowchart LR
@@ -86,7 +86,7 @@ flowchart LR
 
 ---
 
-## 4. Error analysis before metrics
+## 2. Error analysis before metrics
 
 The most common failure in eval programmes is writing the rubric first. Two sources describe the
 alternative; both links were checked while writing these notes.
@@ -136,9 +136,9 @@ transcription of them. That is what "error analysis before metrics" looks like i
 
 ---
 
-## 5. Judge calibration against human labels
+## 3. Judge calibration against human labels
 
-### 5.1 The measurements
+### 3.1 The measurements
 `src/stockroom/evals/calibration.py`:
 
 - `agreement_rate()` — fraction of items where the judge's `passed` equals the human label.
@@ -152,7 +152,7 @@ transcription of them. That is what "error analysis before metrics" looks like i
   `CalibrationReport` with all three, the list of disagreements `(id, human, judge, rationale)`,
   and every verdict. `CalibrationReport.summary()` prints the table.
 
-### 5.2 Rubric v1 → v2 on the repo's calibration set
+### 3.2 Rubric v1 → v2 on the repo's calibration set
 `FakeJudge` in `src/stockroom/evals/judge.py` is deliberately imperfect so that calibration
 shows real movement. Rubric v1 passes any answer containing at least half of the key facts; v2
 requires every key fact and no forbidden/contradicting content (`FakeJudge.grade()`). Repo-
@@ -192,7 +192,7 @@ sequenceDiagram
     C-->>C: agreement_rate, cohens_kappa, confusion_matrix, disagreements
 ```
 
-### 5.3 Binary pass/fail versus Likert scores
+### 3.3 Binary pass/fail versus Likert scores
 The rubrics in `src/stockroom/evals/rubrics/` ask for both: a 0–10 score *and* a boolean
 `pass`, with the threshold stated in the rubric (v2 answer correctness: pass requires 7 or more;
 faithfulness v1: 8 or more and no contradiction). Everything that gates is binary:
@@ -215,7 +215,7 @@ the boolean, and keep the score to see *how* close borderline items are during e
 If you want gradation to matter, write it as several binary criteria (facts present /
 no contradiction / scope covered) rather than one 10-point scale.
 
-### 5.4 Why the judge is a different model family from the agent
+### 3.4 Why the judge is a different model family from the agent
 A judge that shares a model family with the agent shares its blind spots and its stylistic
 preferences; the self-preference probe below measures the second. The repo's default in live
 mode is therefore a Claude agent and an Amazon Nova judge, which the README will document and
@@ -226,7 +226,7 @@ for any judge, DeepEval or RAGAS path.
 
 ---
 
-## 6. Probing the judge for bias
+## 4. Probing the judge for bias
 
 Calibration tells you *whether* the judge agrees with humans on the sampled items; probes tell
 you *whether it can be gamed*. The calibration set reserves items 25–32 for three probe groups,
@@ -268,9 +268,9 @@ Two honest caveats the lab makes explicit:
 
 ---
 
-## 7. Observability: one span tree per run
+## 5. Observability: one span tree per run
 
-### 7.1 The GenAI semantic conventions
+### 5.1 The GenAI semantic conventions
 `src/stockroom/evals/otel_tracer.py` emits, per run:
 
 ```text
@@ -324,7 +324,7 @@ flowchart TD
 the spans. `test_span_tree_per_run()` asserts the shape: one `invoke_agent`, one `chat` per
 model call, one `execute_tool` per tool call, trace id equal to `RunResult.trace_id`.
 
-### 7.2 Exporters
+### 5.2 Exporters
 `configure_tracing(exporter)` returns a `TracingHandle` with an isolated provider:
 
 | `STOCKROOM_TRACE_EXPORTER` | Where spans go | Use |
@@ -351,7 +351,7 @@ that page says:
   In this repo that is the `cloudwatch` extra, which conflicts with the `phoenix` extra because
   ADOT pins `opentelemetry-sdk==1.44.0` (DECISIONS.md, phase 1, item 3) — install one or the other.
 - Run the process under auto-instrumentation: `opentelemetry-instrument python app.py`.
-- Set the OTEL environment variables the page lists, including:
+- Set the `OTEL_*` environment variables the page lists, including:
   `AGENT_OBSERVABILITY_ENABLED=true`, `OTEL_PYTHON_DISTRO=aws_distro`,
   `OTEL_PYTHON_CONFIGURATOR=aws_configurator`, `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`,
   `OTEL_TRACES_EXPORTER=otlp`, and
@@ -369,7 +369,7 @@ the provider ADOT installed rather than creating a second one. The authoring mac
 exercise this path end to end (TASKS.md, known gaps); it is documented and unit-tested with
 stubs, so treat the live CloudWatch screenshots you take in the lab as the first real evidence.
 
-### 7.3 From spans back to metrics
+### 5.3 From spans back to metrics
 `TraceSummary.from_spans(spans, run_id)` rebuilds the list of model calls (with token counts
 and context estimates) and tool calls (name, arguments, step, error flag, latency) from a
 finished trace, selecting spans by walking up to the `invoke_agent` root that carries the run id.
@@ -390,7 +390,7 @@ notebooks.
 
 ---
 
-## 8. Putting the two halves together
+## 6. Putting the two halves together
 
 ```mermaid
 flowchart LR
@@ -410,7 +410,7 @@ variance, and the Bedrock Evaluations job builder.
 
 ---
 
-## 9. Grading multi-turn runs: what the judge sees and what it does not
+## 7. Grading multi-turn runs: what the judge sees and what it does not
 
 `evaluate_case()` calls the judge twice when one is supplied: once with
 `rubric="answer_correctness"` (query, final answer, reference, context, expected and forbidden
@@ -424,7 +424,7 @@ for the SKU instead of guessing?"), write them as separate binary criteria over 
 
 ---
 
-## 10. The lab: `notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb`
+## 8. The lab: `notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb`
 
 Generated from `notebooks/src/day2_judge_calibration_and_otel_traces.py`; runs in mock mode
 without credentials. Sections:
@@ -448,7 +448,7 @@ without credentials. Sections:
 
 ---
 
-## 11. Discussion questions
+## 9. Discussion questions
 
 1. v1 has 58% agreement and kappa 0.25. A stakeholder sees "58%" and says it is "more than
    half right". Explain, with the confusion matrix, why the judge is useless as a gate.
@@ -470,7 +470,7 @@ without credentials. Sections:
 
 ---
 
-## 12. Common mistakes
+## 10. Common mistakes
 
 - **Writing the rubric before reading failures.** Criteria drift is real; the first rubric is
   a guess. Read runs, cluster, label, then write.
@@ -492,14 +492,14 @@ without credentials. Sections:
   rather than an agent change.
 - **Importing `gen_ai.*` names from an incubating module.** Spell them out in one place and
   test them against the installed package, as `src/stockroom/evals/semconv.py` and `tests/test_tracer.py` do.
-- **Installing the `phoenix` and `cloudwatch` extras together.** They conflict on the OTEL SDK
+- **Installing the `phoenix` and `cloudwatch` extras together.** They conflict on the OpenTelemetry SDK
   version; pick one per environment.
 - **Treating the mock exporter as the production exporter.** `memory` is for tests; a process
   that never calls `TracingHandle.flush()` on a `BatchSpanProcessor` loses its last spans.
 
 ---
 
-## 13. External references used in this lecture
+## 11. External references used in this lecture
 
 | Reference | URL | Used for |
 |---|---|---|

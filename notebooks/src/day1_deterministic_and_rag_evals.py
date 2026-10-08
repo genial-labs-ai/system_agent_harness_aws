@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Day 1 — Deterministic and RAG evaluations for the Stockroom agent
+# # Day 1 — Deterministic and RAG Evaluations for the Stockroom Agent
 #
 # **Learning objectives.** By the end of this notebook you can:
 #

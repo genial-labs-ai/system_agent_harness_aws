@@ -1,4 +1,4 @@
-# Day 3 — Building a custom agent harness, mocking tools over MCP, and the managed alternative
+# Day 3 — Building a Custom Agent Harness, Mocking Tools over MCP, and the Managed Alternative
 
 **Thesis of the day:** *Agent = Model + Harness.* The model proposes; the harness decides what is
 allowed to happen. Most runtime failures we see in Stockroom are not "the model was dumb" but "the
