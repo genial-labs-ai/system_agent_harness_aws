@@ -81,7 +81,7 @@ decks:
 # `aliases` are other labels a menu may use for the same page (the navbar's one-word "Teach").
 pages:
   - file: docs/INSTRUCTOR_GUIDE.md
-    title: "Instructor Guide — Evaluating Autonomous Agents"
+    title: "Instructor Guide"
     short: "Instructor Guide"
     aliases: ["Teach"]
   - file: docs/aws/README.md

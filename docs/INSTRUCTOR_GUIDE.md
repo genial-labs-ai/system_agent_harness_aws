@@ -1,9 +1,9 @@
-# Instructor Guide — Evaluating Autonomous Agents
+# Instructor Guide
 
-Four days, one running example. Every lab runs offline in mock mode; live AWS is opt-in. This
-guide covers timings, setup, the failures participants actually hit, facilitation notes per
-exercise, and how to regenerate the generated artefacts. Lecture content is in `lectures/`; the
-Day 1 deck is in `slides/`.
+*Evaluating Autonomous Agents*: four days, one running example. Every lab runs offline in mock
+mode; live AWS is opt-in. This guide covers timings, setup, the failures participants actually
+hit, facilitation notes per exercise, and how to regenerate the generated artefacts. Lecture
+content is in `lectures/`; the decks are in `slides/`.
 
 ---
 
