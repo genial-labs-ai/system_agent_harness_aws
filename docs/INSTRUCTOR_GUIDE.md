@@ -3,7 +3,10 @@
 *Evaluating Autonomous Agents*: four days, one running example. Every lab runs offline in mock
 mode; live AWS is opt-in. This guide covers timings, setup, the failures participants actually
 hit, facilitation notes per exercise, and how to regenerate the generated artefacts. Lecture
-content is in `lectures/`; the decks are in `slides/`.
+content is in `lectures/`; the decks are in `slides/`: a kickoff deck, the Day 1 opening deck and
+one teaching deck each for Days 2–4. Participants read the day's lecture notes beforehand; the deck
+is what you teach from in the 90-minute lecture block, and its speaker notes give the minute split,
+the questions to ask and the command that reproduces every number on the slide.
 
 ---
 
@@ -112,6 +115,8 @@ Summarised here; the README (phase 7) is the authoritative list.
 
 ### Day 1 — Deterministic and RAG Evals
 
+- *Decks.* Open with `slides/intro.qmd` (kickoff, rendered with the site), then
+  `slides/DAY1_MOTIVATIONAL_SLIDES.md`, whose speaker notes say how to reproduce each figure.
 - *Taxonomy demo on the weakness flags.* Show the same query under each flag using
   `uv run stockroom run "<query>" --case-id <id> --json`. Ask participants to name the failure
   class before revealing the flag.
@@ -126,6 +131,10 @@ Summarised here; the README (phase 7) is the authoritative list.
 
 ### Day 2 — Judge Calibration and OTel Traces
 
+- *Deck.* `slides/DAY2_TEACHING_SLIDES.md` (*When a Model Grades a Model (and What the Trace
+  Shows)*): the 09:00 recap, the lecture, the lab briefing and the 16:00 review. The prediction
+  checkpoint asks for v1 and v2 kappa from their agreement rates before the reveal; collect guesses
+  before you run `calibrate()`.
 - *Spans.* Start with the memory exporter so nobody is blocked on Phoenix. `span_tree()` prints the
   hierarchy; `ToolCallEvaluator.from_spans()` must give the same `loops` / `repeated_identical` as
   `ToolCallEvaluator.from_run()` — make them check.
@@ -137,6 +146,10 @@ Summarised here; the README (phase 7) is the authoritative list.
 
 ### Day 3 — Building a Custom Agent Harness (see the lecture's lab plan)
 
+- *Deck.* `slides/DAY3_TEACHING_SLIDES.md` (*The Model Proposes, the Harness Decides*): recap,
+  lecture, lab briefing and review. The prediction checkpoint asks what the run guard does to
+  `must_not_call_ok_rate`, `answer_correctness` and `blocked_call_rate` with
+  `injection_unguarded` on; most rooms expect answer correctness to recover.
 - *Construction lab (section 8, Exercises 1–2).* `injection_unguarded` stays on while participants
   assert on the G041 trajectory and build a run guard through `Harness(run_guards=...)`. Make sure
   they can explain why `answer_correctness` stays at 0.94 (the prompt leak is in the text, not an
@@ -161,6 +174,10 @@ Summarised here; the README (phase 7) is the authoritative list.
 
 ### Day 4 — Bedrock Evaluations and CI Gating (see the lecture's lab plan)
 
+- *Deck.* `slides/DAY4_TEACHING_SLIDES.md` (*An Eval That Does Not Block a Merge Is a Dashboard*):
+  recap, lecture, lab briefing, review and the workshop close-out. The prediction checkpoint uses
+  the lecture's illustrative (synthetic) nightly runs; say that they are not a measurement. Do not
+  reveal before the capstone that `oversized_payload` also passes the aggregate-only gate.
 - *Label validation (Exercise 1).* The point is the order: validate against the data first, run
   the agent second. Ask who would have kept S012 (the agent passes it; the label is the reorder
   point) and dropped S013 (the agent fails it; the label is right). S007 is a near-duplicate the
@@ -196,7 +213,7 @@ Summarised here; the README (phase 7) is the authoritative list.
 | Eval results | `make eval` (golden regression only) or `make test` (everything) | before `make thresholds` |
 | Baseline | `make baseline` → `reports/baseline/main.json` | after an intentional metric/rubric/description/golden change, from a clean mock run with no flags; explain the diff in the PR |
 | Notebooks | `make build-notebooks` (student + `solutions/` from `notebooks/src/*.py`); `make notebooks` builds and executes them | after editing a notebook source; never edit the generated `.ipynb` |
-| Slides | `make slides` renders `slides/DAY1_MOTIVATIONAL_SLIDES.md` with Marp | after editing the deck |
+| Slides | `make slides` renders the four Marp decks (`slides/DAY1_MOTIVATIONAL_SLIDES.md`, `slides/DAY2_TEACHING_SLIDES.md`, `slides/DAY3_TEACHING_SLIDES.md`, `slides/DAY4_TEACHING_SLIDES.md`) to HTML beside their sources; the kickoff deck renders with the site | after editing a deck; when a figure changes, rerun the command its speaker note names |
 | Pricing table | `uv run python scripts/fetch_pricing.py` | occasionally; the only non-live network call in the repo, never in CI |
 | Lecture reference check | `uv run python scripts/check_lecture_refs.py` | after renaming anything the lectures cite |
 | Style check | `uv run python scripts/check_style.py` (titles from `docs/workshop.yml`, `docs/STYLE_GUIDE.md`) | after renaming a day, lab or deck, or editing prose |

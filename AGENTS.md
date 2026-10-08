@@ -41,7 +41,7 @@ not only final answers.
 | regenerate baseline after an intentional metric change | `make baseline` |
 | check that lectures/slides cite real files and symbols | `uv run python scripts/check_lecture_refs.py` |
 | check titles, terminology, Node versions and local links (`docs/STYLE_GUIDE.md`) | `uv run python scripts/check_style.py` |
-| render the slide deck | `make slides` |
+| render the Marp slide decks | `make slides` |
 | current build status / hand-off | `docs/TASKS.md` |
 
 ## Layout cheatsheet

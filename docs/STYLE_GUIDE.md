@@ -59,9 +59,12 @@ The full list, with short labels, is `docs/workshop.yml`. At a glance:
   "Day N" into the eyebrow above the title.
 - Menus, day cards and README tables use the short label: "Day 2 · LLM-as-a-Judge, Calibration,
   and OTel", "Day 4 · Bedrock Evaluations and CI Gating", "Day 3 · Solutions".
-- Decks: "Workshop Kickoff" (`slides/intro.qmd`) and "Why Your AI Agent Fails in Production (and
+- Decks: "Workshop Kickoff" (`slides/intro.qmd`); "Why Your AI Agent Fails in Production (and
   How Evals Fix It)" (`slides/DAY1_MOTIVATIONAL_SLIDES.md`, short label "Why Your AI Agent Fails in
-  Production").
+  Production"); and the Day 2–4 teaching decks "When a Model Grades a Model (and What the Trace
+  Shows)", "The Model Proposes, the Harness Decides" and "An Eval That Does Not Block a Merge Is a
+  Dashboard" (`slides/DAY2_TEACHING_SLIDES.md` to `slides/DAY4_TEACHING_SLIDES.md`; the last one's
+  short label is "Evals That Block a Merge").
 - Notebook file names (`Day2_Judge_Calibration_and_OTEL_Traces.ipynb`) and lecture file names are
   identifiers: they are never renamed to match a title, because links, Colab badges and the site
   depend on them.

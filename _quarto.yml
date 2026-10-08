@@ -18,6 +18,9 @@ project:
     - SECURITY.md
   resources:
     - slides/DAY1_MOTIVATIONAL_SLIDES.html
+    - slides/DAY2_TEACHING_SLIDES.html
+    - slides/DAY3_TEACHING_SLIDES.html
+    - slides/DAY4_TEACHING_SLIDES.html
     - docs/social-preview.png
     - docs/workshop.yml
     - site/fonts/*.woff2
@@ -82,6 +85,12 @@ website:
             href: slides/intro.qmd
           - text: "Day 1 · Why Your AI Agent Fails in Production"
             href: slides/DAY1_MOTIVATIONAL_SLIDES.html
+          - text: "Day 2 · When a Model Grades a Model"
+            href: slides/DAY2_TEACHING_SLIDES.html
+          - text: "Day 3 · The Model Proposes, the Harness Decides"
+            href: slides/DAY3_TEACHING_SLIDES.html
+          - text: "Day 4 · Evals That Block a Merge"
+            href: slides/DAY4_TEACHING_SLIDES.html
       - text: Teach
         href: docs/INSTRUCTOR_GUIDE.md
     right:
@@ -131,6 +140,12 @@ website:
               href: slides/intro.qmd
             - text: "Day 1 · Why Your AI Agent Fails in Production"
               href: slides/DAY1_MOTIVATIONAL_SLIDES.html
+            - text: "Day 2 · When a Model Grades a Model"
+              href: slides/DAY2_TEACHING_SLIDES.html
+            - text: "Day 3 · The Model Proposes, the Harness Decides"
+              href: slides/DAY3_TEACHING_SLIDES.html
+            - text: "Day 4 · Evals That Block a Merge"
+              href: slides/DAY4_TEACHING_SLIDES.html
         - section: Running the Workshop
           contents:
             - text: Instructor Guide

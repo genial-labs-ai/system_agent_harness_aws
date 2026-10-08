@@ -9,6 +9,10 @@ PYTEST        := $(UV) run pytest
 # never via an npx download, so `make promptfoo` and `make slides` cannot reach the network.
 NODE_BIN      := $(CURDIR)/node_modules/.bin
 MCP_PORT      ?= 8765
+# The Marp decks (docs/workshop.yml lists them with their titles); `make slides` writes each one's
+# .html next to it. The kickoff deck, slides/intro.qmd, is rendered by Quarto instead.
+MARP_DECKS    := slides/DAY1_MOTIVATIONAL_SLIDES.md slides/DAY2_TEACHING_SLIDES.md \
+                 slides/DAY3_TEACHING_SLIDES.md slides/DAY4_TEACHING_SLIDES.md
 QUARTO        ?= quarto
 REPORTS       := reports
 
@@ -86,9 +90,9 @@ notebooks: build-notebooks ## Build and execute every notebook in mock mode (sol
 	# Strict mode: an exercise that does not report passing fails its solution notebook.
 	STOCKROOM_STRICT_EXERCISES=1 $(PYTEST) --nbmake --nbmake-timeout=900 notebooks/solutions/*.ipynb -p no:cacheprovider
 
-slides: node-tools ## Render the Marp deck to HTML
+slides: node-tools ## Render the Marp decks to HTML (each slides/X.md to slides/X.html)
 	# stdin is redirected: marp-cli otherwise treats a non-TTY stdin as an extra markdown input and hangs under CI/make.
-	$(NODE_BIN)/marp slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html < /dev/null
+	$(NODE_BIN)/marp $(MARP_DECKS) < /dev/null
 
 site: slides ## Render the Quarto website to _site (executes the notebooks in mock mode; needs quarto on PATH)
 	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
