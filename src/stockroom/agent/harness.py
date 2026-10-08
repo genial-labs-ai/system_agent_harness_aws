@@ -8,6 +8,15 @@ Responsibilities that the model cannot be trusted with live here:
   never reach the tool and the model receives a structured error instead.
 * **Guards** – max steps, per-run token budget, repeated-identical-call detection and a wall-clock
   timeout. Each guard terminates the run with a typed :class:`TerminationReason`.
+* **Run guards (the extension seam)** – callers can pass ``run_guards=[...]``: objects with a
+  ``name`` and ``check_tool_call(call, ctx)`` (:class:`RunGuard`). Each one sees every schema-valid
+  tool call *before* it executes, together with a :class:`ToolCallContext` (the user's query and
+  the tool calls so far), and returns ``None`` (allow), :class:`BlockCall` (refuse this call: the
+  model receives a structured ``blocked_by_guard`` error and the run continues) or a
+  :class:`GuardVerdict` (halt the run with that typed termination reason). A run guard decides
+  about *actions*. It is a different seam from a payload wrapper such as the Day 3
+  ``MaxToolPayloadGuard``, which wraps the :class:`ToolExecutor` and rewrites a *result* after the
+  tool has already run. With no run guards (the default) the loop is unchanged.
 * **Compaction** – when the estimated context exceeds a threshold, older tool results are replaced
   with short summaries; the system prompt and the most recent turns stay verbatim.
 * **Untrusted tool output** – unless the ``injection_unguarded`` weakness is on, tool results are
@@ -23,9 +32,9 @@ import json
 import re
 import time
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol
 
 from jsonschema import Draft202012Validator
 
@@ -85,6 +94,44 @@ class GuardVerdict:
     detail: str
 
 
+@dataclass(frozen=True)
+class BlockCall:
+    """A run guard's decision to refuse one tool call; the run itself continues.
+
+    The call never reaches the tool. The model receives a ``toolResult`` with status ``error`` and
+    ``{"error": "blocked_by_guard", "guard": ..., "message": ...}``, and the trajectory keeps a
+    :class:`ToolCallRecord` with ``blocked_by`` set (``executed`` is False). Keep ``message`` free
+    of the blocked arguments: it goes back into the model's context.
+    """
+
+    guard: str
+    message: str
+
+
+@dataclass(frozen=True)
+class ToolCallContext:
+    """What a run guard may look at before a tool call executes."""
+
+    query: str
+    step: int
+    records: tuple[ToolCallRecord, ...]
+
+
+class RunGuard(Protocol):
+    """The extension seam: a guard consulted before every schema-valid tool call.
+
+    Return ``None`` to allow the call, :class:`BlockCall` to refuse it (the model sees a structured
+    error and may carry on), or :class:`GuardVerdict` to halt the run with a typed
+    :class:`TerminationReason`. Guards run in the order given; the first non-``None`` answer wins.
+    """
+
+    name: str
+
+    def check_tool_call(
+        self, call: ToolCallRequest, ctx: ToolCallContext
+    ) -> BlockCall | GuardVerdict | None: ...
+
+
 class MaxStepsGuard:
     name = "max_steps"
 
@@ -102,10 +149,21 @@ class MaxStepsGuard:
 
 
 class TokenBudgetGuard:
+    """Stop before a model call that could take the run past its token budget.
+
+    The check is ``used + estimated next input + reserved output > budget``, where the reserved
+    output is the call's ``max_tokens`` (the most the model may emit). Every number is an
+    *estimate*: the next input is ``chars / 4`` of the prompt the harness is about to send, not the
+    provider's tokenizer, so the guard bounds estimated tokens, not the bill. In mock mode the fake
+    model counts tokens the same way, so the budget is a hard ceiling there; in live mode the
+    provider's ``usage`` (which the cost estimate uses) can differ from the estimate.
+    """
+
     name = "token_budget"
 
-    def __init__(self, budget: int) -> None:
+    def __init__(self, budget: int, reserve_output_tokens: int = 0) -> None:
         self.budget = budget
+        self.reserve_output_tokens = reserve_output_tokens
 
     def check(self, usage: TokenUsage, next_context_tokens: int) -> GuardVerdict | None:
         if usage.total_tokens >= self.budget:
@@ -114,11 +172,12 @@ class TokenBudgetGuard:
                 TerminationReason.TOKEN_BUDGET,
                 f"used {usage.total_tokens} tokens against a budget of {self.budget}",
             )
-        if usage.total_tokens + next_context_tokens > self.budget:
+        if usage.total_tokens + next_context_tokens + self.reserve_output_tokens > self.budget:
             return GuardVerdict(
                 self.name,
                 TerminationReason.TOKEN_BUDGET,
-                f"next model call (~{next_context_tokens} tokens) would exceed the budget of "
+                f"next model call (~{next_context_tokens} input tokens + up to "
+                f"{self.reserve_output_tokens} output) would exceed the budget of "
                 f"{self.budget} (used {usage.total_tokens})",
             )
         return None
@@ -229,6 +288,7 @@ class Harness:
         data: StockroomData | None = None,
         clock: Callable[[], float] = time.monotonic,
         system_prompt: str = SYSTEM_PROMPT,
+        run_guards: Sequence[RunGuard] = (),
     ) -> None:
         self.config = config
         self.data = data or StockroomData.load(config.data_dir)
@@ -237,6 +297,7 @@ class Harness:
         self._model_client = model_client
         self.clock = clock
         self.system_prompt = system_prompt
+        self.run_guards = tuple(run_guards)
         self.specs = {s.name: s for s in self.executor.list_specs()}
         self.price_table = default_price_table(config.pricing_file)
 
@@ -338,7 +399,7 @@ class Harness:
             enabled=not self.config.has_weakness(WEAKNESS_NAIVE_RETRY),
         )
         max_steps_guard = MaxStepsGuard(self.config.max_steps)
-        budget_guard = TokenBudgetGuard(self.config.token_budget)
+        budget_guard = TokenBudgetGuard(self.config.token_budget, self.config.max_tokens)
         wall_guard = WallClockGuard(self.config.wall_clock_timeout_s, self.clock)
 
         def go(to: State, reason: str) -> None:
@@ -440,8 +501,15 @@ class Harness:
                     if halted is not None:
                         break
                     spec = self.specs.get(call.name)
+                    blocked: BlockCall | None = None
+                    if self.run_guards:
+                        decision = self._consult_run_guards(call, spec, query, step, existing)
+                        if isinstance(decision, GuardVerdict):
+                            halted = decision
+                            break
+                        blocked = decision
                     with self.tracer.tool_span(step, call, spec, usage.model_calls) as tspan:
-                        record = self._execute(step, call, spec, guarded)
+                        record = self._execute(step, call, spec, guarded, blocked)
                         self.tracer.record_tool_result(tspan, record)
                     trajectory.append(record)
                     records_this_step.append(record)
@@ -506,8 +574,31 @@ class Harness:
             result.print_cost_summary()
         return result
 
+    def _consult_run_guards(
+        self,
+        call: ToolCallRequest,
+        spec: ToolSpec | None,
+        query: str,
+        step: int,
+        records: list[ToolCallRecord],
+    ) -> BlockCall | GuardVerdict | None:
+        """Ask each run guard about a schema-valid call; invalid calls never reach a guard."""
+        if spec is None or validate_arguments(spec, call.arguments) is not None:
+            return None
+        ctx = ToolCallContext(query=query, step=step, records=tuple(records))
+        for guard in self.run_guards:
+            decision = guard.check_tool_call(call, ctx)
+            if decision is not None:
+                return decision
+        return None
+
     def _execute(
-        self, step: int, call: ToolCallRequest, spec: ToolSpec | None, guarded: bool
+        self,
+        step: int,
+        call: ToolCallRequest,
+        spec: ToolSpec | None,
+        guarded: bool,
+        blocked: BlockCall | None = None,
     ) -> ToolCallRecord:
         if spec is None:
             err = ToolResult.error(call.name, f"unknown tool {call.name}", code="unknown_tool")
@@ -537,6 +628,23 @@ class Harness:
                 is_error=True,
                 error_code="invalid_arguments",
                 validation_error=problem,
+                payload_chars=len(json.dumps(content)),
+            )
+        if blocked is not None:
+            content = {
+                "error": "blocked_by_guard",
+                "guard": blocked.guard,
+                "message": blocked.message,
+            }
+            return ToolCallRecord(
+                step=step,
+                tool_use_id=call.tool_use_id,
+                name=call.name,
+                arguments=call.arguments,
+                result_content=content,
+                is_error=True,
+                error_code="blocked_by_guard",
+                blocked_by=blocked.guard,
                 payload_chars=len(json.dumps(content)),
             )
         result = self.executor.call(call.name, call.arguments)
