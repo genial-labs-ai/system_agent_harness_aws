@@ -204,69 +204,78 @@ format:
           } catch (e) {}
         </script>
         <script type="module">
-          import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-          // Mermaid would otherwise render every diagram with its own defaults at the load event.
-          mermaid.initialize({ startOnLoad: false });
-          // The palette comes from the --ws-* custom properties that site/theme.scss publishes.
-          // Quarto's own script sets the body class and swaps the stylesheet after the DOM is
-          // parsed, and the toggle does the same later, so: read the wanted scheme from the body
-          // class, wait (with timers, which also run in background tabs) until the published
-          // scheme matches it, render, and do it again whenever the body class changes.
-          const sources = new Map(); // each diagram's text, so it can be drawn again
-          const scheme = () => getComputedStyle(document.documentElement).getPropertyValue("--ws-scheme").trim();
-          const wanted = () => (document.body.classList.contains("quarto-dark") ? "dark" : "light");
-          let drawn = null;
-          let running = Promise.resolve(); // runs are chained: a toggle mid-render waits its turn
-          const draw = () => {
-            const css = getComputedStyle(document.documentElement);
-            const v = (name) => css.getPropertyValue(name).trim();
-            if (v("--ws-bg") === "") { return; } // no palette yet (stylesheet missing): keep the source
-            for (const pre of document.querySelectorAll("pre.mermaid")) {
-              if (!sources.has(pre)) { sources.set(pre, pre.textContent); }
-              pre.textContent = sources.get(pre);
-              pre.removeAttribute("data-processed");
-            }
-            mermaid.initialize({
-              startOnLoad: false,
-              securityLevel: "strict",
-              theme: "base",
-              themeVariables: {
-                fontFamily: "Inter, system-ui, sans-serif",
-                background: v("--ws-bg"),
-                primaryColor: v("--ws-diagram-node"),
-                primaryTextColor: v("--ws-heading"),
-                primaryBorderColor: v("--ws-diagram-node-border"),
-                lineColor: v("--ws-muted"),
-                secondaryColor: v("--ws-accent-soft"),
-                tertiaryColor: v("--ws-surface"),
-                edgeLabelBackground: v("--ws-bg"),
-              },
-            });
-            drawn = scheme();
-            running = running
-              .then(() => mermaid.run())
-              .catch((e) => console.warn("mermaid:", e));
-          };
-          let pending = 0;
-          const sync = () => {
-            clearTimeout(pending);
-            const started = Date.now();
-            const tick = () => {
-              if (scheme() === wanted()) {
-                if (scheme() !== drawn) { running.then(draw); }
-              } else {
-                // Quarto sets the class and the stylesheet together, so they do meet; poll fast
-                // at first, then slowly, and never draw with a palette that is not the wanted one.
-                pending = setTimeout(tick, Date.now() - started < 2000 ? 30 : 500);
-              }
-            };
-            tick();
-          };
-          const start = () => {
-            sync();
-            new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
-          };
           // Quarto's own DOMContentLoaded handler (registered while parsing) sets the body class;
-          // starting after it avoids a light render that is redrawn dark a moment later.
-          if (document.readyState === "complete") { start(); } else { document.addEventListener("DOMContentLoaded", start); }
+          // starting after it avoids a light render that is redrawn dark a moment later. The listener
+          // is registered before anything is awaited, so a slow download cannot make it miss the event.
+          const domReady = new Promise((ok) => {
+            if (document.readyState === "complete") { ok(); } else { document.addEventListener("DOMContentLoaded", ok); }
+          });
+          // Only pages with diagrams load Mermaid. The notebook pages also load require.js (for Jupyter
+          // output), and Mermaid's bundle throws when an AMD loader is present (scripts/site_layout.mjs
+          // caught it). The version is exact so a Mermaid release cannot change the site unreviewed.
+          if (document.querySelector("pre.mermaid")) {
+            const { default: mermaid } = await import("https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs");
+            // Mermaid would otherwise render every diagram with its own defaults at the load event.
+            mermaid.initialize({ startOnLoad: false });
+            // The palette comes from the --ws-* custom properties that site/theme.scss publishes.
+            // Quarto's own script sets the body class and swaps the stylesheet after the DOM is
+            // parsed, and the toggle does the same later, so: read the wanted scheme from the body
+            // class, wait (with timers, which also run in background tabs) until the published
+            // scheme matches it, render, and do it again whenever the body class changes.
+            const sources = new Map(); // each diagram's text, so it can be drawn again
+            const scheme = () => getComputedStyle(document.documentElement).getPropertyValue("--ws-scheme").trim();
+            const wanted = () => (document.body.classList.contains("quarto-dark") ? "dark" : "light");
+            let drawn = null;
+            let running = Promise.resolve(); // runs are chained: a toggle mid-render waits its turn
+            const draw = () => {
+              const css = getComputedStyle(document.documentElement);
+              const v = (name) => css.getPropertyValue(name).trim();
+              if (v("--ws-bg") === "") { return; } // no palette yet (stylesheet missing): keep the source
+              for (const pre of document.querySelectorAll("pre.mermaid")) {
+                if (!sources.has(pre)) { sources.set(pre, pre.textContent); }
+                pre.textContent = sources.get(pre);
+                pre.removeAttribute("data-processed");
+              }
+              mermaid.initialize({
+                startOnLoad: false,
+                securityLevel: "strict",
+                theme: "base",
+                themeVariables: {
+                  fontFamily: "Inter, system-ui, sans-serif",
+                  background: v("--ws-bg"),
+                  primaryColor: v("--ws-diagram-node"),
+                  primaryTextColor: v("--ws-heading"),
+                  primaryBorderColor: v("--ws-diagram-node-border"),
+                  lineColor: v("--ws-muted"),
+                  secondaryColor: v("--ws-accent-soft"),
+                  tertiaryColor: v("--ws-surface"),
+                  edgeLabelBackground: v("--ws-bg"),
+                },
+              });
+              drawn = scheme();
+              running = running
+                .then(() => mermaid.run())
+                .catch((e) => console.warn("mermaid:", e));
+            };
+            let pending = 0;
+            const sync = () => {
+              clearTimeout(pending);
+              const started = Date.now();
+              const tick = () => {
+                if (scheme() === wanted()) {
+                  if (scheme() !== drawn) { running.then(draw); }
+                } else {
+                  // Quarto sets the class and the stylesheet together, so they do meet; poll fast
+                  // at first, then slowly, and never draw with a palette that is not the wanted one.
+                  pending = setTimeout(tick, Date.now() - started < 2000 ? 30 : 500);
+                }
+              };
+              tick();
+            };
+            const start = () => {
+              sync();
+              new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+            };
+            domReady.then(start);
+          }
         </script>

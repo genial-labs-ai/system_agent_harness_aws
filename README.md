@@ -28,7 +28,9 @@ and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Ama
 [genial-labs-ai.github.io/system_agent_harness_aws](https://genial-labs-ai.github.io/system_agent_harness_aws/):
 lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, both slide
 decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and by
-`.github/workflows/pages.yml` on every pull request, and deployed on every push to `main`.
+`.github/workflows/pages.yml` on every pull request (which also runs `make site-check`: pages,
+titles, links, and layout in Chrome at desktop and phone widths), and deployed on every push to
+`main`.
 
 ## Contents
 

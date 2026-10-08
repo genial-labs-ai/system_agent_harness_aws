@@ -356,3 +356,58 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     table had to explain why a working defence raised `invalid_call_rate`. Baseline diff: one new
     metric, `blocked_call_rate: 0.0` (no run guards in the golden suite); every other value
     unchanged.
+50. **The rendered site is checked on every pull request, in HTML and in a browser**
+    (`suggestions.md` §10). `scripts/check_site.py` reads `_site/` without a browser: every page
+    `docs/workshop.yml` names was rendered, its H1 and browser-tab title are canonical, and every
+    local link and `#anchor` resolves (about 5,500 links on the current site).
+    `scripts/site_layout.mjs` serves `_site` and opens the landing page, the site pages and every
+    day's lecture, lab and solutions in Chrome at 1280 and 390 px, light and dark. It checks for
+    content past the right edge (outside a scroll container), undrawn Mermaid diagrams, the wrong
+    colour scheme and uncaught page errors, and saves a screenshot of each view. `make site-check`
+    runs both. `pages.yml` runs it on pull requests (Chrome is preinstalled on the runner) and
+    uploads the screenshots as an artefact. It needs the network (Mermaid comes from jsDelivr), so
+    it stays out of the offline `make ci`. `puppeteer-core` 24.43.1 was already installed through
+    Marp; it is now a direct devDependency at the same version, so no new package is downloaded.
+    It found these defects on the live site, all fixed here:
+    - every notebook page threw `Se.default.extend is not a function`. Mermaid's bundle breaks when
+      an AMD loader is present, and notebook pages load require.js for Jupyter output (reproduced
+      by defining `define.amd` on a lecture page). Pages now load Mermaid only when they contain a
+      diagram.
+    - at desktop width, a long `OTEL_EXPORTER_OTLP_LOGS_HEADERS=…` setting (Day 2 lecture) ran off
+      the page, and the Day 3 metrics table, whose headers are metric names, was 1,179 px wide in
+      an 802 px column. Quarto sets inline code to `white-space: pre`.
+    - at phone width, nine pages (every lecture, the Day 1 and Day 4 labs, the instructor guide,
+      the style guide) scrolled sideways by 28–395 px: Markdown tables wider than the screen, and
+      bare AWS documentation URLs.
+    The fixes are all in `site/theme.scss`:
+    - inline code may wrap (`pre-wrap`) and break anywhere;
+    - prose breaks long words and links break anywhere;
+    - below the desktop layout (992 px), tables scroll inside their own box.
+    The first version of the check missed the phone overflow because it compared against
+    `window.innerWidth`, which on a phone grows to fit content that is too wide. It now measures
+    against the layout width (`documentElement.clientWidth`), and it also flags a page that
+    scrolls sideways and text cut off by a clipping box. Mermaid is pinned to 11.17.2 instead of
+    the moving `mermaid@11`, so a release cannot change the diagrams without a reviewed PR.
+51. **Dependency alerts: one fixed, the rest recorded** (the failing "Dependabot Updates" runs).
+    - `speech-rule-engine` 4.1.4 (Marp → marp-core → mathjax-full) pins `@xmldom/xmldom` to exactly
+      0.9.10, which 11 open alerts cover; Dependabot cannot raise it past a parent's exact pin. An npm
+      `overrides` entry sets 0.9.12, a patch release in the same line. `make slides` and Promptfoo
+      (18/18) pass with it.
+    - Not changed, because none has a fix inside its parent's range and none is reachable from
+      the workshop:
+      - `katex` (low; marp-core needs ^0.17, the fix is 0.18.2, and no deck uses math);
+      - `node-forge` and `basic-ftp` (via Promptfoo; JKS keystores, FTP PAC files);
+      - `extract-zip` (via puppeteer's browser download, which nothing here uses);
+      - `diskcache` (via RAGAS; no patched release);
+      - RAGAS's own SSRF advisory (the multimodal collections module, unused; no patched release);
+      - `pydantic-ai-slim` (optional `phoenix` extra only: versions after 2.51 need `openai>=3.19`,
+        which the pinned `ragas==0.4.3` excludes, and moving RAGAS changes the API the Day 1 lab
+        teaches).
+    - Revisit when Marp, Promptfoo or RAGAS release.
+52. **Duplicated titles stay validated, not generated** (`suggestions.md` §2 proposed either). The
+    copies live in hand-edited files (`_quarto.yml` menus, README tables, `index.qmd` cards, the
+    instructor guide, `CITATION.cff`, the decks), where a generator would have to rewrite regions
+    of prose and layout. `scripts/check_style.py` already fails CI when a rename misses any copy,
+    which is the suggestion's acceptance criterion. `scripts/check_site.py` extends the same check
+    to the rendered pages and browser tabs.
+

@@ -92,7 +92,9 @@ Legend: `[x]` done and verified · `[~]` in progress · `[ ]` not started
 - Website: when `.github/workflows/pages.yml` moves past Quarto 1.6.40, delete the first-visit colour-scheme snippet in `_quarto.yml` (it writes Quarto 1.6's internal `quarto-color-scheme` storage key) and set `respect-user-color-scheme: true` instead (review on PR #1).
 - [x] 2026-10-08: Days 1–2 lecture agendas aligned with the guide's 90-minute morning lab (DECISIONS 41).
 - [x] 2026-10-08: guard seam on `Harness` (`run_guards`, DECISIONS 45); `MaxToolPayloadGuard` stays a payload wrapper by design.
-- From the 2026-10-08 review, not done (needs a decision or a dedicated session): Day 2–4 teaching decks with speaker notes (`suggestions.md` §11); a documented artefact hand-off from Days 1–3 into Day 4 beyond `reports/day4/` (§12); rendered-site browser checks per day in light/dark and desktop/mobile (§10 — the PR site build now catches failed renders, not layout); generating duplicated labels from `docs/workshop.yml` instead of validating copies (§2).
+- [x] 2026-10-08: rendered-site checks per day in light/dark and desktop/phone (`make site-check`, on PRs; DECISIONS 50); duplicated labels stay validated rather than generated (DECISIONS 52).
+- From the 2026-10-08 review, in progress on branch `followups`: Day 2–4 teaching decks (§11), the Day 1–3 → Day 4 artefact hand-off (§12).
+- Dependency alerts with no in-range fix (DECISIONS 51): revisit `katex`, `node-forge`, `basic-ftp`, `extract-zip`, `diskcache`, RAGAS and `pydantic-ai-slim` when Marp, Promptfoo or RAGAS release.
 - [x] 2026-10-08: guard-blocked calls counted apart from invalid ones (`blocked_call_rate`, DECISIONS 47).
 - `scripts/validate_data.py` keeps its own list of termination reasons; a new `TerminationReason` value would need adding there too.
 - The live workflow reports without a baseline, since the committed one is mock and would never be comparable (DECISIONS 42). Once a live run exists, decide whether to commit a separate live baseline for its report.

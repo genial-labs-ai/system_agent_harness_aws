@@ -40,6 +40,7 @@ not only final answers.
 | show the gate failing | `STOCKROOM_WEAKNESSES=ambiguous_tool_desc make ci` (every flag fails it; `naive_retry` shows the category and cost rules) |
 | regenerate baseline after an intentional metric change | `make baseline` |
 | check that lectures/slides cite real files and symbols | `uv run python scripts/check_lecture_refs.py` |
+| check the rendered website: pages, titles, links, then layout in Chrome (needs the network) | `make site` then `make site-check` |
 | check titles, terminology, Node versions and local links (`docs/STYLE_GUIDE.md`) | `uv run python scripts/check_style.py` |
 | render the slide deck | `make slides` |
 | current build status / hand-off | `docs/TASKS.md` |

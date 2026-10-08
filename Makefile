@@ -20,7 +20,8 @@ export PROMPTFOO_PYTHON := $(CURDIR)/.venv/bin/python
 export PYTHONDONTWRITEBYTECODE := 1
 
 .PHONY: help setup lint format test test-unit eval node-tools promptfoo thresholds baseline ci \
-        build-notebooks notebooks mcp-server mcp-smoke slides validate-data phoenix pins clean
+        build-notebooks notebooks mcp-server mcp-smoke slides site site-check site-preview \
+        validate-data phoenix pins clean
 
 help: ## List targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -94,6 +95,10 @@ site: slides ## Render the Quarto website to _site (executes the notebooks in mo
 	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
 	# Quarto writes the executed outputs back into the .ipynb files; regenerate them output-free from notebooks/src.
 	$(PY) scripts/build_notebooks.py
+
+site-check: ## Check the rendered _site: pages, titles and links, then layout in Chrome (needs the network)
+	$(PY) scripts/check_site.py
+	$(PY) scripts/check_site.py --layout-pages | node scripts/site_layout.mjs
 
 site-preview: slides ## Serve the Quarto website locally with live reload (http://localhost:4321)
 	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) preview

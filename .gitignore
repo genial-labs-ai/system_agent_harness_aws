@@ -26,6 +26,7 @@ reports/*
 
 # Quarto site (built by `make site`, deployed by .github/workflows/pages.yml)
 /_site/
+/_site_checks/
 /.quarto/
 _freeze/
 
