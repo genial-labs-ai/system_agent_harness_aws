@@ -26,6 +26,7 @@ PENDING = "not solved yet"
 NOT_RUN = "not run"
 
 _status: dict[str, str] = {}
+_checked: dict[str, object] = {}
 
 
 class ExerciseNotSolved(AssertionError):
@@ -49,14 +50,21 @@ def exercise_pending(exercise_id: str, detail: str = "", *, strict: bool | None 
     """Record that ``exercise_id`` is not solved yet; raise instead of printing in strict mode."""
     message = f"{_label(exercise_id)}: {PENDING}" + (f" ({detail})" if detail else "")
     _status[exercise_id] = PENDING
+    _checked.pop(exercise_id, None)
     if strict_mode() if strict is None else strict:
         raise ExerciseNotSolved(f"{message} [{exercise_id}, strict mode]")
     print(message)
 
 
-def exercise_passed(exercise_id: str, detail: str = "") -> None:
-    """Record that ``exercise_id`` passed its check and print the evidence."""
+def exercise_passed(exercise_id: str, detail: str = "", *, checked: object = None) -> None:
+    """Record that ``exercise_id`` passed its check and print the evidence.
+
+    ``checked`` is the object the check validated (a case, a function, a class). The hand-off cells
+    save that object, not whatever the participant's code returns later, so an edit made after the
+    check passed is never saved as checked work.
+    """
     _status[exercise_id] = PASSED
+    _checked[exercise_id] = checked
     print(f"{_label(exercise_id)} passed" + (f": {detail}" if detail else ""))
 
 
@@ -67,6 +75,12 @@ def exercise_status(exercise_id: str) -> str:
     """
     _label(exercise_id)  # validates the id
     return _status.get(exercise_id, NOT_RUN)
+
+
+def exercise_checked(exercise_id: str) -> object:
+    """The object ``exercise_id``'s check validated when it last passed (``None`` if it has not)."""
+    _label(exercise_id)  # validates the id
+    return _checked.get(exercise_id)
 
 
 def exercise_summary(exercise_ids: Sequence[str], *, strict: bool | None = None) -> dict[str, str]:
@@ -88,3 +102,4 @@ def exercise_summary(exercise_ids: Sequence[str], *, strict: bool | None = None)
 def reset_exercises() -> None:
     """Forget every recorded status (tests and re-runs of a notebook from the top)."""
     _status.clear()
+    _checked.clear()

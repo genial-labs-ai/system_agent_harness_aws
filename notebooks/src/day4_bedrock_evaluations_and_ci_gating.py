@@ -691,7 +691,9 @@ manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 baseline = json.loads((REPO_ROOT / "reports" / "baseline" / "main.json").read_text())
 AGGREGATE_ONLY = {k: v for k, v in thresholds.items() if k not in ("category_gates", "cost")}
 FLAGS = ["ambiguous_tool_desc", "naive_retry", "oversized_payload", "injection_unguarded"]
-suites = {"fixed": results_for(config)} | {f: results_for(config.replace(weaknesses=f)) for f in FLAGS}
+# "fixed" means no weakness flag at all, even if STOCKROOM_WEAKNESSES is set in the environment.
+fixed_cfg = config.replace(weaknesses="")
+suites = {"fixed": results_for(fixed_cfg)} | {f: results_for(config.replace(weaknesses=f)) for f in FLAGS}
 print("evidence problems on the fixed run:", gate.check_evidence(suites["fixed"], manifest, manifest_path))
 
 
@@ -779,7 +781,7 @@ print(f"\nDay 3 · {day3.artefact.assertion} and the {day3.artefact.guard} guard
 aggregate_gate = verdicts(AGGREGATE_ONLY).set_index("configuration")["gate"]
 evidence_rows = []
 for build in suites:
-    build_cfg = config if build == "fixed" else config.replace(weaknesses=build)
+    build_cfg = fixed_cfg if build == "fixed" else config.replace(weaknesses=build)
     own_run = Harness(build_cfg).run(own_case.query, case_id=own_case.id)
     evidence_rows.append(
         {

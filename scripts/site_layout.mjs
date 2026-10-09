@@ -65,7 +65,13 @@ function fail(message) {
 
 function serve(root) {
   const server = createServer((req, res) => {
-    let path = normalize(decodeURIComponent(new URL(req.url, "http://x").pathname));
+    let path;
+    try {
+      path = normalize(decodeURIComponent(new URL(req.url, "http://x").pathname));
+    } catch {
+      res.writeHead(400).end(); // a malformed %-escape must not crash the check
+      return;
+    }
     let file = join(root, path);
     if (!file.startsWith(root + sep) && file !== root) {
       res.writeHead(403).end();
@@ -145,10 +151,22 @@ function clippedText() {
   return found;
 }
 
+// One view; a navigation timeout or a crashed page becomes a problem for this view only, so
+// every other page, width and scheme is still checked and reported.
 async function checkView(browser, origin, page, viewport, scheme) {
   const context = await browser.createBrowserContext(); // fresh storage: a first visit each time
-  const tab = await context.newPage();
   const problems = [];
+  try {
+    await inspectView(await context.newPage(), origin, page, viewport, scheme, problems);
+  } catch (err) {
+    problems.push(`could not check: ${String(err.message ?? err).split("\n")[0]}`);
+  } finally {
+    await context.close();
+  }
+  return problems;
+}
+
+async function inspectView(tab, origin, page, viewport, scheme, problems) {
   tab.on("pageerror", (err) => problems.push(`page error: ${err.message.split("\n")[0]}`));
   await tab.setViewport(viewport);
   await tab.emulateMediaFeatures([{ name: "prefers-color-scheme", value: scheme }]);
@@ -181,8 +199,6 @@ async function checkView(browser, origin, page, viewport, scheme) {
     const shot = `${page.path.replace(/[/.]/g, "_")}--${viewport.name}--${scheme}.png`;
     await tab.screenshot({ path: join(OUT, shot) });
   }
-  await context.close();
-  return problems;
 }
 
 // Read stdin as a stream: readFileSync(0) throws EAGAIN when the pipe is not ready yet.

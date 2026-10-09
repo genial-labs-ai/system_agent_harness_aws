@@ -355,7 +355,9 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     when a guard does its job. Both code reviews of PR #2 flagged the old reading, and the Day 3
     table had to explain why a working defence raised `invalid_call_rate`. Baseline diff: one new
     metric, `blocked_call_rate: 0.0` (no run guards in the golden suite); every other value
-    unchanged.
+    unchanged. `ToolCallEvaluator.from_spans()` reads each tool span's `error.type`
+    (`invalid_arguments`, `blocked_by_guard`), so a report from a trace counts invalid and blocked
+    calls as a report from the run does. Before, it counted every call as executed.
 48. **Days 2–4 get Marp teaching decks in the Day 1 format** (`suggestions.md` §11):
     `slides/DAY2_TEACHING_SLIDES.md`, `slides/DAY3_TEACHING_SLIDES.md` and
     `slides/DAY4_TEACHING_SLIDES.md`, with the Day 1 deck's front matter keys, the gaia theme, a lead
@@ -412,6 +414,12 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
       the solutions', the student pass runs Day 4 on the reference fallbacks and the solution pass
       on what Days 1–3 just saved. `make site` executes the notebooks with the same scratch
       directory, so a local site build never writes into `reports/participant/` either.
+    - *A save cell saves what the check passed.* `exercise_passed(..., checked=...)` keeps the object
+      a check validated, and the save cells write that object (`exercise_checked()`). An edit made
+      after the check passed is never saved as checked work; Day 1 says so when the case changed.
+      The Day 3 sweep (the golden set on five builds, twice) runs in live mode only with
+      `STOCKROOM_CONFIRM_AWS_SPEND=1`. Day 4's "fixed" build pins `weaknesses=""`, as Day 3's does.
+      An unreadable hand-off file raises `HandoffError` with the same advice as a malformed one.
     - No exercise was added, and no metric, rubric, tool description or golden case changed, so
       the baseline is unchanged.
 50. **The rendered site is checked on every pull request, in HTML and in a browser**

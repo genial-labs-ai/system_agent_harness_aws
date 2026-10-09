@@ -183,13 +183,19 @@ def save_handoff(artefact: HandoffArtefact, directory: Path | None = None) -> Pa
 
 def read_handoff[T: HandoffArtefact](kind: type[T], path: Path) -> T:
     """Parse one hand-off file; any problem becomes a :class:`HandoffError` naming the file."""
+    fix = (
+        f"Re-run the save cell at the end of the Day {kind.DAY} notebook, or delete the file "
+        "to use the reference artefact instead."
+    )
     try:
-        return kind.model_validate_json(path.read_bytes())
+        data = path.read_bytes()
+    except OSError as exc:  # a directory of that name, permissions, an unmounted Drive folder
+        raise HandoffError(f"{display_path(path)} could not be read ({exc}).\n{fix}") from exc
+    try:
+        return kind.model_validate_json(data)
     except ValidationError as exc:  # also covers a file that is not JSON at all
         raise HandoffError(
-            f"{display_path(path)} is not a valid Day {kind.DAY} hand-off file: {exc}\n"
-            f"Re-run the save cell at the end of the Day {kind.DAY} notebook, or delete the file "
-            "to use the reference artefact instead."
+            f"{display_path(path)} is not a valid Day {kind.DAY} hand-off file: {exc}\n{fix}"
         ) from exc
 
 

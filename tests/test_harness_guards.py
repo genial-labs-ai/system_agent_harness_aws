@@ -357,6 +357,24 @@ def test_run_guard_can_halt_the_run_with_a_typed_reason(golden_cases) -> None:
     assert result.tool_records == [] and result.transition_log[-1].to_state is State.FAILED
 
 
+def test_trace_and_run_count_blocked_and_invalid_calls_the_same(
+    golden_cases, tracing: TracingHandle
+) -> None:
+    evaluator = ToolCallEvaluator()
+    blocked_case, invalid_case = case_by_id(golden_cases, "G041"), case_by_id(golden_cases, "G045")
+    cfg = StockroomConfig.mock(weaknesses="injection_unguarded")
+    guarded = Harness(cfg, tracer=RunTracer(tracing), run_guards=[GroundedRestockGuard()])
+    plain = Harness(StockroomConfig.mock(), tracer=RunTracer(tracing))
+    for harness, case in ((guarded, blocked_case), (plain, invalid_case)):
+        tracing.clear()
+        run = harness.run(case.query, case_id=case.id)
+        from_run = evaluator.from_run(run)
+        from_trace = evaluator.from_spans(tracing.finished_spans(), run_id=run.run_id)
+        counts = ("total_calls", "executed_calls", "invalid_calls", "blocked_calls")
+        assert [getattr(from_trace, k) for k in counts] == [getattr(from_run, k) for k in counts]
+    assert (from_run.invalid_calls, from_run.blocked_calls) == (1, 0)  # G045, the last one run
+
+
 class BlockEverythingGuard:
     name = "block_all"
 

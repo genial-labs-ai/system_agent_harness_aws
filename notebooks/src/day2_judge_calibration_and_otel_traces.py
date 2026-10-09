@@ -373,6 +373,7 @@ else:
         f"agreement {report_v2.agreement:.2%} -> {report_v3.agreement:.2%}, "
         f"kappa {report_v2.kappa:.3f} -> {report_v3.kappa:.3f}, disagreements "
         f"{[d[0] for d in report_v3.disagreements]}",
+        checked=report_v3,
     )
 
 # %% [markdown]
@@ -435,6 +436,7 @@ else:
     exercise_passed(
         "day2.ex2",
         f"human={new_item.human_label} judge v2 pass={v2_verdict.passed} ({v2_verdict.rationale})",
+        checked=new_item,
     )
 
 # %% [markdown]
@@ -499,18 +501,20 @@ else:
 # far that judge can be trusted. This cell saves what you measured today: agreement and kappa for
 # rubric v2 and for your rubric (Exercise 1), and your calibration item (Exercise 2), which Day 4
 # hands to the gate's judge. It writes `reports/participant/day2.json` (or into
-# `STOCKROOM_HANDOFF_DIR`) once both exercises have passed; otherwise Day 4 uses the reference
-# artefact from `data/handoff/` and says so.
+# `STOCKROOM_HANDOFF_DIR`) once both exercises have passed, saving what the checks passed: after
+# changing your rubric or item, re-run its check first. Otherwise Day 4 uses the reference artefact
+# from `data/handoff/` and says so.
 
 # %%
-from stockroom.exercises import PASSED, exercise_status
+from stockroom.exercises import PASSED, exercise_checked, exercise_status
 from stockroom.handoff import CalibrationSummary, Day2Handoff, save_handoff
 
 if all(exercise_status(e) == PASSED for e in ("day2.ex1", "day2.ex2")):
+    checked_reports = (report_v2, exercise_checked("day2.ex1"))
     own_calibration = Day2Handoff(
         mode=config.mode,
-        calibrations=[CalibrationSummary.from_report(r) for r in (report_v2, report_v3)],
-        calibration_item=new_calibration_item(),
+        calibrations=[CalibrationSummary.from_report(r) for r in checked_reports],
+        calibration_item=exercise_checked("day2.ex2"),
     )
     saved = save_handoff(own_calibration)
     print(f"saved rubrics {[c.rubric_version for c in own_calibration.calibrations]} and item "

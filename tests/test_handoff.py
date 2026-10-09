@@ -136,6 +136,13 @@ def test_a_malformed_file_is_a_clear_error_not_a_fallback(
     assert "Re-run the save cell at the end of the Day 1 notebook" in text
 
 
+def test_an_unreadable_file_is_a_clear_error(own_dir: Path) -> None:
+    (own_dir / "day1.json").mkdir(parents=True)  # a directory where the file should be
+    with pytest.raises(HandoffError, match="could not be read") as excinfo:
+        load_handoff(Day1Handoff, own_dir)
+    assert "Re-run the save cell at the end of the Day 1 notebook" in str(excinfo.value)
+
+
 def test_day3_needs_every_build(own_dir: Path) -> None:
     with pytest.raises(ValueError, match="needs exactly the builds"):
         _day3(assertion_fails={"fixed": []})

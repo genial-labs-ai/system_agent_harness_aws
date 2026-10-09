@@ -13,6 +13,7 @@ import pytest
 from stockroom.config import REPO_ROOT
 from stockroom.exercises import (
     ExerciseNotSolved,
+    exercise_checked,
     exercise_passed,
     exercise_pending,
     exercise_status,
@@ -85,6 +86,16 @@ def test_exercise_status_reports_one_exercise() -> None:
     assert exercise_status("day3.ex1") == "not solved yet"
     exercise_passed("day3.ex1")
     assert exercise_status("day3.ex1") == "passed"
+
+
+def test_the_checked_object_is_what_last_passed() -> None:
+    # The hand-off cells save this object, so an edit after the check is never saved as checked.
+    assert exercise_checked("day1.ex1") is None
+    case = {"id": "G060"}
+    exercise_passed("day1.ex1", checked=case)
+    assert exercise_checked("day1.ex1") is case
+    exercise_pending("day1.ex1", strict=False)  # a later failing check forgets it
+    assert exercise_checked("day1.ex1") is None
 
 
 def _source(check_body: str, summary: str = '["day9.ex1"]') -> str:

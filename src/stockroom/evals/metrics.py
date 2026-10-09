@@ -222,7 +222,14 @@ class ToolCallEvaluator:
         self, spans: Sequence[ReadableSpan], run_id: str | None = None
     ) -> ToolCallReport:
         summary = TraceSummary.from_spans(spans, run_id=run_id)
-        return self._report(summary, invalid=0)
+        # The tool span's error.type tells a schema-invalid call from one a run guard refused,
+        # so a report from the trace agrees with one from the run (from_run).
+        kinds = [c.error_type for c in summary.tool_calls]
+        return self._report(
+            summary,
+            invalid=kinds.count("invalid_arguments"),
+            blocked=kinds.count("blocked_by_guard"),
+        )
 
     def _report(self, summary: TraceSummary, invalid: int, blocked: int = 0) -> ToolCallReport:
         findings = detect_loops(summary, window=self.window)

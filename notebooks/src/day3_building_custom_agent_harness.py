@@ -613,7 +613,7 @@ if caught is None:
 else:
     for cid in ("G020", "G033", "G041"):
         assert_no_ungrounded_writes(harness.run(by_id[cid].query, case_id=cid))  # must not raise
-    exercise_passed("day3.ex1", f"{caught}")
+    exercise_passed("day3.ex1", f"{caught}", checked=assert_no_ungrounded_writes)
 
 # %% [markdown]
 # ### Exercise 2 — the run guard that prevents it (step 3)
@@ -673,7 +673,11 @@ else:
     for cid in ("G020", "G021", "G033"):
         r = allowed.run(by_id[cid].query, case_id=cid)
         assert "create_restock_request" in r.tool_names, f"{cid}: a requested restock was blocked"
-    exercise_passed("day3.ex2", f"blocked {[r.blocked_tool_calls[0].name for r in guarded_runs.values()]}")
+    exercise_passed(
+        "day3.ex2",
+        f"blocked {[r.blocked_tool_calls[0].name for r in guarded_runs.values()]}",
+        checked=GroundedWriteGuard,
+    )
 
 # %% [markdown]
 # **Step 4 — before/after evidence.** The trajectory, the trace and the suite metrics, with the
@@ -987,40 +991,50 @@ else:
 # on a handful of cases. This cell runs both over the whole golden set on the five builds the Day 4
 # gate compares (the fixed agent and each weakness on its own), shows which cases each one catches,
 # and saves that to `reports/participant/day3.json` (or into `STOCKROOM_HANDOFF_DIR`) once both
-# exercises have passed. Otherwise Day 4 uses the reference artefact from `data/handoff/` and
-# says so.
+# exercises have passed. It runs the assertion and guard exactly as their checks passed them, so
+# after editing either one, re-run its check first. Otherwise Day 4 uses the reference artefact from
+# `data/handoff/` and says so. In live mode the sweep calls Bedrock for every case on every build,
+# so it runs only with `STOCKROOM_CONFIRM_AWS_SPEND=1`.
 
 # %%
-from stockroom.exercises import PASSED, exercise_status
+from stockroom.exercises import PASSED, exercise_checked, exercise_status
 from stockroom.handoff import BUILDS, Day3Handoff, save_handoff
 
 
-def assertion_fails(cfg: StockroomConfig) -> list[str]:
-    """Golden cases whose run under ``cfg`` fails assert_no_ungrounded_writes."""
+def assertion_fails(cfg: StockroomConfig, assertion) -> list[str]:
+    """Golden cases whose run under ``cfg`` fails ``assertion``."""
     h = Harness(cfg)
     failing = []
     for c in cases:
         try:
-            assert_no_ungrounded_writes(h.run(c.query, case_id=c.id))
+            assertion(h.run(c.query, case_id=c.id))
         except AssertionError:
             failing.append(c.id)
     return failing
 
 
-def guard_blocks(cfg: StockroomConfig) -> list[str]:
-    """Golden cases in which GroundedWriteGuard blocked at least one call under ``cfg``."""
-    h = Harness(cfg, run_guards=[GroundedWriteGuard()])
+def guard_blocks(cfg: StockroomConfig, guard_class) -> list[str]:
+    """Golden cases in which a ``guard_class`` run guard blocked at least one call under ``cfg``."""
+    h = Harness(cfg, run_guards=[guard_class()])
     return [c.id for c in cases if h.run(c.query, case_id=c.id).blocked_tool_calls]
 
 
-if all(exercise_status(e) == PASSED for e in ("day3.ex1", "day3.ex2")):
+sweep_runs = 2 * len(BUILDS) * len(cases)
+if not all(exercise_status(e) == PASSED for e in ("day3.ex1", "day3.ex2")):
+    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
+          "verdicts.")
+elif config.is_live and not config.confirm_aws_spend:
+    print(f"Nothing saved: in live mode this sweep makes {sweep_runs} agent runs against Bedrock. "
+          "Set STOCKROOM_CONFIRM_AWS_SPEND=1 to run it, or save from a mock-mode session.")
+else:
+    checked_assertion, checked_guard = exercise_checked("day3.ex1"), exercise_checked("day3.ex2")
     builds = {b: config.replace(weaknesses="" if b == "fixed" else b) for b in BUILDS}
     own_verdicts = Day3Handoff(
         mode=config.mode,
-        assertion=assert_no_ungrounded_writes.__name__,
-        guard=GroundedWriteGuard.name,
-        assertion_fails={b: assertion_fails(cfg) for b, cfg in builds.items()},
-        guard_blocks={b: guard_blocks(cfg) for b, cfg in builds.items()},
+        assertion=checked_assertion.__name__,
+        guard=checked_guard.name,
+        assertion_fails={b: assertion_fails(cfg, checked_assertion) for b, cfg in builds.items()},
+        guard_blocks={b: guard_blocks(cfg, checked_guard) for b, cfg in builds.items()},
     )
     display(
         pd.DataFrame(
@@ -1028,9 +1042,6 @@ if all(exercise_status(e) == PASSED for e in ("day3.ex1", "day3.ex2")):
         )
     )
     print(f"saved to {save_handoff(own_verdicts)}")
-else:
-    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
-          "verdicts.")
 
 # %% [markdown]
 # ## Exercise checklist
