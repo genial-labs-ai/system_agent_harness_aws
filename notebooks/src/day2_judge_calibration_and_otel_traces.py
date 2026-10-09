@@ -506,22 +506,25 @@ else:
 # from `data/handoff/` and says so.
 
 # %%
-from stockroom.exercises import PASSED, exercise_checked, exercise_status
+from stockroom.exercises import PASSED, exercise_status, still_checked
 from stockroom.handoff import CalibrationSummary, Day2Handoff, save_handoff
 
-if all(exercise_status(e) == PASSED for e in ("day2.ex1", "day2.ex2")):
-    checked_reports = (report_v2, exercise_checked("day2.ex1"))
+item_now = new_calibration_item()
+if not all(exercise_status(e) == PASSED for e in ("day2.ex1", "day2.ex2")):
+    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
+          "calibration.")
+elif not (still_checked("day2.ex1", report_v3) and still_checked("day2.ex2", item_now)):
+    print("Nothing saved: your rubric or calibration item changed after its check passed. Re-run "
+          "the Exercise 1 and 2 checks, then this cell.")
+else:
     own_calibration = Day2Handoff(
         mode=config.mode,
-        calibrations=[CalibrationSummary.from_report(r) for r in checked_reports],
-        calibration_item=exercise_checked("day2.ex2"),
+        calibrations=[CalibrationSummary.from_report(r) for r in (report_v2, report_v3)],
+        calibration_item=item_now,
     )
     saved = save_handoff(own_calibration)
     print(f"saved rubrics {[c.rubric_version for c in own_calibration.calibrations]} and item "
           f"{own_calibration.calibration_item.id} to {saved}")
-else:
-    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
-          "calibration.")
 
 # %% [markdown]
 # ## Exercise checklist

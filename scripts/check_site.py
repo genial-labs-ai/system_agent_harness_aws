@@ -149,6 +149,7 @@ class SiteChecker:
         self._pages: dict[Path, Page] = {}
 
     def page(self, path: Path) -> Page:
+        path = path.resolve()  # one entry per file, however the path was spelled
         if path not in self._pages:
             self._pages[path] = parse_page(path)
         return self._pages[path]
@@ -192,6 +193,9 @@ class SiteChecker:
         parts = urlsplit(link)
         if parts.scheme or link.startswith("//") or not (parts.path or parts.fragment):
             return None
+        if parts.path.startswith("/"):
+            # GitHub Pages serves this project under /<repo>/, so a root-relative link misses it.
+            return f"{link} is root-relative and misses the Pages project path; use a relative link"
         target = page if not parts.path else (page.parent / unquote(parts.path))
         if parts.path.endswith("/") or target.is_dir():
             target = target / "index.html"

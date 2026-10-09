@@ -19,6 +19,7 @@ from stockroom.exercises import (
     exercise_status,
     exercise_summary,
     reset_exercises,
+    still_checked,
     strict_mode,
 )
 
@@ -96,6 +97,24 @@ def test_the_checked_object_is_what_last_passed() -> None:
     assert exercise_checked("day1.ex1") is case
     exercise_pending("day1.ex1", strict=False)  # a later failing check forgets it
     assert exercise_checked("day1.ex1") is None
+
+
+def test_still_checked_needs_the_object_that_passed() -> None:
+    # A re-check that fails on an assert records nothing, so "passed" survives it; the save cells
+    # compare the object in the notebook now with the one that passed.
+    def guard_v1() -> None:
+        return None
+
+    def guard_v2() -> None:
+        return None
+
+    assert not still_checked("day3.ex2", guard_v1)  # never passed
+    exercise_passed("day3.ex2", checked=guard_v1)
+    assert still_checked("day3.ex2", guard_v1)
+    assert not still_checked("day3.ex2", guard_v2)  # edited and redefined after the check
+    exercise_passed("day1.ex1", checked={"id": "G060"})
+    assert still_checked("day1.ex1", {"id": "G060"})  # an equal value counts
+    assert not still_checked("day1.ex1", {"id": "G061"})
 
 
 def _source(check_body: str, summary: str = '["day9.ex1"]') -> str:

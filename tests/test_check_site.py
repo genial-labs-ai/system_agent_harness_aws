@@ -96,7 +96,8 @@ def test_broken_links_and_anchors_are_reported(site_check, root: Path) -> None:
             f"Day 1 · Foundations – {WORKSHOP}",
             "Foundations",
             '<a href="../notebooks/Day9.html">gone</a><a href="../index.html#nowhere">anchor</a>'
-            '<a href="../../README.md">outside</a><a href="mailto:a@example.org">mail</a>',
+            '<a href="../../README.md">outside</a><a href="mailto:a@example.org">mail</a>'
+            '<a href="/notebooks/Day1.html">rooted</a>',
         )
     )
     messages = sorted(p.message for p in site_check.check(root) if p.rule == "broken-link")
@@ -104,6 +105,8 @@ def test_broken_links_and_anchors_are_reported(site_check, root: Path) -> None:
         "../../README.md points outside the site",
         "../index.html#nowhere: no element with id 'nowhere'",
         "../notebooks/Day9.html does not exist",
+        "/notebooks/Day1.html is root-relative and misses the Pages project path; use a relative "
+        "link",
     ]
 
 

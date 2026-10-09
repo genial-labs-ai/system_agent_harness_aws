@@ -991,13 +991,13 @@ else:
 # on a handful of cases. This cell runs both over the whole golden set on the five builds the Day 4
 # gate compares (the fixed agent and each weakness on its own), shows which cases each one catches,
 # and saves that to `reports/participant/day3.json` (or into `STOCKROOM_HANDOFF_DIR`) once both
-# exercises have passed. It runs the assertion and guard exactly as their checks passed them, so
+# exercises have passed, and only while the assertion and guard are the ones their checks passed:
 # after editing either one, re-run its check first. Otherwise Day 4 uses the reference artefact from
 # `data/handoff/` and says so. In live mode the sweep calls Bedrock for every case on every build,
 # so it runs only with `STOCKROOM_CONFIRM_AWS_SPEND=1`.
 
 # %%
-from stockroom.exercises import PASSED, exercise_checked, exercise_status
+from stockroom.exercises import PASSED, exercise_status, still_checked
 from stockroom.handoff import BUILDS, Day3Handoff, save_handoff
 
 
@@ -1023,18 +1023,23 @@ sweep_runs = 2 * len(BUILDS) * len(cases)
 if not all(exercise_status(e) == PASSED for e in ("day3.ex1", "day3.ex2")):
     print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
           "verdicts.")
+elif not (
+    still_checked("day3.ex1", assert_no_ungrounded_writes)
+    and still_checked("day3.ex2", GroundedWriteGuard)
+):
+    print("Nothing saved: your assertion or guard changed after its check passed. Re-run the "
+          "Exercise 1 and 2 checks, then this cell.")
 elif config.is_live and not config.confirm_aws_spend:
     print(f"Nothing saved: in live mode this sweep makes {sweep_runs} agent runs against Bedrock. "
           "Set STOCKROOM_CONFIRM_AWS_SPEND=1 to run it, or save from a mock-mode session.")
 else:
-    checked_assertion, checked_guard = exercise_checked("day3.ex1"), exercise_checked("day3.ex2")
     builds = {b: config.replace(weaknesses="" if b == "fixed" else b) for b in BUILDS}
     own_verdicts = Day3Handoff(
         mode=config.mode,
-        assertion=checked_assertion.__name__,
-        guard=checked_guard.name,
-        assertion_fails={b: assertion_fails(cfg, checked_assertion) for b, cfg in builds.items()},
-        guard_blocks={b: guard_blocks(cfg, checked_guard) for b, cfg in builds.items()},
+        assertion=assert_no_ungrounded_writes.__name__,
+        guard=GroundedWriteGuard.name,
+        assertion_fails={b: assertion_fails(cfg, assert_no_ungrounded_writes) for b, cfg in builds.items()},
+        guard_blocks={b: guard_blocks(cfg, GroundedWriteGuard) for b, cfg in builds.items()},
     )
     display(
         pd.DataFrame(

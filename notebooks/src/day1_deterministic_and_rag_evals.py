@@ -615,24 +615,25 @@ else:
 # The Day 4 capstone reuses your golden case from Exercise 1: it runs the case through Day 4's
 # label validator and on every seeded-weakness build, next to the CI gate's verdicts. This cell
 # saves the case to the hand-off directory (`reports/participant/day1.json`, or the folder named
-# by `STOCKROOM_HANDOFF_DIR`) once Exercise 1 has passed. It saves the case exactly as that check
-# passed it, so after changing the case, re-run the Exercise 1 check and then this cell.
+# by `STOCKROOM_HANDOFF_DIR`) once Exercise 1 has passed, and only the case that check passed: after
+# changing the case, re-run the Exercise 1 check and then this cell.
 # Nothing saved is fine too: Day 4 then uses the reference case from `data/handoff/` and says so.
 # In Colab, files on the runtime are lost when it is recycled: set `STOCKROOM_HANDOFF_DIR` to a
 # folder on a mounted Google Drive before running this cell, or download the file.
 
 # %%
-from stockroom.exercises import PASSED, exercise_checked, exercise_status
+from stockroom.exercises import PASSED, exercise_status, still_checked
 from stockroom.handoff import Day1Handoff, save_handoff
 
-if exercise_status("day1.ex1") == PASSED:
-    checked_case = exercise_checked("day1.ex1")
-    saved = save_handoff(Day1Handoff(mode=config.mode, golden_case=checked_case))
-    print(f"saved your golden case {checked_case.id}, as Exercise 1 checked it, to {saved}")
-    if new_golden_case() != checked_case:
-        print("new_golden_case() changed after that check: re-run the Exercise 1 check, then this cell.")
-else:
+case_now = new_golden_case()
+if exercise_status("day1.ex1") != PASSED:
     print("Nothing saved: Exercise 1 has not passed yet, so Day 4 will use the reference case.")
+elif not still_checked("day1.ex1", case_now):
+    print("Nothing saved: new_golden_case() changed after Exercise 1 passed. Re-run the "
+          "Exercise 1 check, then this cell.")
+else:
+    saved = save_handoff(Day1Handoff(mode=config.mode, golden_case=case_now))
+    print(f"saved your golden case {case_now.id} to {saved}")
 
 # %% [markdown]
 # ## Exercise checklist

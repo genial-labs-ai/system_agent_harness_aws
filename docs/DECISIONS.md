@@ -414,9 +414,11 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
       the solutions', the student pass runs Day 4 on the reference fallbacks and the solution pass
       on what Days 1–3 just saved. `make site` executes the notebooks with the same scratch
       directory, so a local site build never writes into `reports/participant/` either.
-    - *A save cell saves what the check passed.* `exercise_passed(..., checked=...)` keeps the object
-      a check validated, and the save cells write that object (`exercise_checked()`). An edit made
-      after the check passed is never saved as checked work; Day 1 says so when the case changed.
+    - *A save cell saves only what the check passed.* `exercise_passed(..., checked=...)` keeps the
+      object a check validated. A check whose `assert` fails records nothing, so "passed" survives a
+      failed re-check; the save cells therefore save only while `still_checked()` holds, meaning
+      the case, rubric report, item, assertion or guard in the notebook now is the one that passed.
+      Otherwise they say to re-run the check.
       The Day 3 sweep (the golden set on five builds, twice) runs in live mode only with
       `STOCKROOM_CONFIRM_AWS_SPEND=1`. Day 4's "fixed" build pins `weaknesses=""`, as Day 3's does.
       An unreadable hand-off file raises `HandoffError` with the same advice as a malformed one.

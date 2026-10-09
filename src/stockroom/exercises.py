@@ -83,6 +83,19 @@ def exercise_checked(exercise_id: str) -> object:
     return _checked.get(exercise_id)
 
 
+def still_checked(exercise_id: str, current: object) -> bool:
+    """True when ``exercise_id`` passed and ``current`` is what its check validated.
+
+    A check cell whose ``assert`` fails raises before it can record anything, so an earlier
+    "passed" survives a failed re-check. The hand-off cells therefore save only when the object
+    in the notebook now is the one that passed: the same function or class, or an equal value.
+    """
+    if exercise_status(exercise_id) != PASSED:
+        return False
+    checked = _checked.get(exercise_id)
+    return checked is current or (checked is not None and checked == current)
+
+
 def exercise_summary(exercise_ids: Sequence[str], *, strict: bool | None = None) -> dict[str, str]:
     """Print one status line per exercise; in strict mode raise unless every one passed."""
     statuses = {eid: _status.get(eid, NOT_RUN) for eid in exercise_ids}
