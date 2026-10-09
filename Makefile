@@ -9,8 +9,13 @@ PYTEST        := $(UV) run pytest
 # never via an npx download, so `make promptfoo` and `make slides` cannot reach the network.
 NODE_BIN      := $(CURDIR)/node_modules/.bin
 MCP_PORT      ?= 8765
+# The Marp decks (docs/workshop.yml lists them with their titles); `make slides` writes each one's
+# .html next to it. The kickoff deck, slides/intro.qmd, is rendered by Quarto instead.
+MARP_DECKS    := slides/DAY1_MOTIVATIONAL_SLIDES.md slides/DAY2_TEACHING_SLIDES.md \
+                 slides/DAY3_TEACHING_SLIDES.md slides/DAY4_TEACHING_SLIDES.md
 QUARTO        ?= quarto
 REPORTS       := reports
+NOTEBOOK_HANDOFF := $(REPORTS)/notebooks_handoff
 
 export STOCKROOM_MODE ?= mock
 export DEEPEVAL_TELEMETRY_OPT_OUT := 1
@@ -20,7 +25,8 @@ export PROMPTFOO_PYTHON := $(CURDIR)/.venv/bin/python
 export PYTHONDONTWRITEBYTECODE := 1
 
 .PHONY: help setup lint format test test-unit eval node-tools promptfoo thresholds baseline ci \
-        build-notebooks notebooks mcp-server mcp-smoke slides validate-data phoenix pins clean
+        build-notebooks notebooks mcp-server mcp-smoke slides site site-check site-preview \
+        validate-data phoenix pins clean
 
 help: ## List targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -82,18 +88,31 @@ build-notebooks: ## Generate student + solution .ipynb files from notebooks/src
 	$(PY) scripts/build_notebooks.py
 
 notebooks: build-notebooks ## Build and execute every notebook in mock mode (solutions in strict mode)
-	$(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb -p no:cacheprovider
+	# A scratch hand-off directory (src/stockroom/handoff.py), emptied first: the solution notebooks never
+	# overwrite a participant's reports/participant/, the student pass (nothing solved, nothing saved) runs
+	# Day 4 on the reference fallbacks, and the solution pass runs it on what Days 1-3 just saved.
+	rm -rf $(NOTEBOOK_HANDOFF)
+	STOCKROOM_HANDOFF_DIR=$(CURDIR)/$(NOTEBOOK_HANDOFF) \
+	  $(PYTEST) --nbmake --nbmake-timeout=900 notebooks/*.ipynb -p no:cacheprovider
 	# Strict mode: an exercise that does not report passing fails its solution notebook.
-	STOCKROOM_STRICT_EXERCISES=1 $(PYTEST) --nbmake --nbmake-timeout=900 notebooks/solutions/*.ipynb -p no:cacheprovider
+	STOCKROOM_STRICT_EXERCISES=1 STOCKROOM_HANDOFF_DIR=$(CURDIR)/$(NOTEBOOK_HANDOFF) \
+	  $(PYTEST) --nbmake --nbmake-timeout=900 notebooks/solutions/*.ipynb -p no:cacheprovider
 
-slides: node-tools ## Render the Marp deck to HTML
+slides: node-tools ## Render the Marp decks to HTML (each slides/X.md to slides/X.html)
 	# stdin is redirected: marp-cli otherwise treats a non-TTY stdin as an extra markdown input and hangs under CI/make.
-	$(NODE_BIN)/marp slides/DAY1_MOTIVATIONAL_SLIDES.md -o slides/DAY1_MOTIVATIONAL_SLIDES.html < /dev/null
+	$(NODE_BIN)/marp $(MARP_DECKS) < /dev/null
 
 site: slides ## Render the Quarto website to _site (executes the notebooks in mock mode; needs quarto on PATH)
-	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
+	# The executed notebooks save their hand-off files to the scratch directory, never to a
+	# participant's reports/participant/ (see the notebooks target).
+	rm -rf $(NOTEBOOK_HANDOFF)
+	STOCKROOM_HANDOFF_DIR=$(CURDIR)/$(NOTEBOOK_HANDOFF) QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) render
 	# Quarto writes the executed outputs back into the .ipynb files; regenerate them output-free from notebooks/src.
 	$(PY) scripts/build_notebooks.py
+
+site-check: ## Check the rendered _site: pages, titles and links, then layout in Chrome (needs the network)
+	$(PY) scripts/check_site.py
+	$(PY) scripts/check_site.py --layout-pages | node scripts/site_layout.mjs
 
 site-preview: slides ## Serve the Quarto website locally with live reload (http://localhost:4321)
 	QUARTO_PYTHON=$(CURDIR)/.venv/bin/python $(QUARTO) preview
@@ -121,6 +140,7 @@ ci: ## The PR gate, step by step (mirrors .github/workflows/agent_eval_ci.yml)
 	$(PY) scripts/check_lecture_refs.py
 	$(PY) scripts/check_style.py
 
-clean: ## Remove caches, build artefacts and generated reports
+clean: ## Remove caches, build artefacts and generated reports (keeps a participant's reports/participant/)
 	rm -rf .pytest_cache .ruff_cache _site .quarto reports/eval_results.json reports/promptfoo_results.json reports/summary.md
+	rm -rf $(NOTEBOOK_HANDOFF)
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +

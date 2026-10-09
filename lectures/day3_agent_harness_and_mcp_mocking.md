@@ -197,8 +197,9 @@ every run.
 `Draft202012Validator` over `ToolSpec.input_schema`) before the executor. An invalid call never
 reaches the tool; the model receives a structured `invalid_arguments` error that includes the
 `expected_schema`, and the record is kept in the trajectory with `ToolCallRecord.executed` false.
-If *every* call in a step is invalid and the count of unexecuted calls reaches `MAX_STEPS`, the
-`OBSERVE` state terminates with `INVALID_TOOL_CALLS`.
+If *every* call in a step is invalid and the run's count of invalid calls reaches `MAX_STEPS`, the
+`OBSERVE` state terminates with `INVALID_TOOL_CALLS`. Calls a run guard blocks are counted
+separately (`blocked_call_rate`), so a guard doing its job never looks like a malformed call.
 
 *Evidence.* `test_invalid_arguments_get_structured_error_and_never_reach_the_tool()` and
 `test_validate_arguments_messages()` in `tests/test_harness_guards.py`. The eval signal is

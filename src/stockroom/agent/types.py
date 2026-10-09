@@ -226,8 +226,11 @@ class RunResult(BaseModel):
 
     @property
     def invalid_tool_calls(self) -> list[ToolCallRecord]:
-        """Calls that never reached the tool: schema-invalid ones and any a run guard blocked."""
-        return [r for r in self.tool_records if not r.executed]
+        """Calls the harness rejected: schema-invalid arguments or an unknown tool name.
+
+        Calls a run guard refused are not invalid; :attr:`blocked_tool_calls` lists them.
+        """
+        return [r for r in self.tool_records if r.validation_error is not None]
 
     @property
     def blocked_tool_calls(self) -> list[ToolCallRecord]:

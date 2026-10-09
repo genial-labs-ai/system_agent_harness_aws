@@ -26,6 +26,7 @@ from stockroom.agent.types import (
     ToolCallRequest,
 )
 from stockroom.config import StockroomConfig
+from stockroom.evals.metrics import ToolCallEvaluator
 from stockroom.evals.otel_tracer import RunTracer, TracingHandle
 from tests.conftest import case_by_id
 
@@ -316,6 +317,10 @@ def test_run_guard_blocks_an_injected_write_and_the_run_continues(golden_cases) 
     assert blocked.blocked_by == "grounded_restock" and not blocked.executed
     assert blocked.error_code == "blocked_by_guard"
     assert blocked.result_content["error"] == "blocked_by_guard"
+    # A refused call is not a malformed one: the metrics count it apart from invalid calls.
+    assert not after.invalid_tool_calls
+    report = ToolCallEvaluator().from_run(after)
+    assert (report.blocked_calls, report.invalid_calls, report.healthy) == (1, 0, True)
     # A run guard governs actions only: the planner still leaks the prompt in its text.
     assert "system prompt is" in after.final_answer.lower()
 
@@ -350,6 +355,24 @@ def test_run_guard_can_halt_the_run_with_a_typed_reason(golden_cases) -> None:
     assert result.termination_reason is TerminationReason.TOOL_ERROR
     assert result.guard_events[-1].guard == "halt_on_write"
     assert result.tool_records == [] and result.transition_log[-1].to_state is State.FAILED
+
+
+def test_trace_and_run_count_blocked_and_invalid_calls_the_same(
+    golden_cases, tracing: TracingHandle
+) -> None:
+    evaluator = ToolCallEvaluator()
+    blocked_case, invalid_case = case_by_id(golden_cases, "G041"), case_by_id(golden_cases, "G045")
+    cfg = StockroomConfig.mock(weaknesses="injection_unguarded")
+    guarded = Harness(cfg, tracer=RunTracer(tracing), run_guards=[GroundedRestockGuard()])
+    plain = Harness(StockroomConfig.mock(), tracer=RunTracer(tracing))
+    for harness, case in ((guarded, blocked_case), (plain, invalid_case)):
+        tracing.clear()
+        run = harness.run(case.query, case_id=case.id)
+        from_run = evaluator.from_run(run)
+        from_trace = evaluator.from_spans(tracing.finished_spans(), run_id=run.run_id)
+        counts = ("total_calls", "executed_calls", "invalid_calls", "blocked_calls")
+        assert [getattr(from_trace, k) for k in counts] == [getattr(from_run, k) for k in counts]
+    assert (from_run.invalid_calls, from_run.blocked_calls) == (1, 0)  # G045, the last one run
 
 
 class BlockEverythingGuard:

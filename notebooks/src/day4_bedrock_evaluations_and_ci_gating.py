@@ -12,7 +12,9 @@
 # 4. Keep three numbers apart — the product floor, run-to-run noise and the allowed regression —
 #    and check the decisions they produce with the real gate, `scripts/check_thresholds.py`.
 # 5. **Capstone:** find a seeded regression the aggregate gate lets through, change the gate so it
-#    rejects that regression while the fixed agent still passes, and write the review a PR needs.
+#    rejects that regression while the fixed agent still passes, and write the review a PR needs,
+#    citing your own evidence from Days 1–3 (your golden case, your judge calibration, your
+#    trajectory assertion and run guard).
 # 6. *Optional:* build (and, only with explicit consent, submit) a Bedrock Evaluations job,
 #    call AgentCore Evaluations on a live session, and explain the GitHub OIDC flow.
 #
@@ -21,6 +23,11 @@
 # prints `not solved yet` until your code passes, and the *Exercise checklist* cell near the end
 # lists their status (`STOCKROOM_STRICT_EXERCISES=1` makes an unsolved exercise an error). Every
 # AWS call is behind an explicit guard and is **never** executed in mock mode.
+#
+# **Resuming from Days 1–3.** The capstone reads what the "Save your work for Day 4" cells of the
+# earlier notebooks wrote to `reports/participant/` (or to `STOCKROOM_HANDOFF_DIR`). Missed a day,
+# or never ran its save cell? The capstone then uses the reference artefact from `data/handoff/`
+# for that day, prints that it did, and records it in the review.
 
 # %% [markdown]
 # ## Setup
@@ -684,7 +691,9 @@ manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 baseline = json.loads((REPO_ROOT / "reports" / "baseline" / "main.json").read_text())
 AGGREGATE_ONLY = {k: v for k, v in thresholds.items() if k not in ("category_gates", "cost")}
 FLAGS = ["ambiguous_tool_desc", "naive_retry", "oversized_payload", "injection_unguarded"]
-suites = {"fixed": results_for(config)} | {f: results_for(config.replace(weaknesses=f)) for f in FLAGS}
+# "fixed" means no weakness flag at all, even if STOCKROOM_WEAKNESSES is set in the environment.
+fixed_cfg = config.replace(weaknesses="")
+suites = {"fixed": results_for(fixed_cfg)} | {f: results_for(config.replace(weaknesses=f)) for f in FLAGS}
 print("evidence problems on the fixed run:", gate.check_evidence(suites["fixed"], manifest, manifest_path))
 
 
@@ -713,8 +722,92 @@ display(Markdown(gate.render(suites["naive_retry"], _rows, _failures, promptfoo_
 #
 # This is the deliverable for the afternoon. You are reviewing a PR that "simplified retries"
 # (`naive_retry`) and another that "returns full product records" (`oversized_payload`). Both pass
-# the aggregate gate above. Make an **evaluation change** — in the thresholds; a new golden case or
-# a Day 3 trajectory assertion are good additions to discuss in your review — so that:
+# the aggregate gate above. Before you change the gate, collect the evidence you already have.
+#
+# ### Your evidence from Days 1–3
+#
+# The next cell loads what the "Save your work for Day 4" cells of the earlier notebooks saved in
+# the hand-off directory (`reports/participant/`, or `STOCKROOM_HANDOFF_DIR`). For a day with
+# nothing saved it falls back to the reference artefact in `data/handoff/` (what the solution
+# notebooks save) and says so. The check cell of Exercise 4 copies the same provenance into your
+# review, so a reader can tell your work from the reference.
+#
+# * **Day 1:** your golden case goes through today's label validator, then runs on all five builds.
+# * **Day 2:** your calibration numbers, and your calibration item graded by the judge behind the
+#   gate's `answer_correctness`.
+# * **Day 3:** the golden cases your trajectory assertion fails and your run guard blocks, per build.
+
+# %%
+from stockroom.evals.calibration import to_judge_input
+from stockroom.exercises import PASSED, exercise_status
+from stockroom.handoff import (
+    Day1Handoff,
+    Day2Handoff,
+    Day3Handoff,
+    handoff_dir,
+    load_handoff,
+    markdown_table,
+    provenance_table,
+)
+
+print("hand-off directory:", handoff_dir(), "\n")
+day1 = load_handoff(Day1Handoff)
+day2 = load_handoff(Day2Handoff)
+day3 = load_handoff(Day3Handoff)
+handoff = [day1, day2, day3]
+for item in handoff:
+    print(item.describe())
+
+# %%
+own_case = day1.artefact.golden_case
+print(f"Day 1 · case {own_case.id} ({day1.source}): {own_case.query}")
+if exercise_status("day4.ex1") == PASSED:
+    print("   Day 4 label check:", "; ".join(validate_candidate(own_case)) or "valid")
+else:
+    print("   Day 4 label check: runs once your validate_candidate() passes Exercise 1")
+
+own_item = day2.artefact.calibration_item
+item_verdict = judge.grade(to_judge_input(own_item))
+print(f"\nDay 2 · judge calibration ({day2.source}):")
+for c in day2.artefact.calibrations:
+    print(f"   rubric {c.rubric_version}: agreement {c.agreement:.0%}, kappa {c.kappa:.2f}, "
+          f"disagrees with the humans on {c.disagreements}")
+print(f"   the gate's judge ({JUDGE_LABEL}) on item {own_item.id}: "
+      f"{'pass' if item_verdict.passed else 'fail'}, human label '{own_item.human_label}' -> "
+      f"{'still disagrees' if item_verdict.passed != own_item.human_pass else 'agrees'}")
+
+print(f"\nDay 3 · {day3.artefact.assertion} and the {day3.artefact.guard} guard ({day3.source}), "
+      "next to the aggregate gate and your Day 1 case:")
+aggregate_gate = verdicts(AGGREGATE_ONLY).set_index("configuration")["gate"]
+evidence_rows = []
+for build in suites:
+    build_cfg = fixed_cfg if build == "fixed" else config.replace(weaknesses=build)
+    own_run = Harness(build_cfg).run(own_case.query, case_id=own_case.id)
+    evidence_rows.append(
+        {
+            "build": build,
+            "aggregate gate": aggregate_gate[build],
+            f"Day 1 case {own_case.id}": classify(evaluate_case(own_case, own_run, judge)).split(":")[0],
+            "Day 3 assertion fails on": ", ".join(day3.artefact.assertion_fails[build]) or "—",
+            "Day 3 guard blocks on": ", ".join(day3.artefact.guard_blocks[build]) or "—",
+        }
+    )
+evidence = pd.DataFrame(evidence_rows).set_index("build")
+evidence
+
+# %% [markdown]
+# Read the table against the gate column. With the reference artefacts, the Day 1 case fails only
+# under `ambiguous_tool_desc`, and the Day 3 assertion and guard fire only under
+# `injection_unguarded`: two regressions the aggregate gate already rejects. None of them sees
+# `naive_retry` or `oversized_payload`, and that gap is what Exercise 4 closes. The Day 2 line
+# qualifies the floors themselves: as long as the gate's judge passes an answer a human failed, a
+# green `answer_correctness` is weaker evidence than it looks. Your own artefacts may tell a
+# different story; say in your review what they show.
+#
+# ### Exercise 4 — change the gate and write the review
+#
+# Make an **evaluation change** — in the thresholds; a new golden case or a Day 3 trajectory
+# assertion are good additions to discuss in your review — so that:
 #
 # * the fixed agent still passes (a gate that fails `main` gets disabled);
 # * `naive_retry` and `oversized_payload` fail, and `ambiguous_tool_desc` and `injection_unguarded`
@@ -723,7 +816,9 @@ display(Markdown(gate.render(suites["naive_retry"], _rows, _failures, promptfoo_
 #   and what it means for the committed baseline (does it need regenerating? why or why not?).
 #
 # The check cell saves the before/after gate summaries and your review under `reports/day4/`, so you
-# can attach them to the PR discussion in the review block.
+# can attach them to the PR discussion in the review block. It appends two tables to the review:
+# where each Day 1–3 input came from (yours or the reference) and the evidence table above, with
+# your gate's verdict added.
 
 # %% tags=["exercise"]
 CAPSTONE_THRESHOLDS: dict[str, Any] | None = None
@@ -745,6 +840,9 @@ every category terminates as expected) and a 10% limit on mean input tokens, whi
 cost side of both. The fixed agent passes both rules. The baseline does not need regenerating:
 its metrics are unchanged and it already records by_category and mean_input_tokens. In live
 runs a per-category floor of 1.0 sits inside the noise, so it belongs to the mock PR gate only.
+My Day 1 case and Day 3 grounded-write assertion catch only ambiguous_tool_desc and
+injection_unguarded, which the aggregate gate already fails: useful coverage, not this fix. The
+gate's judge still passes my Day 2 item that a human failed, so I did not tighten answer_correctness.
 """
 
 # %% tags=["check"]
@@ -765,11 +863,25 @@ else:
         summary = gate.render(suites["naive_retry"], rows, failures, promptfoo_clean, baseline, th)
         (out_dir / f"capstone_naive_retry_{label}.md").write_text(summary, encoding="utf-8")
     (out_dir / "capstone_thresholds.yaml").write_text(yaml.safe_dump(CAPSTONE_THRESHOLDS, sort_keys=False))
-    (out_dir / "capstone_review.md").write_text(CAPSTONE_REVIEW.strip() + "\n", encoding="utf-8")
+    evidence_after = evidence.assign(**{"gate after your change": table["gate"]}).reset_index()
+    review_inputs = "\n\n".join(
+        [
+            "## Inputs from Days 1–3",
+            "`participant`: saved by your own Day 1–3 notebook. `reference`: nothing was saved for "
+            "that day, so the reference artefact from `data/handoff/` stood in.",
+            provenance_table(handoff),
+            "## Evidence on every build",
+            markdown_table(evidence_after.to_dict("records")),
+        ]
+    )
+    (out_dir / "capstone_review.md").write_text(
+        CAPSTONE_REVIEW.strip() + "\n\n" + review_inputs + "\n", encoding="utf-8"
+    )
     display(table)
     exercise_passed(
         "day4.ex4",
-        f"fixed passes, {len(FLAGS)} seeded regressions fail; evidence in {out_dir.relative_to(REPO_ROOT)}",
+        f"fixed passes, {len(FLAGS)} seeded regressions fail; evidence in {out_dir.relative_to(REPO_ROOT)}; "
+        f"inputs: {', '.join(f'Day {i.artefact.DAY} {i.source}' for i in handoff)}",
     )
 
 # %% [markdown]

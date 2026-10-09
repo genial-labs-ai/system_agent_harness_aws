@@ -104,7 +104,7 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 [What does "the agent works" mean, and how would you know?]{.day-card-question}
 
 ::: {.day-card-links}
-[Lecture](lectures/day1_llm_eval_foundations.md){.btn-quiet} [Lab](notebooks/Day1_Deterministic_and_RAG_Evals.ipynb){.btn-lab}
+[Lecture](lectures/day1_llm_eval_foundations.md){.btn-quiet} [Slides](slides/DAY1_MOTIVATIONAL_SLIDES.html){.btn-quiet} [Lab](notebooks/Day1_Deterministic_and_RAG_Evals.ipynb){.btn-lab}
 :::
 :::
 ::: {.day-card}
@@ -115,7 +115,7 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 [When can a model grade a model, and what did the agent actually do?]{.day-card-question}
 
 ::: {.day-card-links}
-[Lecture](lectures/day2_llm_as_a_judge_and_otel.md){.btn-quiet} [Lab](notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb){.btn-lab}
+[Lecture](lectures/day2_llm_as_a_judge_and_otel.md){.btn-quiet} [Slides](slides/DAY2_TEACHING_SLIDES.html){.btn-quiet} [Lab](notebooks/Day2_Judge_Calibration_and_OTEL_Traces.ipynb){.btn-lab}
 :::
 :::
 ::: {.day-card}
@@ -126,7 +126,7 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 [Which failures live in the harness, and how do you build one that refuses them?]{.day-card-question}
 
 ::: {.day-card-links}
-[Lecture](lectures/day3_agent_harness_and_mcp_mocking.md){.btn-quiet} [Lab](notebooks/Day3_Building_Custom_Agent_Harness.ipynb){.btn-lab}
+[Lecture](lectures/day3_agent_harness_and_mcp_mocking.md){.btn-quiet} [Slides](slides/DAY3_TEACHING_SLIDES.html){.btn-quiet} [Lab](notebooks/Day3_Building_Custom_Agent_Harness.ipynb){.btn-lab}
 :::
 :::
 ::: {.day-card}
@@ -137,13 +137,15 @@ two parts. Every lab runs offline in mock mode; live AWS is opt-in.
 [How does an eval become a gate that blocks a merge?]{.day-card-question}
 
 ::: {.day-card-links}
-[Lecture](lectures/day4_aws_ci_cd_redteaming.md){.btn-quiet} [Lab](notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb){.btn-lab}
+[Lecture](lectures/day4_aws_ci_cd_redteaming.md){.btn-quiet} [Slides](slides/DAY4_TEACHING_SLIDES.html){.btn-quiet} [Lab](notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb){.btn-lab}
 :::
 :::
 :::
 
 Instructors open with the [kickoff slides](slides/intro.qmd); the
-[Day 1 deck](slides/DAY1_MOTIVATIONAL_SLIDES.html) makes the case for the week. Each notebook
+[Day 1 deck](slides/DAY1_MOTIVATIONAL_SLIDES.html) makes the case for the week, and Days
+[2](slides/DAY2_TEACHING_SLIDES.html), [3](slides/DAY3_TEACHING_SLIDES.html) and
+[4](slides/DAY4_TEACHING_SLIDES.html) each have a teaching deck with speaker notes. Each notebook
 has a matching [solutions](notebooks/solutions/Day1_Deterministic_and_RAG_Evals.ipynb) version.
 
 ## The path
@@ -250,9 +252,10 @@ AgentCore Evaluations, and an OIDC-assumed IAM role with no long-lived keys.
 ::: {.path-body}
 [Bedrock Evaluations, Red Teaming, and CI Gating](notebooks/Day4_Bedrock_Evaluations_and_CI_Gating.ipynb){.path-title}
 
-Generate synthetic cases and filter them with the judge, run the Promptfoo red-team suite
-in-process, derive thresholds from variance, run the gate on a clean and on a regressed run, and
-build a Bedrock Evaluations job payload without submitting it.
+Validate synthetic case labels against the data before any agent runs, write a red-team case
+that catches the unsafe trajectory, set thresholds from run-to-run spread, and make the gate
+reject the regressions an aggregate-only gate misses, using your Day 1–3 work. Bedrock Evaluations
+and AgentCore are optional extensions.
 :::
 :::
 :::

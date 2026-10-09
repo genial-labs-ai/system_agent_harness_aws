@@ -204,6 +204,34 @@ h3 code {
   background: $ws-code-bg;
 }
 
+// Identifiers, settings and paths have no spaces to wrap at, and Quarto sets inline code to
+// `white-space: pre`: a long `OTEL_…` setting ran off the page at desktop width, and metric names
+// in a table header made the table wider than the window (scripts/site_layout.mjs). `pre-wrap`
+// keeps the spaces but allows wrapping; `anywhere` also lets table cells shrink below a name.
+main.content :not(pre) > code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+// The same for prose and links: a bare AWS documentation URL widened the Day 4 lecture and lab
+// pages by up to 395px on a phone.
+main.content {
+  overflow-wrap: break-word;
+
+  a {
+    overflow-wrap: anywhere;
+  }
+}
+
+// Below the desktop layout, a table wider than the column scrolls inside its own box instead of
+// making the whole page scroll sideways (seven pages did at 390px; scripts/site_layout.mjs).
+@media (max-width: 991.98px) {
+  main.content table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
 h1 code,
 h2 code,
 h3 code {

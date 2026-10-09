@@ -5,7 +5,7 @@ The rules are those of ``docs/STYLE_GUIDE.md``:
 
 * ``canonical-title`` - every copy of a day, lecture, lab, deck or site-page title (lecture and
   notebook-source H1s, ``_quarto.yml`` menus and sidebar, README tables, ``index.qmd`` cards and
-  path, the instructor guide, both slide decks, ``CITATION.cff``) matches the manifest;
+  path, the instructor guide, the slide decks, ``CITATION.cff``) matches the manifest;
 * ``page-title`` - each site page listed under ``pages`` has the manifest title as its H1;
 * ``title-case`` - manifest titles, menu labels and slide titles follow the Title Case rules;
 * ``banned-spelling`` - prose uses the canonical spelling of product names and terms (code

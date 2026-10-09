@@ -248,6 +248,7 @@ class TraceToolCall:
     is_error: bool
     latency_ms: float
     span_id: str
+    error_type: str | None = None  # the span's error.type: invalid_arguments, blocked_by_guard, ...
 
     @property
     def signature(self) -> str:
@@ -298,6 +299,7 @@ class TraceSummary:
                         is_error=bool(attrs.get(sc.STOCKROOM_TOOL_IS_ERROR, False)),
                         latency_ms=_duration_ms(s),
                         span_id=format(s.context.span_id, "016x") if s.context else "",
+                        error_type=attrs.get(sc.ERROR_TYPE),
                     )
                 )
             elif op == sc.OP_CHAT:

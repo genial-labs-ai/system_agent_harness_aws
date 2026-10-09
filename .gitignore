@@ -19,13 +19,16 @@ node_modules/
 slides/*.html
 slides/*.pdf
 
-# Eval outputs (the committed baseline is whitelisted below)
+# Eval outputs (the committed baseline is whitelisted below). This also keeps out
+# reports/participant/ (each participant's Day 1–3 hand-off; references live in data/handoff/)
+# and reports/day4/ (the capstone's summaries and review).
 reports/*
 !reports/baseline/
 !reports/baseline/main.json
 
 # Quarto site (built by `make site`, deployed by .github/workflows/pages.yml)
 /_site/
+/_site_checks/
 /.quarto/
 _freeze/
 

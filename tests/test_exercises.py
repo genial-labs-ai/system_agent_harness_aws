@@ -13,10 +13,13 @@ import pytest
 from stockroom.config import REPO_ROOT
 from stockroom.exercises import (
     ExerciseNotSolved,
+    exercise_checked,
     exercise_passed,
     exercise_pending,
+    exercise_status,
     exercise_summary,
     reset_exercises,
+    still_checked,
     strict_mode,
 )
 
@@ -74,6 +77,44 @@ def test_summary_counts_and_fails_strictly_on_unfinished(
 def test_exercise_ids_are_validated() -> None:
     with pytest.raises(ValueError, match=r"day4\.ex2"):
         exercise_passed("exercise-2")
+    with pytest.raises(ValueError, match=r"day4\.ex2"):
+        exercise_status("exercise-2")
+
+
+def test_exercise_status_reports_one_exercise() -> None:
+    assert exercise_status("day3.ex1") == "not run"
+    exercise_pending("day3.ex1", strict=False)
+    assert exercise_status("day3.ex1") == "not solved yet"
+    exercise_passed("day3.ex1")
+    assert exercise_status("day3.ex1") == "passed"
+
+
+def test_the_checked_object_is_what_last_passed() -> None:
+    # The hand-off cells save this object, so an edit after the check is never saved as checked.
+    assert exercise_checked("day1.ex1") is None
+    case = {"id": "G060"}
+    exercise_passed("day1.ex1", checked=case)
+    assert exercise_checked("day1.ex1") is case
+    exercise_pending("day1.ex1", strict=False)  # a later failing check forgets it
+    assert exercise_checked("day1.ex1") is None
+
+
+def test_still_checked_needs_the_object_that_passed() -> None:
+    # A re-check that fails on an assert records nothing, so "passed" survives it; the save cells
+    # compare the object in the notebook now with the one that passed.
+    def guard_v1() -> None:
+        return None
+
+    def guard_v2() -> None:
+        return None
+
+    assert not still_checked("day3.ex2", guard_v1)  # never passed
+    exercise_passed("day3.ex2", checked=guard_v1)
+    assert still_checked("day3.ex2", guard_v1)
+    assert not still_checked("day3.ex2", guard_v2)  # edited and redefined after the check
+    exercise_passed("day1.ex1", checked={"id": "G060"})
+    assert still_checked("day1.ex1", {"id": "G060"})  # an equal value counts
+    assert not still_checked("day1.ex1", {"id": "G061"})
 
 
 def _source(check_body: str, summary: str = '["day9.ex1"]') -> str:

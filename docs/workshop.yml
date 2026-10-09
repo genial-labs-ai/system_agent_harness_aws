@@ -76,6 +76,21 @@ decks:
     day: 1
     title: "Why Your AI Agent Fails in Production (and How Evals Fix It)"
     short: "Why Your AI Agent Fails in Production"
+  - file: slides/DAY2_TEACHING_SLIDES.md
+    rendered: slides/DAY2_TEACHING_SLIDES.html
+    day: 2
+    title: "When a Model Grades a Model (and What the Trace Shows)"
+    short: "When a Model Grades a Model"
+  - file: slides/DAY3_TEACHING_SLIDES.md
+    rendered: slides/DAY3_TEACHING_SLIDES.html
+    day: 3
+    title: "The Model Proposes, the Harness Decides"
+    short: "The Model Proposes, the Harness Decides"
+  - file: slides/DAY4_TEACHING_SLIDES.md
+    rendered: slides/DAY4_TEACHING_SLIDES.html
+    day: 4
+    title: "An Eval That Does Not Block a Merge Is a Dashboard"
+    short: "Evals That Block a Merge"
 
 # Site pages other than lectures and notebooks: `title` is the page's H1, `short` its menu label;
 # `aliases` are other labels a menu may use for the same page (the navbar's one-word "Teach").

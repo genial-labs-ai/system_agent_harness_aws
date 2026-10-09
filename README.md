@@ -26,9 +26,11 @@ and no network. Live mode (`STOCKROOM_MODE=live`) runs the same code against Ama
 
 **Website:** everything below is also published at
 [genial-labs-ai.github.io/system_agent_harness_aws](https://genial-labs-ai.github.io/system_agent_harness_aws/):
-lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, both slide
+lectures with rendered diagrams, the notebooks executed in mock mode with their outputs, the slide
 decks, the instructor guide and the decisions log. Built by `make site` (Quarto) and by
-`.github/workflows/pages.yml` on every pull request, and deployed on every push to `main`.
+`.github/workflows/pages.yml` on every pull request (which also runs `make site-check`: pages,
+titles, links, and layout in Chrome at desktop and phone widths), and deployed on every push to
+`main`.
 
 ## Contents
 
@@ -36,10 +38,12 @@ decks, the instructor guide and the decisions log. Built by `make site` (Quarto)
 |---|---|
 | `lectures/` | four lecture notes (objectives, timed agenda, Mermaid diagrams, discussion questions, common mistakes) |
 | `slides/DAY1_MOTIVATIONAL_SLIDES.md` | Marp deck *Why Your AI Agent Fails in Production (and How Evals Fix It)* |
+| `slides/DAY2_TEACHING_SLIDES.md`, `slides/DAY3_TEACHING_SLIDES.md`, `slides/DAY4_TEACHING_SLIDES.md` | Marp teaching decks for Days 2–4, with speaker notes: *When a Model Grades a Model (and What the Trace Shows)*, *The Model Proposes, the Harness Decides*, *An Eval That Does Not Block a Merge Is a Dashboard* |
 | `slides/intro.qmd` | Quarto reveal.js kickoff deck: why we are here, the thesis, Stockroom, the four days, setup check, rules of the road |
 | `notebooks/` | four notebooks (`Day1…Day4`), generated from `notebooks/src/*.py`; solutions in `notebooks/solutions/` |
 | `src/stockroom/` | the agent (tools, harness, Bedrock adapter + fake), the eval suite (metrics, judges, calibration, tracing) and the MCP server |
-| `data/` | catalogue, orders, policy docs (one contains a seeded prompt injection), golden set + dataset card, judge calibration set |
+| `data/` | catalogue, orders, policy docs (one contains a seeded prompt injection), golden set + dataset card, judge calibration set, reference hand-off artefacts for Day 4 (`data/handoff/`) |
+| `reports/` | generated and gitignored, except the committed baseline `reports/baseline/main.json`: eval results and gate summary, `participant/` (what the Day 1–3 notebooks save for the Day 4 capstone) and `day4/` (the capstone's summaries and review) |
 | `tests/` | unit tests, guard tests, seeded-weakness tests and the golden-set regression suite |
 | `promptfooconfig.yaml` | Promptfoo suite: golden slice + red-team cases (offline) |
 | `eval_thresholds.yaml` | the single place CI thresholds live |
@@ -52,7 +56,11 @@ decks, the instructor guide and the decisions log. Built by `make site` (Quarto)
 ### Notebooks in the browser
 
 Each notebook's setup cell clones and installs the repo when `stockroom` is not importable, so they
-run in Google Colab or SageMaker Studio as well as locally. Mock mode needs no AWS account.
+run in Google Colab or SageMaker Studio as well as locally. Mock mode needs no AWS account. The
+Day 1–3 notebooks end by saving a small artefact that the Day 4 capstone reads back
+(`reports/participant/`; a missing day falls back to a reference artefact). Colab deletes the
+runtime's files when it is recycled, so there set `STOCKROOM_HANDOFF_DIR` to a folder on a
+mounted Google Drive to keep them between days.
 
 | day | student notebook | solutions |
 |---|---|---|
@@ -155,6 +163,7 @@ which mode it is in.
 | `AGENT_PRICE_INPUT_PER_1K`, `AGENT_PRICE_OUTPUT_PER_1K`, `JUDGE_PRICE_*` | — | per-1K-token prices when a model is not in `pricing.yaml` |
 | `STOCKROOM_EVAL_REPEATS` | 1 | run each golden case N times (nightly: 3) to measure run-to-run spread |
 | `STOCKROOM_CONFIRM_AWS_SPEND` | unset | must be `1` before the Day 4 notebook submits a Bedrock Evaluations job |
+| `STOCKROOM_HANDOFF_DIR` | `reports/participant` | where the Day 1–3 notebooks save their artefacts for the Day 4 capstone (relative paths are taken from the repository root) |
 
 ## Live mode on Amazon Bedrock
 

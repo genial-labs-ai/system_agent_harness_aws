@@ -346,3 +346,135 @@ Not done, and why, is in `docs/TASKS.md` under follow-ups.
     `package-lock.json` and stop with "run make setup" when they are missing; the
     `PROMPTFOO_VER` / `MARP_VER` Makefile variables are gone (the versions live in `package.json`).
 
+## Follow-ups (2026-10-08, after PR #2)
+
+47. **A call a run guard blocks is counted apart from an invalid call** (supersedes the metric
+    part of entry 45). `RunResult.invalid_tool_calls` now lists schema-invalid calls and unknown
+    tools only; `ToolCallReport.blocked_calls`, `CaseScores.blocked_calls` and the aggregate
+    `blocked_call_rate` count guard refusals, and `ToolCallReport.healthy` no longer turns False
+    when a guard does its job. Both code reviews of PR #2 flagged the old reading, and the Day 3
+    table had to explain why a working defence raised `invalid_call_rate`. Baseline diff: one new
+    metric, `blocked_call_rate: 0.0` (no run guards in the golden suite); every other value
+    unchanged. `ToolCallEvaluator.from_spans()` reads each tool span's `error.type`
+    (`invalid_arguments`, `blocked_by_guard`), so a report from a trace counts invalid and blocked
+    calls as a report from the run does. Before, it counted every call as executed.
+48. **Days 2–4 get Marp teaching decks in the Day 1 format** (`suggestions.md` §11):
+    `slides/DAY2_TEACHING_SLIDES.md`, `slides/DAY3_TEACHING_SLIDES.md` and
+    `slides/DAY4_TEACHING_SLIDES.md`, with the Day 1 deck's front matter keys, the gaia theme, a lead
+    title slide and a speaker-notes comment on every slide (19, 18 and 19 slides). Marp rather than
+    Quarto reveal.js (the kickoff deck's format) keeps one authoring format for the daily decks, keeps
+    presenter notes in Marp's presenter view, and adds nothing to the site build: `make slides`
+    renders all four Marp decks in one pinned `marp` call (`MARP_DECKS` in the Makefile) and
+    `_quarto.yml` copies the HTML as resources. Titles and short labels are in `docs/workshop.yml`
+    under `decks:`; the generated HTML stays uncommitted. Each deck follows one structure: how the day
+    runs (lecture sections read beforehand, what the 90-minute block teaches, what the lab practises),
+    a prerequisite recap, one motivating failure taken from a seeded weakness or the calibration set
+    and labelled as such, objectives mapped to exercises, worked examples, a prediction checkpoint
+    before a reveal, the lab task, the expected evidence, review questions from the lecture, and a
+    bridge to the next day (Day 4: a close-out). Every figure was reproduced in mock mode at
+    `aee3567`; each note names the test, notebook cell or `uv run python -c` command that reproduces
+    it. The Day 4 checkpoint uses the lecture's illustrative nightly runs, labelled synthetic on the
+    slide. Deviations from the suggestion: the decks also carry the 09:00 recap, the lab briefing
+    and the 16:00 review, not only the 90 minutes; the "one timetable source" part is not done
+    (decks quote `docs/INSTRUCTOR_GUIDE.md` and nothing validates the copies); notes cite notebook
+    exercises by number and cells by topic, not by section number, because the notebooks were being
+    revised at the same time; and two figures come from solution cells (the Day 2 rubric v3 result
+    and the Day 3 run-guard table), so a change to those solutions must be checked against the decks.
+49. **Days 1–3 hand their artefacts to the Day 4 capstone through `reports/participant/`**
+    (`suggestions.md` §12). `stockroom.handoff` has one pydantic model per day (`Day1Handoff`: the
+    Exercise 1 golden case; `Day2Handoff`: agreement and kappa per rubric plus the Exercise 2
+    calibration item; `Day3Handoff`: the golden cases the Exercise 1 assertion fails and the
+    Exercise 2 run guard blocks, per build), `save_handoff()` / `load_handoff()`, and a reference
+    artefact per day in `data/handoff/`, written by running the solution notebooks. Each Day 1–3
+    notebook ends with a save cell; Day 4 section 6 loads the three files, runs the Day 1 case
+    through the label validator and on all five builds, grades the Day 2 item with the gate's
+    judge, shows the Day 3 verdicts beside the aggregate gate, and the Exercise 4 check appends a
+    provenance table (participant or reference, file, time, mode) and that evidence table to
+    `reports/day4/capstone_review.md`. Choices:
+    - *Data, not code.* The Day 3 assertion and guard are functions in the participant's kernel.
+      Rather than pickling them or executing saved source on Day 4, the Day 3 save cell runs them
+      over the golden set on the five builds the Day 4 gate compares and saves what each caught.
+      In mock mode the builds are identical on both days; in live mode the verdicts are a Day 3
+      measurement, and the provenance table says when it was taken.
+    - *Only what passed is saved* (`exercise_status()`, new in `stockroom.exercises`). An unsolved
+      scaffold would otherwise reach Day 4 as an assertion that "catches nothing", labelled as the
+      participant's.
+    - *The participant's case runs beside the gate, not in it.* Adding it to the gate's suite
+      changes the dataset hash, and the gate rightly refuses the baseline; the review is where
+      adding it (new manifest version, regenerated baseline) gets argued.
+    - *A missing file falls back and says so; a malformed one stops with `HandoffError`.* A silent
+      fallback would drop the participant's work from the review unnoticed.
+    - *`reports/participant/` stays gitignored* with the rest of `reports/`: the artefacts are
+      per person and would conflict on every `git pull`, and the reference files make a fresh
+      clone work. `STOCKROOM_HANDOFF_DIR` moves it (Colab: a mounted Google Drive folder). The
+      module reads it, as `stockroom.exercises` reads `STOCKROOM_STRICT_EXERCISES`, because it is
+      a notebook setting, not an agent one.
+    - *`make notebooks` uses a scratch hand-off directory* (`reports/notebooks_handoff/`, emptied
+      first). `make ci` in a participant's checkout therefore never overwrites their artefacts with
+      the solutions', the student pass runs Day 4 on the reference fallbacks and the solution pass
+      on what Days 1–3 just saved. `make site` executes the notebooks with the same scratch
+      directory, so a local site build never writes into `reports/participant/` either.
+    - *A save cell saves only what the check passed.* `exercise_passed(..., checked=...)` keeps the
+      object a check validated. A check whose `assert` fails records nothing, so "passed" survives a
+      failed re-check; the save cells therefore save only while `still_checked()` holds, meaning
+      the case, rubric report, item, assertion or guard in the notebook now is the one that passed.
+      Otherwise they say to re-run the check.
+      The Day 3 sweep (the golden set on five builds, twice) runs in live mode only with
+      `STOCKROOM_CONFIRM_AWS_SPEND=1`. Day 4's "fixed" build pins `weaknesses=""`, as Day 3's does.
+      An unreadable hand-off file raises `HandoffError` with the same advice as a malformed one.
+    - No exercise was added, and no metric, rubric, tool description or golden case changed, so
+      the baseline is unchanged.
+50. **The rendered site is checked on every pull request, in HTML and in a browser**
+    (`suggestions.md` §10). `scripts/check_site.py` reads `_site/` without a browser: every page
+    `docs/workshop.yml` names was rendered, its H1 and browser-tab title are canonical, and every
+    local link and `#anchor` resolves (about 5,500 links on the current site).
+    `scripts/site_layout.mjs` serves `_site` and opens the landing page, the site pages and every
+    day's lecture, lab and solutions in Chrome at 1280 and 390 px, light and dark. It checks for
+    content past the right edge (outside a scroll container), undrawn Mermaid diagrams, the wrong
+    colour scheme and uncaught page errors, and saves a screenshot of each view. `make site-check`
+    runs both. `pages.yml` runs it on pull requests (Chrome is preinstalled on the runner) and
+    uploads the screenshots as an artefact. It needs the network (Mermaid comes from jsDelivr), so
+    it stays out of the offline `make ci`. `puppeteer-core` 24.43.1 was already installed through
+    Marp; it is now a direct devDependency at the same version, so no new package is downloaded.
+    It found these defects on the live site, all fixed here:
+    - every notebook page threw `Se.default.extend is not a function`. Mermaid's bundle breaks when
+      an AMD loader is present, and notebook pages load require.js for Jupyter output (reproduced
+      by defining `define.amd` on a lecture page). Pages now load Mermaid only when they contain a
+      diagram.
+    - at desktop width, a long `OTEL_EXPORTER_OTLP_LOGS_HEADERS=…` setting (Day 2 lecture) ran off
+      the page, and the Day 3 metrics table, whose headers are metric names, was 1,179 px wide in
+      an 802 px column. Quarto sets inline code to `white-space: pre`.
+    - at phone width, nine pages (every lecture, the Day 1 and Day 4 labs, the instructor guide,
+      the style guide) scrolled sideways by 28–395 px: Markdown tables wider than the screen, and
+      bare AWS documentation URLs.
+    The fixes are all in `site/theme.scss`:
+    - inline code may wrap (`pre-wrap`) and break anywhere;
+    - prose breaks long words and links break anywhere;
+    - below the desktop layout (992 px), tables scroll inside their own box.
+    The first version of the check missed the phone overflow because it compared against
+    `window.innerWidth`, which on a phone grows to fit content that is too wide. It now measures
+    against the layout width (`documentElement.clientWidth`), and it also flags a page that
+    scrolls sideways and text cut off by a clipping box. Mermaid is pinned to 11.17.2 instead of
+    the moving `mermaid@11`, so a release cannot change the diagrams without a reviewed PR.
+51. **Dependency alerts: one fixed, the rest recorded** (the failing "Dependabot Updates" runs).
+    - `speech-rule-engine` 4.1.4 (Marp → marp-core → mathjax-full) pins `@xmldom/xmldom` to exactly
+      0.9.10, which 11 open alerts cover; Dependabot cannot raise it past a parent's exact pin. An npm
+      `overrides` entry sets 0.9.12, a patch release in the same line. `make slides` and Promptfoo
+      (18/18) pass with it.
+    - Not changed, because none has a fix inside its parent's range and none is reachable from
+      the workshop:
+      - `katex` (low; marp-core needs ^0.17, the fix is 0.18.2, and no deck uses math);
+      - `node-forge` and `basic-ftp` (via Promptfoo; JKS keystores, FTP PAC files);
+      - `extract-zip` (via puppeteer's browser download, which nothing here uses);
+      - `diskcache` (via RAGAS; no patched release);
+      - RAGAS's own SSRF advisory (the multimodal collections module, unused; no patched release);
+      - `pydantic-ai-slim` (optional `phoenix` extra only: versions after 2.51 need `openai>=3.19`,
+        which the pinned `ragas==0.4.3` excludes, and moving RAGAS changes the API the Day 1 lab
+        teaches).
+    - Revisit when Marp, Promptfoo or RAGAS release.
+52. **Duplicated titles stay validated, not generated** (`suggestions.md` §2 proposed either). The
+    copies live in hand-edited files (`_quarto.yml` menus, README tables, `index.qmd` cards, the
+    instructor guide, `CITATION.cff`, the decks), where a generator would have to rewrite regions
+    of prose and layout. `scripts/check_style.py` already fails CI when a rename misses any copy,
+    which is the suggestion's acceptance criterion. `scripts/check_site.py` extends the same check
+    to the rendered pages and browser tabs.

@@ -263,7 +263,7 @@ else:
     check = OutputEvaluator.evaluate(candidate, run)
     assert tool_selection_score(candidate, run) == 1.0, f"tools called: {run.tool_names}"
     assert check.passed, f"facts missing {check.facts_missing}, forbidden {check.forbidden_found}"
-    exercise_passed("day1.ex1", f"{candidate.id} -> {run.final_answer}")
+    exercise_passed("day1.ex1", f"{candidate.id} -> {run.final_answer}", checked=candidate)
 
 # %% [markdown]
 # ## 4. Assertion-based tests
@@ -608,6 +608,32 @@ else:
     wrong = {k: v for k, v in FAILURE_LABELS.items() if EXPECTED_LABELS[k] != v}
     assert not wrong, f"re-read the metric columns for {sorted(wrong)}"
     exercise_passed("day1.ex4", "all three failures classified correctly")
+
+# %% [markdown]
+# ## Save your work for Day 4
+#
+# The Day 4 capstone reuses your golden case from Exercise 1: it runs the case through Day 4's
+# label validator and on every seeded-weakness build, next to the CI gate's verdicts. This cell
+# saves the case to the hand-off directory (`reports/participant/day1.json`, or the folder named
+# by `STOCKROOM_HANDOFF_DIR`) once Exercise 1 has passed, and only the case that check passed: after
+# changing the case, re-run the Exercise 1 check and then this cell.
+# Nothing saved is fine too: Day 4 then uses the reference case from `data/handoff/` and says so.
+# In Colab, files on the runtime are lost when it is recycled: set `STOCKROOM_HANDOFF_DIR` to a
+# folder on a mounted Google Drive before running this cell, or download the file.
+
+# %%
+from stockroom.exercises import PASSED, exercise_status, still_checked
+from stockroom.handoff import Day1Handoff, save_handoff
+
+case_now = new_golden_case()
+if exercise_status("day1.ex1") != PASSED:
+    print("Nothing saved: Exercise 1 has not passed yet, so Day 4 will use the reference case.")
+elif not still_checked("day1.ex1", case_now):
+    print("Nothing saved: new_golden_case() changed after Exercise 1 passed. Re-run the "
+          "Exercise 1 check, then this cell.")
+else:
+    saved = save_handoff(Day1Handoff(mode=config.mode, golden_case=case_now))
+    print(f"saved your golden case {case_now.id} to {saved}")
 
 # %% [markdown]
 # ## Exercise checklist

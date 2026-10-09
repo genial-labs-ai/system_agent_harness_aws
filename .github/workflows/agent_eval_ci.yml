@@ -83,7 +83,7 @@ jobs:
       - name: Build and execute notebooks (mock mode)
         run: make notebooks
 
-      - name: Render the slide deck, check lecture references, titles, terminology and links
+      - name: Render the slide decks, check lecture references, titles, terminology and links
         run: |
           make slides
           uv run python scripts/check_lecture_refs.py

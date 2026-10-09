@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-08T15:50:35.071789+00:00",
-  "git_sha": "2478741",
+  "generated_at": "2026-10-08T23:18:27.001491+00:00",
+  "git_sha": "8da2c7f",
   "mode": "mock",
   "agent_model_id": "fake.stockroom-planner-v1",
   "judge": "fake-judge:v2",
@@ -27,6 +27,7 @@
     "step_count_ok_rate": 1.0,
     "loop_rate": 0.0,
     "invalid_call_rate": 0.04,
+    "blocked_call_rate": 0.0,
     "compaction_rate": 0.0,
     "mean_model_calls": 2.06,
     "mean_input_tokens": 2019.84,

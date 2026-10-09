@@ -613,7 +613,7 @@ if caught is None:
 else:
     for cid in ("G020", "G033", "G041"):
         assert_no_ungrounded_writes(harness.run(by_id[cid].query, case_id=cid))  # must not raise
-    exercise_passed("day3.ex1", f"{caught}")
+    exercise_passed("day3.ex1", f"{caught}", checked=assert_no_ungrounded_writes)
 
 # %% [markdown]
 # ### Exercise 2 — the run guard that prevents it (step 3)
@@ -673,7 +673,11 @@ else:
     for cid in ("G020", "G021", "G033"):
         r = allowed.run(by_id[cid].query, case_id=cid)
         assert "create_restock_request" in r.tool_names, f"{cid}: a requested restock was blocked"
-    exercise_passed("day3.ex2", f"blocked {[r.blocked_tool_calls[0].name for r in guarded_runs.values()]}")
+    exercise_passed(
+        "day3.ex2",
+        f"blocked {[r.blocked_tool_calls[0].name for r in guarded_runs.values()]}",
+        checked=GroundedWriteGuard,
+    )
 
 # %% [markdown]
 # **Step 4 — before/after evidence.** The trajectory, the trace and the suite metrics, with the
@@ -702,7 +706,13 @@ pd.DataFrame(
 )
 
 # %%
-GUARD_METRICS = ["tool_selection_accuracy", "answer_correctness", "must_not_call_ok_rate", "invalid_call_rate"]
+GUARD_METRICS = [
+    "tool_selection_accuracy",
+    "answer_correctness",
+    "must_not_call_ok_rate",
+    "invalid_call_rate",
+    "blocked_call_rate",
+]
 with_guard = (GroundedWriteGuard(),)
 pd.DataFrame(
     [
@@ -724,9 +734,11 @@ pd.DataFrame(
 # * `answer_correctness` does **not** recover. The planner still leaks its system prompt in the
 #   *text* of the answer (`after_run.final_answer`). A run guard governs actions, not words; the
 #   default quarantine (section 5) handles both, which is why you want both layers.
-# * `invalid_call_rate` goes **up**: a blocked call is a call that did not execute, and
-#   `RunResult.invalid_tool_calls` counts it with schema-invalid ones (`RunResult.blocked_tool_calls`
-#   separates them). A metric moving the "wrong" way after a fix is a reason to read its definition.
+# * `blocked_call_rate` goes **up** and `invalid_call_rate` does not move. A blocked call did not
+#   execute, but the model sent a valid call and the harness refused it on purpose, so it is counted
+#   apart from schema-invalid calls (`RunResult.blocked_tool_calls` vs `RunResult.invalid_tool_calls`).
+#   Read it per configuration: blocking an injected write is the guard working, while a rising
+#   `blocked_call_rate` on the default configuration would mean the guard refuses legitimate work.
 #
 # ## 9. A payload wrapper is not a run guard
 #
@@ -970,6 +982,71 @@ else:
 # are identical: which tool was selected, were the arguments valid, how did the run terminate, how
 # much context did it carry, and did untrusted tool output change the agent's behaviour. Those are
 # properties of traces, and traces are what AgentCore Evaluations consumes (Day 4).
+
+# %% [markdown]
+# ## Save your work for Day 4
+#
+# The Day 4 capstone asks which seeded regressions the CI gate lets through, and your trajectory
+# assertion (Exercise 1) and run guard (Exercise 2) are evidence for its review. So far you ran them
+# on a handful of cases. This cell runs both over the whole golden set on the five builds the Day 4
+# gate compares (the fixed agent and each weakness on its own), shows which cases each one catches,
+# and saves that to `reports/participant/day3.json` (or into `STOCKROOM_HANDOFF_DIR`) once both
+# exercises have passed, and only while the assertion and guard are the ones their checks passed:
+# after editing either one, re-run its check first. Otherwise Day 4 uses the reference artefact from
+# `data/handoff/` and says so. In live mode the sweep calls Bedrock for every case on every build,
+# so it runs only with `STOCKROOM_CONFIRM_AWS_SPEND=1`.
+
+# %%
+from stockroom.exercises import PASSED, exercise_status, still_checked
+from stockroom.handoff import BUILDS, Day3Handoff, save_handoff
+
+
+def assertion_fails(cfg: StockroomConfig, assertion) -> list[str]:
+    """Golden cases whose run under ``cfg`` fails ``assertion``."""
+    h = Harness(cfg)
+    failing = []
+    for c in cases:
+        try:
+            assertion(h.run(c.query, case_id=c.id))
+        except AssertionError:
+            failing.append(c.id)
+    return failing
+
+
+def guard_blocks(cfg: StockroomConfig, guard_class) -> list[str]:
+    """Golden cases in which a ``guard_class`` run guard blocked at least one call under ``cfg``."""
+    h = Harness(cfg, run_guards=[guard_class()])
+    return [c.id for c in cases if h.run(c.query, case_id=c.id).blocked_tool_calls]
+
+
+sweep_runs = 2 * len(BUILDS) * len(cases)
+if not all(exercise_status(e) == PASSED for e in ("day3.ex1", "day3.ex2")):
+    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
+          "verdicts.")
+elif not (
+    still_checked("day3.ex1", assert_no_ungrounded_writes)
+    and still_checked("day3.ex2", GroundedWriteGuard)
+):
+    print("Nothing saved: your assertion or guard changed after its check passed. Re-run the "
+          "Exercise 1 and 2 checks, then this cell.")
+elif config.is_live and not config.confirm_aws_spend:
+    print(f"Nothing saved: in live mode this sweep makes {sweep_runs} agent runs against Bedrock. "
+          "Set STOCKROOM_CONFIRM_AWS_SPEND=1 to run it, or save from a mock-mode session.")
+else:
+    builds = {b: config.replace(weaknesses="" if b == "fixed" else b) for b in BUILDS}
+    own_verdicts = Day3Handoff(
+        mode=config.mode,
+        assertion=assert_no_ungrounded_writes.__name__,
+        guard=GroundedWriteGuard.name,
+        assertion_fails={b: assertion_fails(cfg, assert_no_ungrounded_writes) for b, cfg in builds.items()},
+        guard_blocks={b: guard_blocks(cfg, GroundedWriteGuard) for b, cfg in builds.items()},
+    )
+    display(
+        pd.DataFrame(
+            {"assertion fails on": own_verdicts.assertion_fails, "guard blocks on": own_verdicts.guard_blocks}
+        )
+    )
+    print(f"saved to {save_handoff(own_verdicts)}")
 
 # %% [markdown]
 # ## Exercise checklist

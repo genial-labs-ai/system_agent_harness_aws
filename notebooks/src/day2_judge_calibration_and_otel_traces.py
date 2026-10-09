@@ -373,6 +373,7 @@ else:
         f"agreement {report_v2.agreement:.2%} -> {report_v3.agreement:.2%}, "
         f"kappa {report_v2.kappa:.3f} -> {report_v3.kappa:.3f}, disagreements "
         f"{[d[0] for d in report_v3.disagreements]}",
+        checked=report_v3,
     )
 
 # %% [markdown]
@@ -435,6 +436,7 @@ else:
     exercise_passed(
         "day2.ex2",
         f"human={new_item.human_label} judge v2 pass={v2_verdict.passed} ({v2_verdict.rationale})",
+        checked=new_item,
     )
 
 # %% [markdown]
@@ -491,6 +493,38 @@ else:
     expected = (loop.signature.split(":", 1)[0], loop.count)
     assert answer == expected, f"got {answer}, ToolCallEvaluator says {expected}"
     exercise_passed("day2.ex3", f"{answer[0]} was called {answer[1]} times with identical arguments")
+
+# %% [markdown]
+# ## Save your work for Day 4
+#
+# The Day 4 gate's `answer_correctness` is graded by a judge, so the capstone review should say how
+# far that judge can be trusted. This cell saves what you measured today: agreement and kappa for
+# rubric v2 and for your rubric (Exercise 1), and your calibration item (Exercise 2), which Day 4
+# hands to the gate's judge. It writes `reports/participant/day2.json` (or into
+# `STOCKROOM_HANDOFF_DIR`) once both exercises have passed, saving what the checks passed: after
+# changing your rubric or item, re-run its check first. Otherwise Day 4 uses the reference artefact
+# from `data/handoff/` and says so.
+
+# %%
+from stockroom.exercises import PASSED, exercise_status, still_checked
+from stockroom.handoff import CalibrationSummary, Day2Handoff, save_handoff
+
+item_now = new_calibration_item()
+if not all(exercise_status(e) == PASSED for e in ("day2.ex1", "day2.ex2")):
+    print("Nothing saved: Exercises 1 and 2 have not both passed, so Day 4 will use the reference "
+          "calibration.")
+elif not (still_checked("day2.ex1", report_v3) and still_checked("day2.ex2", item_now)):
+    print("Nothing saved: your rubric or calibration item changed after its check passed. Re-run "
+          "the Exercise 1 and 2 checks, then this cell.")
+else:
+    own_calibration = Day2Handoff(
+        mode=config.mode,
+        calibrations=[CalibrationSummary.from_report(r) for r in (report_v2, report_v3)],
+        calibration_item=item_now,
+    )
+    saved = save_handoff(own_calibration)
+    print(f"saved rubrics {[c.rubric_version for c in own_calibration.calibrations]} and item "
+          f"{own_calibration.calibration_item.id} to {saved}")
 
 # %% [markdown]
 # ## Exercise checklist
