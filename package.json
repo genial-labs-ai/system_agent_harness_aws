@@ -6,8 +6,8 @@
   "license": "MIT",
   "devDependencies": {
     "@marp-team/marp-cli": "4.5.1",
-    "promptfoo": "0.124.0",
-    "puppeteer-core": "24.43.1"
+    "promptfoo": "0.125.1",
+    "puppeteer-core": "25.16.0"
   },
   "engines": {
     "node": ">=20"
